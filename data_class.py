@@ -21,6 +21,7 @@ class Data_class():
 
 
         self.world : list[list[str]] = []
+        self.path : list[list[PathPos]] = []
 
         self.run : bool = True
         self.mouse_wheel_up : bool = False
@@ -100,6 +101,29 @@ class Data_class():
         screen_x : int = world_pos[0] * self.tile_zoom * 12 + self.world_margin[0]
         screen_y : int = world_pos[1] * self.tile_zoom * 12 + self.world_margin[1]
         return (screen_x, screen_y)
+
+
+
+
+
+
+
+
+####################
+# Additional types #
+####################
+
+class PathPos(TypedDict):
+    """
+    Represents a position in the pathfinding algorithm.
+    The path in the end is a list of lists of these objects.
+    The path will always start in the first list.
+    If a tile leads into multiple future child-paths, specify those list-indexes in the jump_to list.
+    """
+    x : int
+    y : int
+    jump_to : list[int]
+
 
 
             

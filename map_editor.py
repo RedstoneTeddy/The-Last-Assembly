@@ -21,7 +21,7 @@ logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
 
-version : str = "0.1.1"
+version : str = "0.1.2"
 data : Data_class = Data_class(version)
 file_name : str = ""
 
@@ -43,6 +43,8 @@ sidebar.append(["sidebar_12", "sidebar_15", "sidebar_15", "sidebar_15", "sidebar
 for i in range(18):
     for j in range(5):
         data.world[i].insert(0, sidebar[i][j])
+
+data.path = []
 
 
 
