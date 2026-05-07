@@ -1,7 +1,7 @@
 from typing import TypedDict, Literal
 
 import pygame as pg
-
+import logging
 
 class Data_class():
     def __init__(self, version : str) -> None:
@@ -23,6 +23,8 @@ class Data_class():
         self.world : list[list[str]] = []
 
         self.run : bool = True
+        self.mouse_wheel_up : bool = False
+        self.mouse_wheel_down : bool = False
 
         self.__font_objects : dict[str, pg.font.Font] = {}
 
@@ -77,8 +79,9 @@ class Data_class():
         if needed_size in self.__font_objects:
             return self.__font_objects[needed_size]
         else:
-            print(f"Creating new font object for size {size}")
-            font_object : pg.font.Font = pg.font.Font("assets/coure.fon", size)
+            logging.debug(f"Creating new font object for size {size}")
+            # https://www.1001fonts.com/fff-forward-font.html
+            font_object : pg.font.Font = pg.font.Font("assets/FFFFORWA.TTF", size)
             self.__font_objects[needed_size] = font_object
             return font_object
         
@@ -86,6 +89,17 @@ class Data_class():
         font_object : pg.font.Font = self.Get_font(size)
         text_surface : pg.Surface = font_object.render(text, True, color)
         self.screen.blit(text_surface, position)
+
+
+    def Get_Screen_to_World(self, screen_pos : tuple[int, int]) -> tuple[int, int]:
+        world_x : int = (screen_pos[0] - self.world_margin[0]) // (self.tile_zoom * 12)
+        world_y : int = (screen_pos[1] - self.world_margin[1]) // (self.tile_zoom * 12)
+        return (world_x, world_y)
+
+    def Get_World_to_Screen(self, world_pos : tuple[int, int]) -> tuple[int, int]:
+        screen_x : int = world_pos[0] * self.tile_zoom * 12 + self.world_margin[0]
+        screen_y : int = world_pos[1] * self.tile_zoom * 12 + self.world_margin[1]
+        return (screen_x, screen_y)
 
 
             
