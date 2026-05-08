@@ -74,7 +74,8 @@ class Selector:
 
 
         # Other notes:
-        self.data.Draw_text("c - Gen. Floor", (2*self.data.tile_zoom, 70*self.data.tile_zoom), self.data.tile_zoom*5, (0,0,0))
+        self.data.Draw_text("C - Gen. Floor", (2*self.data.tile_zoom, 70*self.data.tile_zoom), self.data.tile_zoom*4, (0,0,0))
+        self.data.Draw_text("M - Switch Mode", (2*self.data.tile_zoom, 80*self.data.tile_zoom), self.data.tile_zoom*4, (0,0,0))
 
     def Get_current(self) -> str:
         return self.selected_tile

@@ -59,6 +59,9 @@ import map_editor_helper_functions.selector
 selector_obj : map_editor_helper_functions.selector.Selector = map_editor_helper_functions.selector.Selector(data, tile_renderer)
 import map_editor_helper_functions.save_load
 
+import map_editor_helper_functions.path_creation
+path_obj : map_editor_helper_functions.path_creation.Path_creation = map_editor_helper_functions.path_creation.Path_creation(data)
+
 
 import easygui # type: ignore
 file_name = easygui.enterbox("Enter the name of the map to load (without .pkl extension):", "Load Map")
@@ -75,6 +78,9 @@ else:
     exit()
 
 
+editor_mode : str = "main"
+mode_switch_pressed : bool = False
+
 try:
     while data.run:
 
@@ -84,20 +90,37 @@ try:
         tile_renderer.Draw()
 
 
-        selector_obj.Main()
+        # Check for mode switch
+        keys = pg.key.get_pressed()
+        if keys[pg.K_m]:
+            if not mode_switch_pressed:
+                mode_switch_pressed = True
+                if editor_mode == "main":
+                    editor_mode = "path"
+                else:
+                    editor_mode = "main"
+        else:
+            mode_switch_pressed = False
 
-        # Create floor patches when C is pressed
-        if pg.key.get_pressed()[pg.K_c] and not create_patches_pressed:
-            create_patches_pressed = True
-            map_editor_helper_functions.create_patches.Create_floor_patches(data)
-        if not pg.key.get_pressed()[pg.K_c]:
-            create_patches_pressed = False
-            
-        # Placing tiless with 
-        if pg.mouse.get_pressed()[0]: 
-            world_pos : tuple[int, int] = data.Get_Screen_to_World(pg.mouse.get_pos())
-            if world_pos[0] >= 5 and world_pos[0] < len(data.world[0]) and world_pos[1] >= 0 and world_pos[1] < len(data.world):
-                data.world[world_pos[1]][world_pos[0]] = selector_obj.Get_current()
+
+        if editor_mode == "main":
+            selector_obj.Main()
+
+            # Create floor patches when C is pressed
+            if pg.key.get_pressed()[pg.K_c] and not create_patches_pressed:
+                create_patches_pressed = True
+                map_editor_helper_functions.create_patches.Create_floor_patches(data)
+            if not pg.key.get_pressed()[pg.K_c]:
+                create_patches_pressed = False
+                
+            # Placing tiless with 
+            if pg.mouse.get_pressed()[0]: 
+                world_pos : tuple[int, int] = data.Get_Screen_to_World(pg.mouse.get_pos())
+                if world_pos[0] >= 5 and world_pos[0] < len(data.world[0]) and world_pos[1] >= 0 and world_pos[1] < len(data.world):
+                    data.world[world_pos[1]][world_pos[0]] = selector_obj.Get_current()
+        
+        elif editor_mode == "path":
+            path_obj.Main()
 
 
 
@@ -114,6 +137,8 @@ try:
                     data.mouse_wheel_up = True
                 elif event.y < 0:
                     data.mouse_wheel_down = True
+            # if event.type == pg.KEYDOWN:
+            #     print(event.key, event.unicode)
 
 
 except Exception as e:
