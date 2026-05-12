@@ -18,7 +18,7 @@ class Tiles:
             f"floor_{i}" : pg.image.load(f"assets/tile/floor/normal{i}.png").convert_alpha() for i in range(1, 41)
         })
         self.original_images.update({
-            f"path_{i}" : pg.image.load(f"assets/tile/path/normal{i}.png").convert_alpha() for i in range(1, 7)
+            f"path_{i}" : pg.image.load(f"assets/tile/path/normal{i}.png").convert_alpha() for i in range(1, 12)
         })
         self.original_images.update({
             f"sidebar_{i}" : pg.image.load(f"assets/tile/sidebar/sidebar{i}.png").convert_alpha() for i in range(1, 16)

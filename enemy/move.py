@@ -36,29 +36,76 @@ class EnemyMove:
 
         if not self.__cache_locations:
             self.Precache_enemy_locations()
+
+            
+        pos_exact_frame_offset_max : int = 12
         
-        for enemy_id in enemies.health.keys():
+        for enemy_id in list(enemies.health.keys()):
             enemies.pos_exact_frame_offset[enemy_id] += 1
             if self.data.fast_forward:
                 enemies.pos_exact_frame_offset[enemy_id] += 1
+                
+            # Set the enemy's next position if it doesn't have one
+            if enemies.next_position.get(enemy_id, None) is None:
+                # Enemy needs a new next position
+                self.__Set_next_position(enemy_id)
+                self.__Set_pos_direction(enemy_id)
 
-            # Move to next tile
-            if enemies.pos_exact_frame_offset[enemy_id] >= 20:
+            # Move the enemy towards its next position
+            if enemies.pos_exact_frame_offset[enemy_id] >= pos_exact_frame_offset_max:
+                # Check if enemy reached the end of the path
+                if enemies.next_position[enemy_id] == (-1, -1):
+                    self.data.health -= enemies.health[enemy_id]
+                    enemies.Remove_enemy(enemy_id)
+                    continue
+
+                enemies.position[enemy_id] = enemies.next_position[enemy_id]
                 enemies.pos_exact_frame_offset[enemy_id] = 0
-                current_pos : tuple[int, int] = enemies.position[enemy_id]
-                path_i, tile_i = self.__cache_locations[current_pos]
 
-                if tile_i + 1 < len(self.data.path[path_i]):
-                    next_tile : data_class.PathPos = self.data.path[path_i][tile_i + 1]
-                    enemies.position[enemy_id] = (next_tile["x"], next_tile["y"])
+                # Enemy needs a new next position
+                self.__Set_next_position(enemy_id)
 
-                else: # Path is finished
-                    if len(self.data.path[path_i][tile_i]["jump_to"]) > 0:
-                        jump_to_posibilities : list[int] = self.data.path[path_i][tile_i]["jump_to"]
-                        chosen_jump : int = random.choice(jump_to_posibilities)
-                        next_tile = self.data.path[chosen_jump][0]
-                        enemies.position[enemy_id] = (next_tile["x"], next_tile["y"])
-                        
-                    else: # Enemy reached the end of the path
-                        self.data.health -= enemies.health[enemy_id]
-                        enemies.Remove_enemy(enemy_id)
+                # Set heading direction
+                self.__Set_pos_direction(enemy_id)
+
+
+
+
+
+
+
+    def __Set_pos_direction(self, enemy_id : int) -> None:
+        enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
+        current_pos : tuple[int, int] = enemies.position[enemy_id]
+        next_pos : tuple[int, int] = enemies.next_position[enemy_id]
+        if next_pos != (-1, -1):
+            if next_pos[0] > current_pos[0]:
+                enemies.pos_direction[enemy_id] = "right"
+            elif next_pos[0] < current_pos[0]:
+                enemies.pos_direction[enemy_id] = "left"
+            elif next_pos[1] > current_pos[1]:
+                enemies.pos_direction[enemy_id] = "down"
+            elif next_pos[1] < current_pos[1]:
+                enemies.pos_direction[enemy_id] = "up"
+
+
+    def __Set_next_position(self, enemy_id : int) -> None:
+        enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
+
+        current_pos : tuple[int, int] = enemies.position[enemy_id]
+        path_i, tile_i = self.__cache_locations[current_pos]
+
+        if tile_i + 1 < len(self.data.path[path_i]):
+            next_tile : data_class.PathPos = self.data.path[path_i][tile_i + 1]
+            enemies.next_position[enemy_id] = (next_tile["x"], next_tile["y"])
+        
+        else: # Path is finished
+            if len(self.data.path[path_i][tile_i]["jump_to"]) > 0:
+                jump_to_possibilities : list[int] = self.data.path[path_i][tile_i]["jump_to"]
+                chosen_jump : int = random.choice(jump_to_possibilities)
+                next_tile = self.data.path[chosen_jump][0]
+                enemies.next_position[enemy_id] = (next_tile["x"], next_tile["y"])
+            
+            else: # Enemy will reach the end of the path
+                enemies.next_position[enemy_id] = (-1, -1)
+

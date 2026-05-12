@@ -30,49 +30,105 @@ class Hud:
     def Draw(self) -> None:
         self.Resize()
 
-        # Show background
-        self.data.screen.blit(self.images["label_long"], self.data.Get_World_to_Screen((0, 14)))
-
-
-
         # Show money
-        money_icon_pos : tuple[int, int] = self.data.Get_World_to_Screen((3, 14))
+        self.data.screen.blit(self.images["label_long"], self.data.Get_World_to_Screen((0, 7)))
+        money_icon_pos : tuple[int, int] = self.data.Get_World_to_Screen((3, 7))
         money_icon_pos = (money_icon_pos[0] + 8 * self.data.tile_zoom, money_icon_pos[1] + 3 * self.data.tile_zoom)
         self.data.screen.blit(self.images["money"], money_icon_pos)
 
         money_txt : str = str(self.data.money)
         money_size : int = 8 * self.data.tile_zoom
-        money_pos : tuple[int, int] = self.data.Get_World_to_Screen((0, 14))
+        money_pos : tuple[int, int] = self.data.Get_World_to_Screen((0, 7))
         money_pos = (money_pos[0] + 6 * self.data.tile_zoom, money_pos[1] + 4 * self.data.tile_zoom)
 
         match len(money_txt):
             case 1:
                 money_pos = (money_pos[0] + 30 * self.data.tile_zoom, money_pos[1])
             case 2:
-                money_pos = (money_pos[0] + 25 * self.data.tile_zoom, money_pos[1])
+                money_pos = (money_pos[0] + 24 * self.data.tile_zoom, money_pos[1])
             case 3:
-                money_pos = (money_pos[0] + 10 * self.data.tile_zoom, money_pos[1])
+                money_pos = (money_pos[0] + 18 * self.data.tile_zoom, money_pos[1])
             case 4:
-                money_pos = (money_pos[0], money_pos[1])
+                money_pos = (money_pos[0] + 12 * self.data.tile_zoom, money_pos[1])
             case 5:
-                money_pos = (money_pos[0] + 10 * self.data.tile_zoom, money_pos[1])
-                money_size = 4 * self.data.tile_zoom
+                money_pos = (money_pos[0] + 6 * self.data.tile_zoom, money_pos[1])
             case 6:
-                money_pos = (money_pos[0] + 2 * self.data.tile_zoom, money_pos[1])
-                money_size = 4 * self.data.tile_zoom
+                money_pos = (money_pos[0] + 0 * self.data.tile_zoom, money_pos[1])
             case 7:
-                money_pos = (money_pos[0] + 10 * self.data.tile_zoom, money_pos[1])
-                money_size = 3 * self.data.tile_zoom
-            case 8:
-                money_pos = (money_pos[0] + 4 * self.data.tile_zoom, money_pos[1])
-                money_size = 3 * self.data.tile_zoom
-            case 9:
-                money_pos = (money_pos[0] - 2 * self.data.tile_zoom, money_pos[1])
-                money_size = 3 * self.data.tile_zoom
-            case _:
                 money_pos = (money_pos[0], money_pos[1])
-                money_size = 3 * self.data.tile_zoom
+                money_size = 7 * self.data.tile_zoom
+            case 8:
+                money_pos = (money_pos[0], money_pos[1] + 1 * self.data.tile_zoom)
+                money_size = 6 * self.data.tile_zoom
+            case 9:
+                money_pos = (money_pos[0], money_pos[1] + 1 * self.data.tile_zoom)
+                money_size = 5 * self.data.tile_zoom
+            case 10:
+                money_pos = (money_pos[0], money_pos[1] + 2 * self.data.tile_zoom)
+                money_size = 5 * self.data.tile_zoom
+            case _:
+                money_pos = (money_pos[0], money_pos[1] + 2 * self.data.tile_zoom)
+                money_size = 4 * self.data.tile_zoom
+            
 
         self.data.Draw_text(money_txt, money_pos, money_size, (238, 168, 25))
+
+        # Show health
+        self.data.screen.blit(self.images["label_long"], self.data.Get_World_to_Screen((0, 5)))
+        health_icon_pos : tuple[int, int] = self.data.Get_World_to_Screen((3, 5))
+        health_icon_pos = (health_icon_pos[0] + 8 * self.data.tile_zoom, health_icon_pos[1] + 3 * self.data.tile_zoom)
+        self.data.screen.blit(self.images["life"], health_icon_pos)
+
+        health_txt : str = str(self.data.health)
+        health_size : int = 8 * self.data.tile_zoom
+        health_pos : tuple[int, int] = self.data.Get_World_to_Screen((0, 5))
+        health_pos = (health_pos[0] + 6 * self.data.tile_zoom, health_pos[1] + 4 * self.data.tile_zoom)
+
+        match len(health_txt):
+            case 1:
+                health_pos = (health_pos[0] + 30 * self.data.tile_zoom, health_pos[1])
+            case 2:
+                health_pos = (health_pos[0] + 24 * self.data.tile_zoom, health_pos[1])
+            case 3:
+                health_pos = (health_pos[0] + 18 * self.data.tile_zoom, health_pos[1])
+            case 4:
+                health_pos = (health_pos[0] + 12 * self.data.tile_zoom, health_pos[1])
+            case 5:
+                health_pos = (health_pos[0] + 6 * self.data.tile_zoom, health_pos[1])
+            case 6:
+                health_pos = (health_pos[0] + 0 * self.data.tile_zoom, health_pos[1])
+            case _:
+                health_pos = (health_pos[0], health_pos[1] + 1 * self.data.tile_zoom)
+                health_size = 6 * self.data.tile_zoom
+            
+
+        self.data.Draw_text(health_txt, health_pos, health_size, (230, 72, 46))
+
+
+
+
+        # Show wave info
+        self.data.screen.blit(self.images["label_long"], self.data.Get_World_to_Screen((0, 3)))
+
+        wave_txt : str = str(self.data.wave) + ". Wave"
+        wave_size : int = 6 * self.data.tile_zoom
+        wave_pos : tuple[int, int] = self.data.Get_World_to_Screen((0, 3))
+        wave_pos = (wave_pos[0] + 6 * self.data.tile_zoom, wave_pos[1] + 5 * self.data.tile_zoom)
+
+        match len(wave_txt):
+            case 7:
+                wave_pos = (wave_pos[0] + 8 * self.data.tile_zoom, wave_pos[1])
+            case 8:
+                wave_pos = (wave_pos[0] + 6 * self.data.tile_zoom, wave_pos[1])
+            case 9:
+                wave_pos = (wave_pos[0] + 4 * self.data.tile_zoom, wave_pos[1])
+            case _:
+                wave_pos = (wave_pos[0], wave_pos[1] + 1 * self.data.tile_zoom)
+                wave_size = 4 * self.data.tile_zoom
+
+        self.data.Draw_text(wave_txt, wave_pos, wave_size, (0, 0, 0))
+
+
+
 
         

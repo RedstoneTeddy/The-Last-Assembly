@@ -14,7 +14,7 @@ class Selector:
 
         self.variant_max : dict[str, int] = {
             "floor" : 40,
-            "path" : 6,
+            "path" : 11,
             "hq" : 12
         }
 

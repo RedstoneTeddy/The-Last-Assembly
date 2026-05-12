@@ -2,14 +2,20 @@ from typing import TypedDict, Literal
 
 import pygame as pg
 import logging
-
 import enemy.enemy_data_class as enemy_data_class
+
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    import towers.base_tower.base as base_tower
+
 
 class Data_class():
     def __init__(self, version : str) -> None:
         self.version = version
 
         self.screen_size : tuple[int, int] = (32*30, 18*30)
+        self.screen_size_before_fullscreen : tuple[int, int] = self.screen_size
         self.is_fullscreen : bool = False
         self.__fullscreen_clicked : bool = False
         self.screen_title : str = "The Last Assembly"
@@ -25,6 +31,7 @@ class Data_class():
         self.run : bool = True
         self.mouse_wheel_up : bool = False
         self.mouse_wheel_down : bool = False
+        self.clock : pg.time.Clock = pg.time.Clock()
 
         self.__font_objects : dict[str, pg.font.Font] = {}
 
@@ -37,7 +44,7 @@ class Data_class():
         self.path : list[list[PathPos]] = []
 
         self.wave : int = 0
-        self.money : int = 22
+        self.money : int = 0
         self.health : int = 0
         self.fast_forward : bool = False
 
@@ -45,6 +52,7 @@ class Data_class():
         self.in_shop : bool = False
 
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
+        self.towers : list[base_tower.Base_tower] = []
 
     
     def Check_resize(self, force : bool = False) -> bool:
@@ -53,7 +61,14 @@ class Data_class():
         if keys[pg.K_F11] and not self.__fullscreen_clicked:
             self.__fullscreen_clicked = True
             self.is_fullscreen = not self.is_fullscreen
-            pg.display.toggle_fullscreen()
+            if self.is_fullscreen:
+                self.screen_size_before_fullscreen = self.screen_size   
+                self.screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+            else:
+                self.screen_size = self.screen_size_before_fullscreen
+                self.screen = pg.display.set_mode(self.screen_size, pg.RESIZABLE)
+        elif not keys[pg.K_F11]:
+            self.__fullscreen_clicked = False
 
         # Check if the screen size has changed
         if self.screen_size != pg.display.get_window_size() or force:
