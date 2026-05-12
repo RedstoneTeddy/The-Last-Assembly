@@ -37,7 +37,7 @@ class Data_class():
         self.path : list[list[PathPos]] = []
 
         self.wave : int = 0
-        self.money : int = 0
+        self.money : int = 22
         self.health : int = 0
         self.fast_forward : bool = False
 

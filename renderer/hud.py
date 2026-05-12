@@ -36,20 +36,20 @@ class Hud:
 
 
         # Show money
-        money_icon_pos : tuple[int, int] = self.data.Get_World_to_Screen((4, 14))
-        money_icon_pos = (money_icon_pos[0] + 6 * self.data.tile_zoom, money_icon_pos[1] + 3 * self.data.tile_zoom)
+        money_icon_pos : tuple[int, int] = self.data.Get_World_to_Screen((3, 14))
+        money_icon_pos = (money_icon_pos[0] + 8 * self.data.tile_zoom, money_icon_pos[1] + 3 * self.data.tile_zoom)
         self.data.screen.blit(self.images["money"], money_icon_pos)
 
         money_txt : str = str(self.data.money)
-        money_size : int = 5 * self.data.tile_zoom
+        money_size : int = 8 * self.data.tile_zoom
         money_pos : tuple[int, int] = self.data.Get_World_to_Screen((0, 14))
-        money_pos = (money_pos[0] + 6 * self.data.tile_zoom, money_pos[1] + 3 * self.data.tile_zoom)
+        money_pos = (money_pos[0] + 6 * self.data.tile_zoom, money_pos[1] + 4 * self.data.tile_zoom)
 
         match len(money_txt):
             case 1:
                 money_pos = (money_pos[0] + 30 * self.data.tile_zoom, money_pos[1])
             case 2:
-                money_pos = (money_pos[0] + 20 * self.data.tile_zoom, money_pos[1])
+                money_pos = (money_pos[0] + 25 * self.data.tile_zoom, money_pos[1])
             case 3:
                 money_pos = (money_pos[0] + 10 * self.data.tile_zoom, money_pos[1])
             case 4:
@@ -73,6 +73,6 @@ class Hud:
                 money_pos = (money_pos[0], money_pos[1])
                 money_size = 3 * self.data.tile_zoom
 
-        self.data.Draw_text(money_txt, money_pos, money_size, (150, 150, 0))
+        self.data.Draw_text(money_txt, money_pos, money_size, (238, 168, 25))
 
         
