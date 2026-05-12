@@ -23,6 +23,9 @@ class Path_creation:
         if (self.selected_group >= 0):
             pg.draw.rect(self.data.screen, colors[self.selected_group], (35*self.data.tile_zoom, 2*self.data.tile_zoom, self.data.tile_zoom*12, self.data.tile_zoom*12))
 
+        self.data.Draw_text("LC: Nodes", (2*self.data.tile_zoom, 20*self.data.tile_zoom), self.data.tile_zoom*5, (0,0,0))
+        self.data.Draw_text("RC: Jump", (2*self.data.tile_zoom, 30*self.data.tile_zoom), self.data.tile_zoom*5, (0,0,0))
+
 
         # Functionality
         keys = pg.key.get_pressed()
@@ -55,10 +58,11 @@ class Path_creation:
                 if not self.__clicked:
                     self.__clicked = True
                     already_exists : bool = False
-                    for elements in self.data.path[self.selected_group]:
-                        if elements["x"] == pos[0] and elements["y"] == pos[1]:
-                            already_exists = True
-                            break
+                    if self.selected_group < len(self.data.path):
+                        for elements in self.data.path[self.selected_group]:
+                            if elements["x"] == pos[0] and elements["y"] == pos[1]:
+                                already_exists = True
+                                break
                     if already_exists:
                         # Remove the element
                         self.data.path[self.selected_group] = [elements for elements in self.data.path[self.selected_group] if not (elements["x"] == pos[0] and elements["y"] == pos[1])]
@@ -139,9 +143,10 @@ class Path_creation:
             pg.draw.circle(self.data.screen, my_color, (screen_pos[0] + self.data.tile_zoom * 6, screen_pos[1] + self.data.tile_zoom * 6), self.data.tile_zoom * 3, self.data.tile_zoom*2)
             # Show the color of the next path elements
             for i, next in enumerate(self.data.path):
-                other_color : tuple[int, int, int] = possible_colors[i][0]
-                pg.draw.rect(self.data.screen, other_color, 
-                             (screen_pos[0] + self.data.tile_zoom*3*i, screen_pos[1] , self.data.tile_zoom*3, self.data.tile_zoom*3))
+                if i in path_element["jump_to"]:
+                    other_color : tuple[int, int, int] = possible_colors[i][0]
+                    pg.draw.rect(self.data.screen, other_color, 
+                                (screen_pos[0] + self.data.tile_zoom*3*i, screen_pos[1] , self.data.tile_zoom*3, self.data.tile_zoom*3))
             return
         
         # Draw a small arrow pointing to the next path element

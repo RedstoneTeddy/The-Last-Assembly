@@ -3,6 +3,8 @@ from typing import TypedDict, Literal
 import pygame as pg
 import logging
 
+import enemy.enemy_data_class as enemy_data_class
+
 class Data_class():
     def __init__(self, version : str) -> None:
         self.version = version
@@ -18,16 +20,31 @@ class Data_class():
         self.screen : pg.Surface = pg.display.set_mode(self.screen_size, pg.RESIZABLE)
         pg.display.set_caption(self.screen_title)
         self.Check_resize(force=True)
-
-
-        self.world : list[list[str]] = []
-        self.path : list[list[PathPos]] = []
+        
 
         self.run : bool = True
         self.mouse_wheel_up : bool = False
         self.mouse_wheel_down : bool = False
 
         self.__font_objects : dict[str, pg.font.Font] = {}
+
+        self.__id_counter : int = 0
+
+    
+
+        # Game variables
+        self.world : list[list[str]] = []
+        self.path : list[list[PathPos]] = []
+
+        self.wave : int = 0
+        self.money : int = 0
+        self.health : int = 0
+        self.fast_forward : bool = False
+
+        self.wave_in_progress : bool = False
+        self.in_shop : bool = False
+
+        self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
 
     
     def Check_resize(self, force : bool = False) -> bool:
@@ -101,6 +118,11 @@ class Data_class():
         screen_x : int = world_pos[0] * self.tile_zoom * 12 + self.world_margin[0]
         screen_y : int = world_pos[1] * self.tile_zoom * 12 + self.world_margin[1]
         return (screen_x, screen_y)
+    
+
+    def Generate_id(self) -> int:
+        self.__id_counter += 1
+        return self.__id_counter*1000 + self.wave   
 
 
 
@@ -123,6 +145,7 @@ class PathPos(TypedDict):
     x : int
     y : int
     jump_to : list[int]
+
 
 
 
