@@ -50,10 +50,64 @@ class Tower_info():
                 self.images[name] = pg.transform.scale(self.original_images[name], (image_size[0]*self.zoom, image_size[1]*self.zoom))
 
                 
+
+
     def Draw(self) -> None:
         self.Resize()
 
         for tower in self.data.towers:
             if tower._is_selected and tower._is_placed:
-                pass
+                texts : list[tuple[str, tuple[int, int, int], str, bool]] = tower.Get_info_texts()
+                if len(texts) > 0:
+                    # Check if user hovers over the tower
+                    mouse_pos : tuple[int, int] = pg.mouse.get_pos()
+                    tower_rect : tuple[int, int, int, int] = (
+                        self.data.Get_World_to_Screen(tower._pos)[0],
+                        self.data.Get_World_to_Screen(tower._pos)[1],
+                        2*12*self.data.tile_zoom,
+                        2*12*self.data.tile_zoom
+                    )
+                    if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
+                        box_pos : tuple[int, int] = (mouse_pos[0] + 6*self.data.tile_zoom, mouse_pos[1] - 12*self.data.tile_zoom)
+                        self.data.screen.blit(self.images["top_60"], box_pos)
+                        box_pos = (box_pos[0], box_pos[1] + 2*self.data.tile_zoom)
+                        for i in range(len(texts)):
+                            self.__Draw_line(box_pos, texts[i][0], texts[i][1], texts[i][2], texts[i][3])
+                            box_pos = (box_pos[0], box_pos[1] + 14*self.data.tile_zoom)
+                        self.data.screen.blit(self.images["bottom_60"], box_pos)
+
+
+
+
+    def __Draw_line(self, pos : tuple[int, int], text : str, color : tuple[int, int, int], icon : str, is_small : bool) -> None:
+        """
+        Draw a single line including the background at pixel-position pos with color and text.
+        If icon != "", draw the icon with the name at the beginning
+        If is_small is True, print two lines in the same segment. Separate them with a \\n or ; in text
+        """
+        self.data.screen.blit(self.images["line_60"], pos)
+        
+        if is_small:
+            lines : list[str] = text.replace("\\n", ";").split(";")
+            text_pos : tuple[int, int] = (pos[0] + 3*self.data.tile_zoom, pos[1] + 2*self.data.tile_zoom)
+            self.data.Draw_text(lines[0], text_pos, 4*self.data.tile_zoom, color)
+            text_pos = (text_pos[0], text_pos[1] + (3+4)*self.data.tile_zoom)
+            self.data.Draw_text(lines[1], text_pos, 4*self.data.tile_zoom, color)
+
+        else: # Normal / bigger text
+            text_pos = (pos[0] + 3*self.data.tile_zoom, pos[1] + 4*self.data.tile_zoom)
+
+            if (len(text) > 12 and icon == "") or (len(text) > 10 and icon != ""):
+                test_size : int = 4 * self.data.tile_zoom
+                text_pos = (text_pos[0], text_pos[1] + 1*self.data.tile_zoom)
+            else:
+                test_size = 6 * self.data.tile_zoom
+
+            if icon != "":
+                self.data.screen.blit(self.images["icon_"+icon], (pos[0] + 3*self.data.tile_zoom, pos[1] + 1*self.data.tile_zoom))
+                text_pos = (text_pos[0] + 14*self.data.tile_zoom, text_pos[1])
+
+            self.data.Draw_text(text, text_pos, test_size, color)
+
+
 

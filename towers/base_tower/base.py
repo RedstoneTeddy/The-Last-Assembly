@@ -46,6 +46,37 @@ class Base_tower:
 
 
 
+    def Get_info_texts(self) -> list[tuple[str, tuple[int, int, int], str, bool]]:
+        """
+        Returns a list of tuples, each is one line of text to be displayed 
+        The tuple contains in the following order:
+        1. (str) : the text
+        2. (tuple[int, int, int]) : the color of the text in RGB
+        3. (str) : the icon to be displayed before the text
+        4. (bool) : whether the line is small
+        """
+        output : list[tuple[str, tuple[int, int, int], str, bool]] = []
+
+        output.append((self.name, (0,0,0), "", False))
+
+        if self.rarity == "Common":
+            output.append(("Common", (0,0,0), "", False))
+        elif self.rarity == "Uncommon":
+            output.append(("Uncommon", (0,0,255), "", False))
+        elif self.rarity == "Rare":
+            output.append(("Rare", (200,100,0), "", False))
+
+        output.append((str(self.damage), (0,0,0), self.damage_type.lower(), False))
+        output.append((str(round(self.cooldown/60, 2))+" s", (0,0,0), "time", False))
+        output.append((str(round(self.range/ 12, 1))+" tiles", (0,0,0), "range", False))
+
+        output.append(("123456789012", (0,0,0), "", False))
+        output.append(("123456789012345", (0,0,0), "", False))
+        output.append(("abcdefghijklm;nopqrstuvwxyz", (0,0,0), "", True))
+
+
+        return output
+
 
 
 

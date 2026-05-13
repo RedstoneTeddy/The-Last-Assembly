@@ -18,7 +18,7 @@ logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
 
-version : str = "0.2.1"
+version : str = "0.2.2"
 data : Data_class = Data_class(version)
 
 
