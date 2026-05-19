@@ -68,6 +68,20 @@ class EnemyMove:
                 # Set heading direction
                 self.__Set_pos_direction(enemy_id)
 
+            # Calculate the enemy's exact position
+            offset_direction : str = enemies.pos_direction.get(enemy_id, "down")
+            offset_value : float = enemies.pos_exact_frame_offset[enemy_id] / pos_exact_frame_offset_max
+
+            if offset_direction == "right":
+                enemies.exact_pos[enemy_id] = (enemies.position[enemy_id][0] + offset_value, enemies.position[enemy_id][1])
+            elif offset_direction == "left":
+                enemies.exact_pos[enemy_id] = (enemies.position[enemy_id][0] - offset_value, enemies.position[enemy_id][1])
+            elif offset_direction == "down":
+                enemies.exact_pos[enemy_id] = (enemies.position[enemy_id][0], enemies.position[enemy_id][1] + offset_value)
+            elif offset_direction == "up":
+                enemies.exact_pos[enemy_id] = (enemies.position[enemy_id][0], enemies.position[enemy_id][1] - offset_value)
+
+
 
 
 

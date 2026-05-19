@@ -18,7 +18,7 @@ logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
 
-version : str = "0.2.2"
+version : str = "0.3.0"
 data : Data_class = Data_class(version)
 
 
@@ -49,14 +49,38 @@ enemy_move : enemy.move.EnemyMove = enemy.move.EnemyMove(data)
 import enemy.wave_handler
 enemy_wave : enemy.wave_handler.Wave_handler = enemy.wave_handler.Wave_handler(data)
 
+import debug.top_handler
+debug_handler : debug.top_handler.Top_handler = debug.top_handler.Top_handler(data)
+
 
 # Temporary Code
 enemy_wave.New_wave() 
+
 import towers.combat_robot
 cr = towers.combat_robot.Combat_robot(data)
-cr._pos = (8, 8)
+cr._pos = (10, 3)
 cr._is_placed = True
 data.towers.append(cr)
+
+import towers.gear_thrower
+gt = towers.gear_thrower.Gear_thrower(data)
+gt._pos = (14, 3)
+gt._is_placed = True
+data.towers.append(gt)
+
+import towers.tesla_coil
+tc = towers.tesla_coil.Tesla_coil(data)
+tc._pos = (18, 3)
+tc._is_placed = True
+data.towers.append(tc)
+
+import towers.zapper
+zapper = towers.zapper.Zapper(data)
+zapper._pos = (24, 3)
+zapper._is_placed = True
+data.towers.append(zapper)
+
+data.fast_forward = False
 
 
 
@@ -82,6 +106,7 @@ try:
 
         tower_info_renderer.Draw()
 
+        debug_handler.Main()
 
 
         pg.display.flip()
@@ -97,7 +122,7 @@ try:
                 elif event.y < 0:
                     data.mouse_wheel_down = True
 
-        if not pg.key.get_pressed()[pg.K_F1]:
+        if not pg.key.get_pressed()[pg.K_F3]:
             data.clock.tick(60)
         
 except Exception as e:

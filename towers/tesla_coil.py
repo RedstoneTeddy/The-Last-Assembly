@@ -1,0 +1,24 @@
+import towers.base_tower.base as base
+import data_class
+
+
+class Tesla_coil(base.Base_tower):
+    def __init__(self, data : data_class.Data_class) -> None:
+        super().__init__(data)
+
+        self.internal_name : str = "tesla_coil"
+        self.name : str = "Tesla Coil"
+
+        self.number_of_frames : int = 7
+        self.animation_speed : int = 4
+        self.chance_to_start_animation : float = 1.0
+
+        self.rarity : base.RARITIES = "Rare"
+
+        self.range : int = 3*12
+        self.damage : int = 2
+        self.cooldown : int = 40
+        self.shot_speed : int = 1
+        self.damage_type : base.DAMAGE_TYPES = "Electrical"
+
+        self.dont_rotate : bool = True

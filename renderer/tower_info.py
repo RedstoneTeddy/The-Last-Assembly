@@ -68,7 +68,16 @@ class Tower_info():
                         2*12*self.data.tile_zoom
                     )
                     if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
-                        box_pos : tuple[int, int] = (mouse_pos[0] + 6*self.data.tile_zoom, mouse_pos[1] - 12*self.data.tile_zoom)
+                        # Calculate offset of the box to not go out of the screen
+                        offset : tuple = (0, 0)
+                        if mouse_pos[0] + 70*self.data.tile_zoom > self.data.screen_size[0]:
+                            offset = ((-70)*self.data.tile_zoom, 0)
+                        if mouse_pos[1] + 15*len(texts)*self.data.tile_zoom > self.data.screen_size[1]:
+                            offset = (offset[0],
+                                      self.data.screen_size[1] - (mouse_pos[1] + 15*len(texts)*self.data.tile_zoom))
+
+                        # Show box
+                        box_pos : tuple[int, int] = (mouse_pos[0] + 6*self.data.tile_zoom + offset[0], mouse_pos[1] - 12*self.data.tile_zoom + offset[1])
                         self.data.screen.blit(self.images["top_60"], box_pos)
                         box_pos = (box_pos[0], box_pos[1] + 2*self.data.tile_zoom)
                         for i in range(len(texts)):

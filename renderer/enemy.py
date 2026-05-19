@@ -24,25 +24,13 @@ class Enemy:
     def Draw(self) -> None:
         self.Resize()
 
-        pos_exact_frame_offset_max : int = 12
 
         for id, health in self.data.enemies.health.items():
             if health <= 0:
                 continue
 
-            draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(self.data.enemies.position[id])
-            draw_offset : int = self.data.enemies.pos_exact_frame_offset[id]
-            offset_direction : str = self.data.enemies.pos_direction.get(id, "down")
-            px_offset : int = int(draw_offset / pos_exact_frame_offset_max * self.data.tile_zoom * 12)
-
-            if offset_direction == "right":
-                draw_pos = (draw_pos[0] + px_offset, draw_pos[1])
-            elif offset_direction == "left":
-                draw_pos = (draw_pos[0] - px_offset, draw_pos[1])
-            elif offset_direction == "down":
-                draw_pos = (draw_pos[0], draw_pos[1] + px_offset)
-            elif offset_direction == "up":
-                draw_pos = (draw_pos[0], draw_pos[1] - px_offset)
+            draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
+            
 
             enemy_img : str = self.__Get_image(id)
             self.data.screen.blit(self.images[enemy_img], draw_pos)

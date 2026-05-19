@@ -42,6 +42,8 @@ class Data_class():
         # Game variables
         self.world : list[list[str]] = []
         self.path : list[list[PathPos]] = []
+        self._weighted_world : list[list[int]] = []
+        self.sorted_path : list[tuple[int, int]] = [] 
 
         self.wave : int = 0
         self.money : int = 0
@@ -129,9 +131,9 @@ class Data_class():
         world_y : int = (screen_pos[1] - self.world_margin[1]) // (self.tile_zoom * 12)
         return (world_x, world_y)
 
-    def Get_World_to_Screen(self, world_pos : tuple[int, int]) -> tuple[int, int]:
-        screen_x : int = world_pos[0] * self.tile_zoom * 12 + self.world_margin[0]
-        screen_y : int = world_pos[1] * self.tile_zoom * 12 + self.world_margin[1]
+    def Get_World_to_Screen(self, world_pos : tuple[int, int] | tuple[float, float]) -> tuple[int, int]:
+        screen_x : int = int(world_pos[0] * self.tile_zoom * 12 + self.world_margin[0])
+        screen_y : int = int(world_pos[1] * self.tile_zoom * 12 + self.world_margin[1])
         return (screen_x, screen_y)
     
 

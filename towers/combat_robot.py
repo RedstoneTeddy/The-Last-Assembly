@@ -15,7 +15,8 @@ class Combat_robot(base.Base_tower):
 
         self.rarity : base.RARITIES = "Uncommon"
 
-        self.range : int = 48
+        self.range : int = 6*12
         self.damage : int = 1
         self.cooldown : int = 30
+        self.shot_speed : int = 2
         self.damage_type : base.DAMAGE_TYPES = "Physical"

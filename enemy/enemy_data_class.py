@@ -12,6 +12,7 @@ class Enemy_data_class:
         self.pos_exact_frame_offset : dict[int, int] = {} # Needed for the exact position
         self.next_position : dict[int, tuple[int, int]] = {} # Needed for the direction the enemy is heading to
         self.pos_direction : dict[int, str] = {} # "up", "down", "left", "right"
+        self.exact_pos : dict[int, tuple[float, float]] = {}
 
 
 
@@ -20,7 +21,9 @@ class Enemy_data_class:
         self.health.pop(enemy_id, None)
         self.position.pop(enemy_id, None)
         self.pos_exact_frame_offset.pop(enemy_id, None)
+        self.next_position.pop(enemy_id, None)
         self.pos_direction.pop(enemy_id, None)
+        self.exact_pos.pop(enemy_id, None)
 
 
 

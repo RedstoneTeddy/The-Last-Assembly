@@ -3,6 +3,8 @@ import data_class
 import enemy.enemy_data_class
 from typing import Literal
 
+import towers.base_tower.shooting
+
 
 RARITIES = Literal["Common", "Uncommon", "Rare"]
 DAMAGE_TYPES = Literal["Physical", "Electrical", "Fire"]
@@ -27,9 +29,10 @@ class Base_tower:
         self.range : int = 0                            # The towers range in pixels * tile_zoom
         self.damage : int = 0                           # Damage of the tower per hit
         self.cooldown : int = 0                         # Cooldown between hits in ticks
+        self.shot_speed : int = 0                       # Max distance a shot can travel in one tick in tiles
         self.damage_type : DAMAGE_TYPES = "Physical"    # The towers damage type
 
-
+        self.dont_rotate : bool = True                 # Whether the tower should not rotate towards the enemy, used for towers that shoot in a fixed direction
 
 
         # Animation
@@ -41,8 +44,15 @@ class Base_tower:
 
         # Basic variables
         self._pos : tuple[int, int] = (-1, -1)
+        self._shot_pos : tuple[float, float] = (-1, -1)
+        self._shoot_at_id : int = -1
+        self._shoot_at_pos : tuple[float, float] = (-1, -1)
         self._is_selected : bool = False
         self._selected_clicked : bool = False
+        self._shot_direction : Literal["Up", "Down", "Left", "Right"] = "Up" # Only used for rendering
+
+        # Shot / Shooting variables
+        self._cooldown_timer : int = 0
 
 
 
@@ -70,9 +80,6 @@ class Base_tower:
         output.append((str(round(self.cooldown/60, 2))+" s", (0,0,0), "time", False))
         output.append((str(round(self.range/ 12, 1))+" tiles", (0,0,0), "range", False))
 
-        output.append(("123456789012", (0,0,0), "", False))
-        output.append(("123456789012345", (0,0,0), "", False))
-        output.append(("abcdefghijklm;nopqrstuvwxyz", (0,0,0), "", True))
 
 
         return output
@@ -95,7 +102,9 @@ class Base_tower:
             mouse_pos : tuple[int, int] = pg.mouse.get_pos()
             if pg.mouse.get_pressed()[0] and not self._selected_clicked:
                 if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
-                    self._is_selected = not self._is_selected
+                    for tower in self.data.towers:
+                        tower._is_selected = False
+                    self._is_selected = True
                     self._selected_clicked = True
             elif not pg.mouse.get_pressed()[0]:
                 self._selected_clicked = False
@@ -104,6 +113,12 @@ class Base_tower:
                 center_pos : tuple[int, int] = self.data.Get_World_to_Screen((self._pos[0]+1, self._pos[1]+1))
                 pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self.range*self.data.tile_zoom, self.data.tile_zoom)
 
+        if self.data.wave_in_progress:
+            if self.data.fast_forward:
+                towers.base_tower.shooting.Tick_shooting(self)
+            towers.base_tower.shooting.Tick_shooting(self)
+        else:
+            self._shot_pos = (-1, -1)
 
 
 
