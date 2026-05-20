@@ -18,7 +18,8 @@ logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
 
-version : str = "0.3.0"
+
+version : str = "0.4.0"
 data : Data_class = Data_class(version)
 
 
@@ -52,13 +53,17 @@ enemy_wave : enemy.wave_handler.Wave_handler = enemy.wave_handler.Wave_handler(d
 import debug.top_handler
 debug_handler : debug.top_handler.Top_handler = debug.top_handler.Top_handler(data)
 
+import shop.main
+shop_obj : shop.main.Shop = shop.main.Shop(data)
+
 
 # Temporary Code
+data.wave = 11
 enemy_wave.New_wave() 
 
 import towers.combat_robot
 cr = towers.combat_robot.Combat_robot(data)
-cr._pos = (10, 3)
+cr._pos = (18, 3)
 cr._is_placed = True
 data.towers.append(cr)
 
@@ -70,7 +75,7 @@ data.towers.append(gt)
 
 import towers.tesla_coil
 tc = towers.tesla_coil.Tesla_coil(data)
-tc._pos = (18, 3)
+tc._pos = (10, 3)
 tc._is_placed = True
 data.towers.append(tc)
 
@@ -84,7 +89,6 @@ data.fast_forward = False
 
 
 
-
 # Main loop
 try:
     while data.run:
@@ -92,19 +96,27 @@ try:
         data.screen.fill((0, 0, 0))
         data.Check_resize()
 
-        tile_renderer.Draw()
-        hud_obj.Draw()
-        tower_renderer.Draw()
+        if data.in_shop and not data.shop_minimized:
+            shop_obj.Shop_main()
+        
+        else:
+            tile_renderer.Draw()
+            hud_obj.Draw()
+            tower_renderer.Draw()
 
-        for tower in data.towers:
-            tower.Tick()    
+            if data.in_shop and data.shop_minimized:
+                shop_obj.Show_minimized_shop()
+            
+            else: # Player is not in shop
+                for tower in data.towers:
+                    tower.Tick()    
 
-        if data.wave_in_progress:
-            enemy_wave.Tick()
-            enemy_move.Move_enemies()
-            enemy_renderer.Draw()
+                if data.wave_in_progress:
+                    enemy_wave.Tick()
+                    enemy_move.Move_enemies()
+                    enemy_renderer.Draw()
 
-        tower_info_renderer.Draw()
+                tower_info_renderer.Draw()
 
         debug_handler.Main()
 

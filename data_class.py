@@ -9,6 +9,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import towers.base_tower.base as base_tower
 
+import random
+from time import time
+
 
 class Data_class():
     def __init__(self, version : str) -> None:
@@ -46,15 +49,21 @@ class Data_class():
         self.sorted_path : list[tuple[int, int]] = [] 
 
         self.wave : int = 0
-        self.money : int = 0
-        self.health : int = 0
+        self.money : int = 1000
+        self.health : int = 100
         self.fast_forward : bool = False
 
         self.wave_in_progress : bool = False
         self.in_shop : bool = False
+        self.shop_minimized : bool = False
 
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
         self.towers : list[base_tower.Base_tower] = []
+
+        self.path_random  : random.Random = random.Random(time())
+        self.wave_gen_random  : random.Random = random.Random(time())
+        self.shop_random  : random.Random = random.Random(time())
+        self.other_random : random.Random = random.Random(time())
 
     
     def Check_resize(self, force : bool = False) -> bool:
@@ -139,6 +148,10 @@ class Data_class():
 
     def Generate_id(self) -> int:
         self.__id_counter += 1
+        if self.__id_counter >= 1_000_000:
+            self.__id_counter = 0
+            max_alive_id : int = max(self.enemies.health.keys())
+            logging.warning(f"ID counter reset, the highest currently alive ID is {max_alive_id}")
         return self.__id_counter*1000 + self.wave   
 
 

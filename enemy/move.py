@@ -107,7 +107,11 @@ class EnemyMove:
         enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
 
         current_pos : tuple[int, int] = enemies.position[enemy_id]
-        path_i, tile_i = self.__cache_locations[current_pos]
+        path_i, tile_i = self.__cache_locations.get(current_pos, (None, None))
+        if path_i is None or tile_i is None:
+            logging.error(f"Enemy at position {current_pos} is not on the path! Deleting enemy.")
+            self.data.enemies.Remove_enemy(enemy_id)
+            return
 
         if tile_i + 1 < len(self.data.path[path_i]):
             next_tile : data_class.PathPos = self.data.path[path_i][tile_i + 1]
@@ -116,7 +120,7 @@ class EnemyMove:
         else: # Path is finished
             if len(self.data.path[path_i][tile_i]["jump_to"]) > 0:
                 jump_to_possibilities : list[int] = self.data.path[path_i][tile_i]["jump_to"]
-                chosen_jump : int = random.choice(jump_to_possibilities)
+                chosen_jump : int = self.data.path_random.choice(jump_to_possibilities)
                 next_tile = self.data.path[chosen_jump][0]
                 enemies.next_position[enemy_id] = (next_tile["x"], next_tile["y"])
             

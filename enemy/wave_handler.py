@@ -1,4 +1,5 @@
 import data_class
+import enemy.wave_gen
 
 
 class Wave_handler:
@@ -7,24 +8,15 @@ class Wave_handler:
 
         self.__wave_counter : int = 0
 
-        self.wave : dict[int, tuple[int, str]] = {
-            10 : (1, ""),
-            70 : (2, ""),
-            130 : (3, ""),
-            190 : (4, ""),
-            250 : (5, ""),
-            310 : (10, ""),
-            370 : (20, ""),
-            430 : (30, ""),
-            490 : (40, ""),
-            550 : (50, "")
-
-        } # Wave number : List of tuples with enemy health and special-enemy-type
+        self.wave : dict[int, tuple[int, str]] = {}
+        self.wave_gen : enemy.wave_gen.Wave_gen = enemy.wave_gen.Wave_gen(data)
 
     def New_wave(self) -> None:
         self.__wave_counter = 0
         self.data.wave += 1
         self.data.wave_in_progress = True
+        self.wave = self.wave_gen.Generate_wave(self.data.wave)
+        
 
     def Tick(self) -> None:
         if not self.data.wave_in_progress:
@@ -43,10 +35,13 @@ class Wave_handler:
 
             new_id : int = self.data.Generate_id()
 
+            # Spawn enemy
             enemies.position[new_id] = self.data.path[0][0]["x"], self.data.path[0][0]["y"]
             enemies.pos_exact_frame_offset[new_id] = 0
             enemies.health[new_id] = self.wave[self.__wave_counter][0]
-            
+            enemies.exact_pos[new_id] = (-1, -1)
+            enemies.pos_direction[new_id] = "Up"
+            enemies.pos_exact_frame_offset[new_id] = 0
 
             
         

@@ -31,6 +31,14 @@ class Towers:
         temp_tower = towers.zapper.Zapper(self.data)
         self.__Load_original_images_of_tower(temp_tower)
 
+        # Red and green alpha overlay for build-hologram
+        red_overlay : pg.Surface = pg.Surface((24, 24), pg.SRCALPHA)
+        red_overlay.fill((255, 0, 0, 150))
+        self.original_images["red_overlay"] = red_overlay
+        green_overlay : pg.Surface = pg.Surface((24, 24), pg.SRCALPHA)
+        green_overlay.fill((0, 255, 0, 150))
+        self.original_images["green_overlay"] = green_overlay
+
 
         self.Resize(force=True)
 
@@ -56,7 +64,7 @@ class Towers:
         self.Resize()
 
         for tower in self.data.towers:
-            if tower._is_placed:
+            if tower._is_placed: # Tower is fully built
                 # Render tower
                 image : pg.Surface = self.images[tower.internal_name + f"_{tower._animation_frame}_{tower._shot_direction}"]
                 pos : tuple[int, int] = self.data.Get_World_to_Screen(tower._pos)
@@ -67,9 +75,9 @@ class Towers:
                 # Update animation
                 if tower._animation_frame == 1: # Maybe start a new animation
                     tower._animation_counter += 1
-                    if tower._animation_counter >= 10: # Performance optimization
+                    if tower._animation_counter >= tower.animation_speed: # Performance optimization
                         tower._animation_counter = 0
-                        if random.random() < tower.chance_to_start_animation:
+                        if self.data.other_random.random() < tower.chance_to_start_animation:
                             tower._animation_frame = 2
                             tower._animation_counter = 0
                 
@@ -87,6 +95,19 @@ class Towers:
                     shot_image : pg.Surface = self.images[tower.internal_name + "_shot"]
                     shot_pos : tuple[int, int] = self.data.Get_World_to_Screen(tower._shot_pos)
                     self.data.screen.blit(shot_image, shot_pos)
+
+        # Display tower hologram while building
+        for tower in self.data.towers:
+            if not tower._is_placed and tower._pos != (-1, -1): # Tower is currently being built, render hologram
+                image= self.images[tower.internal_name + "_1_Up"]
+                pos = self.data.Get_World_to_Screen(tower._pos)
+                pos2 = (pos[0] - self.tower_offset * self.current_zoom, pos[1] - self.tower_offset * self.current_zoom)
+
+                self.data.screen.blit(image, pos2)
+                if tower._build_hologram_allowed:
+                    self.data.screen.blit(self.images["green_overlay"], pos)
+                else:
+                    self.data.screen.blit(self.images["red_overlay"], pos)
 
 
 

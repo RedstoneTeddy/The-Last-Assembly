@@ -11,9 +11,10 @@ class Zapper(base.Base_tower):
 
         self.number_of_frames : int = 43
         self.animation_speed : int = 4
-        self.chance_to_start_animation : float = 0.08
+        self.chance_to_start_animation : float = 0.02
 
         self.rarity : base.RARITIES = "Rare"
+        self.build_cost : int = 500
 
         self.range : int = 6*12
         self.damage : int = 2

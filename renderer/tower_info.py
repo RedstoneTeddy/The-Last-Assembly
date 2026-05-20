@@ -55,18 +55,51 @@ class Tower_info():
     def Draw(self) -> None:
         self.Resize()
 
+        self.delete_tower_i : int = -1
+        i : int = -1
+
         for tower in self.data.towers:
+            i += 1
             if tower._is_selected and tower._is_placed:
                 texts : list[tuple[str, tuple[int, int, int], str, bool]] = tower.Get_info_texts()
+                mouse_pos : tuple[int, int] = pg.mouse.get_pos()
+                tower_rect : tuple[int, int, int, int] = (
+                    self.data.Get_World_to_Screen(tower._pos)[0],
+                    self.data.Get_World_to_Screen(tower._pos)[1],
+                    2*12*self.data.tile_zoom,
+                    2*12*self.data.tile_zoom
+                )
+
+                
+                # Sell button rect
+                sell_rect_y : int = tower_rect[1] - 26*self.data.tile_zoom
+                sell_button_rect : tuple[int, int, int, int] = (
+                    tower_rect[0] - 12*self.data.tile_zoom,
+                    sell_rect_y if sell_rect_y > 0 else tower_rect[1] + tower_rect[3] + 4*self.data.tile_zoom,
+                    48*self.data.tile_zoom,
+                    22*self.data.tile_zoom
+                )
+
+                # Draw sell button
+                sell_button_hover : bool = False
+                if sell_button_rect[0] <= mouse_pos[0] <= sell_button_rect[0] + sell_button_rect[2] and sell_button_rect[1] <= mouse_pos[1] <= sell_button_rect[1] + sell_button_rect[3]:
+                    sell_button_hover = True
+                    if pg.mouse.get_pressed()[0]:
+                        self.delete_tower_i = i
+                pg.draw.rect(self.data.screen, (255, 90, 55), sell_button_rect, border_radius=2*self.data.tile_zoom)
+                if sell_button_hover:
+                    pg.draw.rect(self.data.screen, (255, 255, 255), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
+                else:
+                    pg.draw.rect(self.data.screen, (0, 0, 0), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
+                self.data.screen.blit(self.images["icon_money"], (sell_button_rect[0] + 3*self.data.tile_zoom, sell_button_rect[1] + 5*self.data.tile_zoom))
+                self.data.Draw_text("Sell", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 3*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
+                self.data.Draw_text(str(tower._sell_value)+" $", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 11*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
+
+
+
+                # Show info-box
                 if len(texts) > 0:
                     # Check if user hovers over the tower
-                    mouse_pos : tuple[int, int] = pg.mouse.get_pos()
-                    tower_rect : tuple[int, int, int, int] = (
-                        self.data.Get_World_to_Screen(tower._pos)[0],
-                        self.data.Get_World_to_Screen(tower._pos)[1],
-                        2*12*self.data.tile_zoom,
-                        2*12*self.data.tile_zoom
-                    )
                     if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
                         # Calculate offset of the box to not go out of the screen
                         offset : tuple = (0, 0)
@@ -80,10 +113,17 @@ class Tower_info():
                         box_pos : tuple[int, int] = (mouse_pos[0] + 6*self.data.tile_zoom + offset[0], mouse_pos[1] - 12*self.data.tile_zoom + offset[1])
                         self.data.screen.blit(self.images["top_60"], box_pos)
                         box_pos = (box_pos[0], box_pos[1] + 2*self.data.tile_zoom)
-                        for i in range(len(texts)):
-                            self.__Draw_line(box_pos, texts[i][0], texts[i][1], texts[i][2], texts[i][3])
+                        for line_i in range(len(texts)):
+                            self.__Draw_line(box_pos, texts[line_i][0], texts[line_i][1], texts[line_i][2], texts[line_i][3])
                             box_pos = (box_pos[0], box_pos[1] + 14*self.data.tile_zoom)
                         self.data.screen.blit(self.images["bottom_60"], box_pos)
+
+
+
+        # Check if user sold a tower
+        if self.delete_tower_i != -1:
+            self.data.money += self.data.towers[self.delete_tower_i]._sell_value
+            del self.data.towers[self.delete_tower_i]
 
 
 

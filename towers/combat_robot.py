@@ -11,9 +11,10 @@ class Combat_robot(base.Base_tower):
 
         self.number_of_frames : int = 45
         self.animation_speed : int = 4
-        self.chance_to_start_animation : float = 0.05
+        self.chance_to_start_animation : float = 0.01
 
         self.rarity : base.RARITIES = "Uncommon"
+        self.build_cost : int = 200
 
         self.range : int = 6*12
         self.damage : int = 1

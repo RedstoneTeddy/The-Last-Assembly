@@ -11,9 +11,10 @@ class Gear_thrower(base.Base_tower):
 
         self.number_of_frames : int = 43
         self.animation_speed : int = 6
-        self.chance_to_start_animation : float = 0.05
+        self.chance_to_start_animation : float = 0.01
 
         self.rarity : base.RARITIES = "Common"
+        self.build_cost : int = 100
 
         self.range : int = 4*12
         self.damage : int = 3
