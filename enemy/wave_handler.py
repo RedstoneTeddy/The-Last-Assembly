@@ -1,3 +1,5 @@
+import logging
+
 import data_class
 import enemy.wave_gen
 
@@ -9,13 +11,20 @@ class Wave_handler:
         self.__wave_counter : int = 0
 
         self.wave : dict[int, tuple[int, str]] = {}
+        self.last_wave_tick : int = 0
         self.wave_gen : enemy.wave_gen.Wave_gen = enemy.wave_gen.Wave_gen(data)
+
+
 
     def New_wave(self) -> None:
         self.__wave_counter = 0
         self.data.wave += 1
         self.data.wave_in_progress = True
         self.wave = self.wave_gen.Generate_wave(self.data.wave)
+
+        self.last_wave_tick = 0
+        for tick in self.wave:
+            self.last_wave_tick = max(self.last_wave_tick, tick)
         
 
     def Tick(self) -> None:
@@ -25,6 +34,18 @@ class Wave_handler:
         self.__Internal_tick()
         if self.data.fast_forward:
             self.__Internal_tick()
+
+        # Check if wave is over
+        if len(self.data.enemies.health) == 0 and self.__wave_counter > self.last_wave_tick+10:
+            self.data.wave_in_progress = False
+            self.data.shop_minimized = False
+            self.data.in_shop = True
+
+        # Check if player has lost
+        if self.data.health <= 0:
+            self.data.run = False
+            print("Game Over")
+            logging.info("Player has lost the game.")
         
 
     def __Internal_tick(self) -> None:

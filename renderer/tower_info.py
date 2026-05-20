@@ -96,28 +96,11 @@ class Tower_info():
                 self.data.Draw_text(str(tower._sell_value)+" $", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 11*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
 
 
-
                 # Show info-box
                 if len(texts) > 0:
                     # Check if user hovers over the tower
                     if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
-                        # Calculate offset of the box to not go out of the screen
-                        offset : tuple = (0, 0)
-                        if mouse_pos[0] + 70*self.data.tile_zoom > self.data.screen_size[0]:
-                            offset = ((-70)*self.data.tile_zoom, 0)
-                        if mouse_pos[1] + 15*len(texts)*self.data.tile_zoom > self.data.screen_size[1]:
-                            offset = (offset[0],
-                                      self.data.screen_size[1] - (mouse_pos[1] + 15*len(texts)*self.data.tile_zoom))
-
-                        # Show box
-                        box_pos : tuple[int, int] = (mouse_pos[0] + 6*self.data.tile_zoom + offset[0], mouse_pos[1] - 12*self.data.tile_zoom + offset[1])
-                        self.data.screen.blit(self.images["top_60"], box_pos)
-                        box_pos = (box_pos[0], box_pos[1] + 2*self.data.tile_zoom)
-                        for line_i in range(len(texts)):
-                            self.__Draw_line(box_pos, texts[line_i][0], texts[line_i][1], texts[line_i][2], texts[line_i][3])
-                            box_pos = (box_pos[0], box_pos[1] + 14*self.data.tile_zoom)
-                        self.data.screen.blit(self.images["bottom_60"], box_pos)
-
+                        self.Draw_box_at_mouse(texts)
 
 
         # Check if user sold a tower
@@ -126,6 +109,31 @@ class Tower_info():
             del self.data.towers[self.delete_tower_i]
 
 
+
+    def Draw_box_at_mouse(self, texts : list[tuple[str, tuple[int, int, int], str, bool]]) -> None:
+        """
+        Draw a box at the mouse position with the given texts. Each entry in texts is a tuple of (text, color, icon, is_small)
+        """
+        self.Resize()
+        mouse_pos : tuple[int, int] = pg.mouse.get_pos()
+        # Calculate offset of the box to not go out of the screen
+        offset : tuple = (0, 0)
+        if mouse_pos[0] + 70*self.data.tile_zoom > self.data.screen_size[0]:
+            offset = ((-70)*self.data.tile_zoom, 0)
+        if mouse_pos[1] + 15*len(texts)*self.data.tile_zoom > self.data.screen_size[1]:
+            offset = (offset[0],
+                        self.data.screen_size[1] - (mouse_pos[1] + 15*len(texts)*self.data.tile_zoom))
+
+        # Show box
+        box_pos : tuple[int, int] = (mouse_pos[0] + 6*self.data.tile_zoom + offset[0], mouse_pos[1] - 12*self.data.tile_zoom + offset[1])
+        self.data.screen.blit(self.images["top_60"], box_pos)
+        box_pos = (box_pos[0], box_pos[1] + 2*self.data.tile_zoom)
+        for line_i in range(len(texts)):
+            self.__Draw_line(box_pos, texts[line_i][0], texts[line_i][1], texts[line_i][2], texts[line_i][3])
+            box_pos = (box_pos[0], box_pos[1] + 14*self.data.tile_zoom)
+        self.data.screen.blit(self.images["bottom_60"], box_pos)
+
+        
 
 
     def __Draw_line(self, pos : tuple[int, int], text : str, color : tuple[int, int, int], icon : str, is_small : bool) -> None:

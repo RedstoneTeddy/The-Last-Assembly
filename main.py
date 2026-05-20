@@ -19,7 +19,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.4.0"
+version : str = "0.4.1"
 data : Data_class = Data_class(version)
 
 
@@ -54,38 +54,10 @@ import debug.top_handler
 debug_handler : debug.top_handler.Top_handler = debug.top_handler.Top_handler(data)
 
 import shop.main
-shop_obj : shop.main.Shop = shop.main.Shop(data)
+shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer)
 
 
-# Temporary Code
-data.wave = 11
-enemy_wave.New_wave() 
 
-import towers.combat_robot
-cr = towers.combat_robot.Combat_robot(data)
-cr._pos = (18, 3)
-cr._is_placed = True
-data.towers.append(cr)
-
-import towers.gear_thrower
-gt = towers.gear_thrower.Gear_thrower(data)
-gt._pos = (14, 3)
-gt._is_placed = True
-data.towers.append(gt)
-
-import towers.tesla_coil
-tc = towers.tesla_coil.Tesla_coil(data)
-tc._pos = (10, 3)
-tc._is_placed = True
-data.towers.append(tc)
-
-import towers.zapper
-zapper = towers.zapper.Zapper(data)
-zapper._pos = (24, 3)
-zapper._is_placed = True
-data.towers.append(zapper)
-
-data.fast_forward = False
 
 
 
@@ -96,29 +68,48 @@ try:
         data.screen.fill((0, 0, 0))
         data.Check_resize()
 
-        if data.in_shop and not data.shop_minimized:
-            shop_obj.Shop_main()
-        
-        else:
-            tile_renderer.Draw()
-            hud_obj.Draw()
-            tower_renderer.Draw()
 
-            if data.in_shop and data.shop_minimized:
-                shop_obj.Show_minimized_shop()
-            
-            else: # Player is not in shop
-                for tower in data.towers:
-                    tower.Tick()    
+
+
+
+
+        tile_renderer.Draw()
+        hud_obj.Draw()
+
+        if not data.in_shop or shop_obj.shop_animation < shop_obj._max_shop_animation: # Player is not in shop or shop animation is finished
+            tower_renderer.Draw()
+            for tower in data.towers:
+                tower.Tick()    
+
+            if not data.in_shop: # Player is not in shop
 
                 if data.wave_in_progress:
                     enemy_wave.Tick()
                     enemy_move.Move_enemies()
                     enemy_renderer.Draw()
 
-                tower_info_renderer.Draw()
+
+            tower_info_renderer.Draw()
+
+            if data.start_next_wave:
+                data.start_next_wave = False
+                enemy_wave.New_wave()
+            
+            # Delete unwanted towers
+            tower_delete_id : int = -1
+            for i in range(len(data.towers)):
+                if data.towers[i]._marked_for_removal:
+                    tower_delete_id = i
+                    break
+            if tower_delete_id != -1:
+                del data.towers[tower_delete_id]
+                
+        if data.in_shop:
+            shop_obj.Shop_main()
 
         debug_handler.Main()
+
+
 
 
         pg.display.flip()

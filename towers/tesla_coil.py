@@ -13,7 +13,7 @@ class Tesla_coil(base.Base_tower):
         self.animation_speed : int = 7
         self.chance_to_start_animation : float = 1.0
 
-        self.rarity : base.RARITIES = "Rare"
+        self.rarity : base.RARITIES = "Common"
         self.build_cost : int = 500
 
         self.range : int = 3*12

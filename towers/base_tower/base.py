@@ -7,7 +7,7 @@ import towers.base_tower.shooting
 import towers.base_tower.building
 
 
-RARITIES = Literal["Common", "Uncommon", "Rare"]
+RARITIES = Literal["Common", "Uncommon", "Rare", ""]
 DAMAGE_TYPES = Literal["Physical", "Electrical", "Fire"]
 
 
@@ -57,6 +57,7 @@ class Base_tower:
         self._shoot_at_id : int = -1
         self._shoot_at_pos : tuple[float, float] = (-1, -1)
         self._shot_direction : Literal["Up", "Down", "Left", "Right"] = "Up" # Only used for rendering
+        self._marked_for_removal : bool = False
 
 
 
@@ -93,7 +94,12 @@ class Base_tower:
 
 
     def Tick(self) -> None:
+        if pg.mouse.get_pressed()[0] == False:
+            self._selected_clicked = False
+
         if self._is_placed:
+            if self.data.in_shop and not self.data.shop_minimized:
+                return
             # Update wave-independent            
             tower_rect : tuple[int, int, int, int] = (
                 self.data.Get_World_to_Screen(self._pos)[0],
@@ -111,12 +117,14 @@ class Base_tower:
                             tower._is_selected = False
                     self._is_selected = not self._is_selected
                     self._selected_clicked = True
-            elif not pg.mouse.get_pressed()[0]:
-                self._selected_clicked = False
 
             if self._is_selected:
                 center_pos : tuple[int, int] = self.data.Get_World_to_Screen((self._pos[0]+1, self._pos[1]+1))
                 pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self.range*self.data.tile_zoom, self.data.tile_zoom)
+
+                
+            if self.data.in_shop:
+                return
 
             if self.data.wave_in_progress:
                 if self.data.fast_forward:
@@ -127,6 +135,8 @@ class Base_tower:
 
         else: # Is currently building
             towers.base_tower.building.Tick_building(self)
+
+        
 
 
 

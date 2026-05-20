@@ -8,6 +8,8 @@ class Hud:
     def __init__(self, data : data_class.Data_class):
         self.data : data_class.Data_class = data
 
+        self._speed_btn_pressed : bool = False
+
         self.original_images : dict[str, pg.Surface] = {}
         self.images : dict[str, pg.Surface] = {}
 
@@ -19,6 +21,11 @@ class Hud:
         
         self.original_images["life"] = pg.image.load("assets/icons/life.png").convert_alpha()
         self.original_images["money"] = pg.image.load("assets/icons/money.png").convert_alpha()
+
+        self.original_images["normal_speed"] = pg.image.load("assets/icons/buttons/normal_speed.png").convert_alpha()
+        self.original_images["normal_speed_selected"] = pg.image.load("assets/icons/buttons/normal_speed_selected.png").convert_alpha()
+        self.original_images["fast_speed"] = pg.image.load("assets/icons/buttons/fast_speed.png").convert_alpha()
+        self.original_images["fast_speed_selected"] = pg.image.load("assets/icons/buttons/fast_speed_selected.png").convert_alpha()
 
     def Resize(self):
         if self.current_zoom != self.data.tile_zoom:
@@ -127,6 +134,39 @@ class Hud:
                 wave_size = 4 * self.data.tile_zoom
 
         self.data.Draw_text(wave_txt, wave_pos, wave_size, (0, 0, 0))
+
+        
+        # Show speed buttons
+        speed_btn_rected : tuple[int, int, int, int] = (
+            self.data.Get_World_to_Screen((0, 16))[0],
+            self.data.Get_World_to_Screen((0, 16))[1],
+            self.images["normal_speed"].get_width(),
+            self.images["normal_speed"].get_height()
+        )
+        
+        mouse_pos : tuple[int, int] = pg.mouse.get_pos()
+        is_hovered : bool = (mouse_pos[0] >= speed_btn_rected[0] and mouse_pos[0] <= speed_btn_rected[0] + speed_btn_rected[2] and 
+                             mouse_pos[1] >= speed_btn_rected[1] and mouse_pos[1] <= speed_btn_rected[1] + speed_btn_rected[3])
+        
+        if self.data.wave_in_progress:
+            if self.data.fast_forward:
+                if is_hovered:
+                    self.data.screen.blit(self.images["fast_speed_selected"], self.data.Get_World_to_Screen((0, 16)))
+                else:
+                    self.data.screen.blit(self.images["fast_speed"], self.data.Get_World_to_Screen((0, 16)))
+            else:
+                if is_hovered:
+                    self.data.screen.blit(self.images["normal_speed_selected"], self.data.Get_World_to_Screen((0, 16)))
+                else:
+                    self.data.screen.blit(self.images["normal_speed"], self.data.Get_World_to_Screen((0, 16)))
+            
+            if pg.mouse.get_pressed()[0]:
+                if is_hovered and self._speed_btn_pressed == False:
+                    self.data.fast_forward = not self.data.fast_forward
+                    self._speed_btn_pressed = True
+            else:
+                self._speed_btn_pressed = False
+
 
 
 

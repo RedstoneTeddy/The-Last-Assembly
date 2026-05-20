@@ -53,13 +53,22 @@ class Data_class():
         self.health : int = 100
         self.fast_forward : bool = False
 
-        self.wave_in_progress : bool = False
-        self.in_shop : bool = False
-        self.shop_minimized : bool = False
-
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
         self.towers : list[base_tower.Base_tower] = []
 
+        # Game parameters
+        self.money_per_round : int = 100
+        self.interest_per_100 : int = 10
+        self.interest_cap : int = 100
+        
+        # Menu variables
+        self.wave_in_progress : bool = False
+        self.in_shop : bool = True
+        self.shop_minimized : bool = False
+        self.start_next_wave : bool = False 
+        self.is_building_tower : bool = False
+
+        # Random generators
         self.path_random  : random.Random = random.Random(time())
         self.wave_gen_random  : random.Random = random.Random(time())
         self.shop_random  : random.Random = random.Random(time())
