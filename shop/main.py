@@ -3,10 +3,11 @@ import logging
 
 import pygame as pg
 import data_class
-from typing import Literal
+from typing import Literal, get_args, cast
 
 import renderer.tower_info
-
+import zones.building
+import zones.info_data
 
 import towers.base_tower.base
 import towers.combat_robot
@@ -15,19 +16,22 @@ import towers.tesla_coil
 import towers.zapper
 
 class Shop:
-    def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info) -> None:
+    def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info, zone_building : zones.building.Zone_building) -> None:
         self.data : data_class.Data_class = data
         self.tower_info_renderer : renderer.tower_info.Tower_info = tower_info_renderer
+        self.zone_building : zones.building.Zone_building = zone_building
 
 
         # Shop variables
         self.shop_animation : int = 0
         self._max_shop_animation : int = 30
         self._show_reward_screen : bool = False
-        self._rerolled_shop : int = 0
-        
+        self._rerolled_shop : int = 0  
+        self._rewards_total_cash : int = -1
+        self._rewards_lines : list[str] = []      
 
         self._button_pressed : bool = False
+
 
         # The current shop elements.
         self.shop_elements : list[str] = []
@@ -40,12 +44,17 @@ class Shop:
 
         # Load shop-element-data
         self.original_images : dict[str, pg.Surface] = {}
+
         self.__tower_classes : list[type] = []
         self.__tower_names : list[str] = []
         self.__tower_rarities : list[towers.base_tower.base.RARITIES] = []
         self.__tower_costs : list[int] = []
         self.__tower_info_box : list[list[tuple[str, tuple[int, int, int], str, bool]]] = [] # List of info box lines for each tower. Each line is a tuple of (text, color, icon, is_small)
         self.__Load_shop_element_data()
+
+        self.__zone_names : list[str] = []
+        self.__info_box : list[list[tuple[str, tuple[int, int, int], str, bool]]] = []
+        self.__Load_zone_data()
 
 
         # Images
@@ -86,6 +95,8 @@ class Shop:
         self.__Clear_shop()
         self._rerolled_shop = 0
         self._selected_shop_element = -1
+        self._rewards_total_cash = -1
+        self._rewards_lines = []
     
 
     def Shop_main(self) -> None:
@@ -93,14 +104,20 @@ class Shop:
         if self.data.shop_minimized:
             if self.shop_animation > 0:
                 self.shop_animation -= 1
+                self._button_pressed = True
         else:
             if self.shop_animation < self._max_shop_animation:
-                self.shop_animation += 1        
+                self.shop_animation += 1  
+                self._button_pressed = True      
 
         if self._show_reward_screen:
             self.Show_reward()
         else: # Show shop
             self.Show_shop()
+
+        if not self.data.shop_minimized and self.shop_animation > 1 and self.data.is_building != "":
+            # If the player is currently building something and maximizes the shop, kill the building-process
+            self.__Kill_building_process()
 
 
         if not pg.mouse.get_pressed()[0]:
@@ -240,10 +257,19 @@ class Shop:
                             if tower_class is None:
                                 logging.error(f"Could not find tower class for shop element {self.shop_elements[i]}")
                             else:
+                                self.data.is_building = "tower"
                                 new_tower : towers.base_tower.base.Base_tower = tower_class(self.data)
                                 new_tower._is_placed = False
                                 new_tower._selected_clicked = True
                                 self.data.towers.append(new_tower)
+                                self.data.shop_minimized = True
+
+                        # Build zone if element is a zone
+                        elif self.shop_element_types[i] == "zone":
+                            if self.shop_elements[i] in get_args(data_class.ZoneTypes):
+                                self.data.is_building = "zone"
+                                # shop_elements stores strings; cast to ZoneTypes for static type checkers
+                                self.zone_building.build_zone = cast(data_class.ZoneTypes, self.shop_elements[i])
                                 self.data.shop_minimized = True
 
 
@@ -258,7 +284,10 @@ class Shop:
 
         # If minimized, option to maximize again
         if self.data.shop_minimized:
-            self.data.Draw_text("Minimized - Click to maximize", (shop_rect[0] + shop_rect[2]//2 - 70 * self.data.tile_zoom, shop_rect[1] + 5 * self.data.tile_zoom), self.data.tile_zoom * 7, (255, 255, 255))
+            if self.data.is_building != "":
+                self.data.Draw_text("Minimized - Click to maximize and abort building", (shop_rect[0] + shop_rect[2]//2 - 110 * self.data.tile_zoom, shop_rect[1] + 5 * self.data.tile_zoom), self.data.tile_zoom * 7, (255, 50, 50))
+            else:
+                self.data.Draw_text("Minimized - Click to maximize", (shop_rect[0] + shop_rect[2]//2 - 70 * self.data.tile_zoom, shop_rect[1] + 5 * self.data.tile_zoom), self.data.tile_zoom * 7, (255, 255, 255))
             if (mouse_pos[0] >= shop_rect[0] and mouse_pos[0] <= shop_rect[0] + shop_rect[2] and
                 mouse_pos[1] >= shop_rect[1] and mouse_pos[1] <= shop_rect[1] + shop_rect[3]):
                 if pg.mouse.get_pressed()[0] and not self._button_pressed:
@@ -293,14 +322,16 @@ class Shop:
 
         self.data.Draw_text("- $ - Rewards - $ -", (shop_rect[0] + shop_rect[2]//2 - 65 * self.data.tile_zoom, shop_rect[1] + 5 * self.data.tile_zoom), self.data.tile_zoom * 10, (238, 168, 25))
         lines: list[str] = []
+        total_cash : int = 0
 
         # Calculate rewards
-        total_cash : int = self.data.money_per_round
-        lines.append(f"Wave cleared : +{total_cash}$")
-
-        interest_cash : int = min(self.data.interest_cap, (self.data.money // 100) * self.data.interest_per_100)
-        total_cash += interest_cash
-        lines.append(f"Interest (max {self.data.interest_cap}$) : +{interest_cash}$")
+        if self._rewards_total_cash == -1:
+            total_cash, lines = self._Calculate_reward()
+            self._rewards_total_cash = total_cash
+            self._rewards_lines = lines
+        else:
+            total_cash = self._rewards_total_cash
+            lines = self._rewards_lines       
 
         # Display lines
         for i in range(len(lines)):
@@ -323,8 +354,35 @@ class Shop:
             if pg.mouse.get_pressed()[0] and not self._button_pressed:
                 self._button_pressed = True
                 self._show_reward_screen = False
+                self.data.money += total_cash
         else:
             self.data.screen.blit(self.images["close_btn"], (close_button_rect[0], close_button_rect[1]))
+
+
+
+    def _Calculate_reward(self) -> tuple[int, list[str]]:
+        total_cash : int = self.data.money_per_round
+        lines: list[str] = []
+        # Base reward
+        lines.append(f"Wave cleared : +{total_cash}$")
+
+        # Interest
+        interest_cash : int = min(self.data.interest_cap, (self.data.money // 100) * self.data.interest_per_100)
+        total_cash += interest_cash
+        lines.append(f"Interest (max {self.data.interest_cap}$) : +{interest_cash}$")
+
+        # Gold-zones
+        gold_zone_count : int = 0
+        for y, row in enumerate(self.data.zones):
+            for x, tile in enumerate(row):
+                if tile == "gold":
+                    gold_zone_count += 1
+        if gold_zone_count > 0:
+            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 30}$")
+            total_cash += gold_zone_count * 30
+
+        return total_cash, lines
+
 
 
     def Generate_shop(self) -> None:
@@ -340,11 +398,10 @@ class Shop:
         else:
             self.__Generate_tower("Common")
             self.__Generate_tower("")
-            # TODO : Temp will be replaced by completely random
-            self.__Generate_tower("")
-            self.__Generate_tower("")
-            self.__Generate_tower("")
-                
+            self.__Generate_random_element()
+            self.__Generate_random_element()
+            self.__Generate_random_element()
+
 
 
     def __Clear_shop(self) -> None:
@@ -354,6 +411,17 @@ class Shop:
         self.shop_element_descriptions = []
         self.shop_element_bought = []
 
+    def __Generate_random_element(self) -> None:
+        """
+        Generates a random shop element. Can be a tower, zone.
+        """
+        element_type : int = self.data.shop_random.randint(0, 1)
+        if element_type == 0:
+            self.__Generate_tower("")
+        elif element_type == 1:
+            self.__Generate_zone()
+        else:
+            logging.error(f"Invalid shop element type generated: {element_type}")
 
 
     def __Generate_tower(self, rarity : towers.base_tower.base.RARITIES = "") -> None:
@@ -369,6 +437,17 @@ class Shop:
                 self.shop_element_descriptions.append(self.__tower_info_box[random_index])
                 self.shop_element_bought.append(False)
                 break
+
+    def __Generate_zone(self) -> None:
+        """
+        Generates a random zone.
+        """
+        random_index : int = self.data.shop_random.randint(0, len(self.__zone_names)-1)
+        self.shop_elements.append(self.__zone_names[random_index])
+        self.shop_element_types.append("zone")
+        self.shop_element_costs.append(self.data.zone_cost)
+        self.shop_element_descriptions.append(self.__info_box[random_index])
+        self.shop_element_bought.append(False)
 
 
     def __Load_shop_element_data(self) -> None:
@@ -391,7 +470,37 @@ class Shop:
             self.__tower_info_box.append(tower_instance.Get_info_texts())
             self.original_images[tower_instance.internal_name] = pg.image.load(f"assets/tower/{tower_instance.internal_name}/{tower_instance.internal_name}1.png").convert_alpha()
 
+    
+    def __Load_zone_data(self) -> None:
+        """
+        Loads the data for the zones into the shop_element_data dictionary
+        """
+        zone_info_data : list[tuple[str, list[tuple[str, tuple[int, int, int], str, bool]]]] = zones.info_data.Get_zone_info_data()
+        for zone_data in zone_info_data:
+            self.__zone_names.append(zone_data[0])
+            self.__info_box.append(zone_data[1])
+            self.original_images[zone_data[0]] = pg.transform.scale(pg.image.load(f"assets/zones/{zone_data[0]}.png").convert_alpha(), (32, 32))
 
+
+    def __Kill_building_process(self) -> None:
+        """
+        Kills the current building process (if the player is currently building something). This is used when the player opens the shop while building, to prevent bugs.
+        """
+        # Refund user
+        if self.data.is_building == "tower":
+            for tower in self.data.towers:
+                if not tower._is_placed:
+                    self.data.money += tower.build_cost
+        elif self.data.is_building == "zone":
+            self.data.money += self.data.zone_cost
+
+        # Kill all building process
+        self.data.is_building = ""
+        for tower in self.data.towers:
+            tower._selected_clicked = False
+            if tower._is_placed == False:
+                tower._marked_for_removal = True
+        self.zone_building.build_zone = ""
 
 
 

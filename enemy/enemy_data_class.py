@@ -14,6 +14,10 @@ class Enemy_data_class:
         self.pos_direction : dict[int, str] = {} # "up", "down", "left", "right"
         self.exact_pos : dict[int, tuple[float, float]] = {}
 
+        self.frozen : dict[int, int] = {} # Enemy is frozen for x ticks
+        self.slowness : dict[int, int] = {} # Enemy is slowed for x ticks
+        self.speed : dict[int, int] = {} # Enemy speed is increased for x ticks
+
 
 
 
@@ -24,7 +28,9 @@ class Enemy_data_class:
         self.next_position.pop(enemy_id, None)
         self.pos_direction.pop(enemy_id, None)
         self.exact_pos.pop(enemy_id, None)
-
+        self.frozen.pop(enemy_id, None)
+        self.slowness.pop(enemy_id, None)
+        self.speed.pop(enemy_id, None)
 
 
 

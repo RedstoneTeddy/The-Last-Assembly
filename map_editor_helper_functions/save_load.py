@@ -67,3 +67,10 @@ def Load_World(data: data_class.Data_class, filename: str) -> None:
                     if data._weighted_world[pos[1]][pos[0]] == num:
                         data.sorted_path.append(pos)
         logging.info("Path sorted")
+
+        # Reset zones
+        data.zones = []
+        for y in range(len(data.world)):
+            data.zones.append([])
+            for _ in range(len(data.world[y])):
+                data.zones[y].append("")

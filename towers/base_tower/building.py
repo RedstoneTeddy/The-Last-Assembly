@@ -45,7 +45,7 @@ def Tick_building(tower : "base.Base_tower") -> None:
                 tower._selected_clicked = True
                 tower._is_placed = True
                 tower._sell_value = tower.build_cost // 2
-                tower.data.is_building_tower = False
+                tower.data.is_building = ""
                 tower.data.shop_minimized = False
 
         else:
@@ -59,5 +59,5 @@ def Tick_building(tower : "base.Base_tower") -> None:
     if pg.mouse.get_pressed()[2]:
         tower.data.shop_minimized = False
         tower._marked_for_removal = True
-        tower.data.is_building_tower = False
+        tower.data.is_building = ""
         tower.data.money += tower.build_cost

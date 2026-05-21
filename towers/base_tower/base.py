@@ -85,9 +85,17 @@ class Base_tower:
         output.append((str(round(self.cooldown/60, 2))+" s", (0,0,0), "time", False))
         output.append((str(round(self.range/ 12, 1))+" tiles", (0,0,0), "range", False))
 
+        output.extend(self.Get_specific_info_texts())
 
 
         return output
+    
+    def Get_specific_info_texts(self) -> list[tuple[str, tuple[int, int, int], str, bool]]:
+        """
+        Tower specific info, if needed should be implemented by the child class
+        For example a tower that has a special effect
+        """
+        return []
 
 
 

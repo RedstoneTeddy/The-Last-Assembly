@@ -14,11 +14,11 @@ class Tesla_coil(base.Base_tower):
         self.chance_to_start_animation : float = 1.0
 
         self.rarity : base.RARITIES = "Common"
-        self.build_cost : int = 500
+        self.build_cost : int = 80
 
         self.range : int = 3*12
-        self.damage : int = 2
-        self.cooldown : int = 40
+        self.damage : int = 1
+        self.cooldown : int = 30
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Electrical"
 

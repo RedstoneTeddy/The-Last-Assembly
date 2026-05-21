@@ -41,10 +41,40 @@ class EnemyMove:
         pos_exact_frame_offset_max : int = 12
         
         for enemy_id in list(enemies.health.keys()):
-            enemies.pos_exact_frame_offset[enemy_id] += 1
-            if self.data.fast_forward:
-                enemies.pos_exact_frame_offset[enemy_id] += 1
-                
+            # Advance movement
+            if enemies.frozen.get(enemy_id, 0) == 0 or enemies.pos_exact_frame_offset[enemy_id] == 0:
+                # Slowness-effect:
+                if enemies.slowness.get(enemy_id, 0) == 0 or enemies.pos_exact_frame_offset[enemy_id] == 0 or self.data.path_random.random() < 0.5:
+                    enemies.pos_exact_frame_offset[enemy_id] += 1
+                    if self.data.fast_forward:
+                        enemies.pos_exact_frame_offset[enemy_id] += 1
+                # Speed-effect:
+                if enemies.speed.get(enemy_id, 0) > 0:
+                    enemies.pos_exact_frame_offset[enemy_id] += 1
+                    if self.data.fast_forward:
+                        enemies.pos_exact_frame_offset[enemy_id] += 1
+
+            # Decrease move-based buffs / debuffs
+            if enemies.frozen.get(enemy_id, 0) > 0:
+                enemies.frozen[enemy_id] -= 1
+                if self.data.fast_forward:
+                    enemies.frozen[enemy_id] -= 1
+                if enemies.frozen[enemy_id] <= 0:
+                    enemies.frozen.pop(enemy_id, None)
+            if enemies.slowness.get(enemy_id, 0) > 0:
+                enemies.slowness[enemy_id] -= 1
+                if self.data.fast_forward:
+                    enemies.slowness[enemy_id] -= 1
+                if enemies.slowness[enemy_id] <= 0:
+                    enemies.slowness.pop(enemy_id, None)
+            if enemies.speed.get(enemy_id, 0) > 0:
+                enemies.speed[enemy_id] -= 1
+                if self.data.fast_forward:
+                    enemies.speed[enemy_id] -= 1
+                if enemies.speed[enemy_id] <= 0:
+                    enemies.speed.pop(enemy_id, None)
+
+
             # Set the enemy's next position if it doesn't have one
             if enemies.next_position.get(enemy_id, None) is None:
                 # Enemy needs a new next position

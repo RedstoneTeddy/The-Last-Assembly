@@ -27,10 +27,12 @@ class Tiles:
             f"hq_{i}" : pg.image.load(f"assets/tile/hq/hq{i}.png").convert_alpha() for i in range(1, 13)
         })
 
+        self.Resize(force=True)
 
 
-    def Resize(self):
-        if self.current_zoom != self.data.tile_zoom:
+
+    def Resize(self, force: bool = False) -> None:
+        if self.current_zoom != self.data.tile_zoom or force:
             self.current_zoom = self.data.tile_zoom
             for key, image in self.original_images.items():
                 self.images[key] = pg.transform.scale(image, (image.get_width() * self.current_zoom, image.get_height() * self.current_zoom))

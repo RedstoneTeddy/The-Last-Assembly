@@ -49,24 +49,29 @@ class Data_class():
         self.sorted_path : list[tuple[int, int]] = [] 
 
         self.wave : int = 0
-        self.money : int = 1000
+        self.money : int = 300
         self.health : int = 100
         self.fast_forward : bool = False
 
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
         self.towers : list[base_tower.Base_tower] = []
+        self.zones : list[list[ZoneTypes]] = []
+
 
         # Game parameters
         self.money_per_round : int = 100
         self.interest_per_100 : int = 10
         self.interest_cap : int = 100
+        self.zone_cost : int = 150
         
+
         # Menu variables
         self.wave_in_progress : bool = False
         self.in_shop : bool = True
         self.shop_minimized : bool = False
         self.start_next_wave : bool = False 
-        self.is_building_tower : bool = False
+        self.is_building : Literal["", "tower", "zone"] = ""
+
 
         # Random generators
         self.path_random  : random.Random = random.Random(time())
@@ -186,6 +191,7 @@ class PathPos(TypedDict):
     jump_to : list[int]
 
 
+ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
 
 
             

@@ -94,7 +94,25 @@ def Update_shot(tower : 'base_tower.Base_tower') -> None:
 
 def _Hit_enemy(tower : 'base_tower.Base_tower') -> None:
     if tower._shoot_at_id is not None and tower._shoot_at_id in tower.data.enemies.health:
-        tower.data.enemies.health[tower._shoot_at_id] -= tower.damage
+        damage_to_deal : float = tower.damage
+
+        # Check for focus-zone
+        enemy_pos : tuple[int, int] = tower.data.enemies.position[tower._shoot_at_id]
+        if enemy_pos[0] >= 0 and enemy_pos[1] >= 0 and enemy_pos[1] < len(tower.data.zones) and enemy_pos[0] < len(tower.data.zones[0]):
+            if tower.data.zones[enemy_pos[1]][enemy_pos[0]] == "focus":
+                damage_to_deal *= 1.3
+        
+        # Combat-robot special effect
+        if tower.internal_name == "combat_robot":
+            if tower.data.enemies.health[tower._shoot_at_id] > 10:
+                damage_to_deal *= 1.2
+
+        # Deal damage
+        tower.data.enemies.health[tower._shoot_at_id] -= int(damage_to_deal)
+        damage_to_deal -= int(damage_to_deal)
+        if damage_to_deal > 0:
+            if tower.data.path_random.random() < damage_to_deal:
+                tower.data.enemies.health[tower._shoot_at_id] -= 1
         if tower.data.enemies.health[tower._shoot_at_id] <= 0:
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
         

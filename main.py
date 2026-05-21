@@ -19,7 +19,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.4.1"
+version : str = "0.4.3"
 data : Data_class = Data_class(version)
 
 
@@ -44,6 +44,8 @@ import renderer.towers
 tower_renderer : renderer.towers.Towers = renderer.towers.Towers(data)
 import renderer.tower_info
 tower_info_renderer : renderer.tower_info.Tower_info = renderer.tower_info.Tower_info(data)
+import renderer.zones
+zone_renderer : renderer.zones.Zones = renderer.zones.Zones(data)
 
 import enemy.move
 enemy_move : enemy.move.EnemyMove = enemy.move.EnemyMove(data)
@@ -53,10 +55,13 @@ enemy_wave : enemy.wave_handler.Wave_handler = enemy.wave_handler.Wave_handler(d
 import debug.top_handler
 debug_handler : debug.top_handler.Top_handler = debug.top_handler.Top_handler(data)
 
+import zones.building
+zone_building : zones.building.Zone_building = zones.building.Zone_building(data)
+import zones.handle
+zone_handler : zones.handle.Zone_handler = zones.handle.Zone_handler(data)
+
 import shop.main
-shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer)
-
-
+shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_building)
 
 
 
@@ -69,11 +74,8 @@ try:
         data.Check_resize()
 
 
-
-
-
-
         tile_renderer.Draw()
+        zone_renderer.Draw()
         hud_obj.Draw()
 
         if not data.in_shop or shop_obj.shop_animation < shop_obj._max_shop_animation: # Player is not in shop or shop animation is finished
@@ -87,8 +89,9 @@ try:
                     enemy_wave.Tick()
                     enemy_move.Move_enemies()
                     enemy_renderer.Draw()
+                    zone_handler.Main()
 
-
+            zone_building.Main()
             tower_info_renderer.Draw()
 
             if data.start_next_wave:

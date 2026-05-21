@@ -1,7 +1,6 @@
 import pygame as pg
 from data_class import Data_class
 import renderer.tiles
-import traceback
 import random
 
 pg.init()
@@ -21,7 +20,7 @@ logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
 
-version : str = "0.3.0"
+version : str = "0.4.3"
 data : Data_class = Data_class(version)
 file_name : str = ""
 
