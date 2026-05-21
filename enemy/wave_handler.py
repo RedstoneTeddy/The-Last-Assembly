@@ -17,6 +17,10 @@ class Wave_handler:
 
 
     def New_wave(self) -> None:
+        """
+        Start a new wave.
+        This will generate the wave and reset the wave_spawn_counter to 0.
+        """
         self.__wave_counter = 0
         self.data.wave += 1
         self.data.wave_in_progress = True
@@ -28,6 +32,10 @@ class Wave_handler:
         
 
     def Tick(self) -> None:
+        """
+        Tick the wave handler.
+        Will handle the spawning of enemies and check if the wave is over.
+        """
         if not self.data.wave_in_progress:
             return
         

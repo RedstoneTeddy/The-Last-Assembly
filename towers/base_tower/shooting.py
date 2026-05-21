@@ -4,6 +4,10 @@ if TYPE_CHECKING:
     import towers.base_tower.base as base_tower
 
 def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
+    """
+    Main function to tick (backend-tick) the shooting of a tower.
+    Handles shooting-cooldown, shooting and the shot.
+    """
     # Update / move the shot
     if tower._shot_pos != (-1, -1):
         Update_shot(tower)
@@ -39,6 +43,10 @@ def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
 
 
 def Update_shot(tower : 'base_tower.Base_tower') -> None:
+    """
+    Tick the shot of a tower. 
+    Gets called automatically by Tick_shooting if the shot is active (shot_pos != (-1, -1))
+    """
     SHOOT_NEARBY_ENEMY_RADIUS : int = 3 * tower.data.tile_zoom
     ENEMY_HIT_RADIUS : float = 0.5
 
@@ -93,6 +101,9 @@ def Update_shot(tower : 'base_tower.Base_tower') -> None:
 
 
 def _Hit_enemy(tower : 'base_tower.Base_tower') -> None:
+    """
+    If the shot hit an enemy, calculate the damage and apply it to the enemy.
+    """
     if tower._shoot_at_id is not None and tower._shoot_at_id in tower.data.enemies.health:
         damage_to_deal : float = tower.damage
 
@@ -128,6 +139,7 @@ def _Kill_shot(tower : 'base_tower.Base_tower') -> None:
 def Get_nearby_enemy(tower : 'base_tower.Base_tower', center_pos : tuple[int, int], radius : int, closest : bool = True) -> int | None:
     """
     Center_pos and radius are in pixel_coordinates (not world_coordinates)
+    Returns the id of the selected enemy.
     """
     possible_enemy_ids : list[int] = []
     distances : dict[int, int] = {}

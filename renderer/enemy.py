@@ -15,6 +15,9 @@ class Enemy:
         })
 
     def Resize(self) -> None:
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if self.current_zoom != self.data.tile_zoom:
             enemy_size : int = 12 * self.data.tile_zoom
             self.current_zoom = self.data.tile_zoom
@@ -22,6 +25,9 @@ class Enemy:
                 self.images[key] = pg.transform.scale(image, (enemy_size, enemy_size))
 
     def Draw(self) -> None:
+        """
+        Displays / draws all the enemies onto the screen
+        """
         self.Resize()
 
 

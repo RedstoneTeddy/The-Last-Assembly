@@ -13,6 +13,11 @@ DAMAGE_TYPES = Literal["Physical", "Electrical", "Fire"]
 
 
 class Base_tower:
+    """
+    Base / Parent Class for all the towers.
+    Towers inherit from this class and should implement their own special features.
+    All variables not starting with a underscore "_" should be set by the child class
+    """
     def __init__(self, data : data_class.Data_class) -> None:
         self.data : data_class.Data_class = data
 
@@ -102,6 +107,10 @@ class Base_tower:
 
 
     def Tick(self) -> None:
+        """
+        Tick (Backend-Tick) a tower. Should be called every tick for every tower
+        Handles selecting, shooting and building a (this) tower.
+        """
         if pg.mouse.get_pressed()[0] == False:
             self._selected_clicked = False
 

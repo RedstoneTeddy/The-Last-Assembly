@@ -2,6 +2,10 @@ import pygame
 import data_class
 
 def Debug_show(data : data_class.Data_class) -> None:
+    """
+    Debuging overlay.
+    Show the sorted world and the sorted path.
+    """
     # Show sorted_path
     for i in range(len(data.sorted_path)):
         percentage : float = i / max(1, len(data.sorted_path)-1)

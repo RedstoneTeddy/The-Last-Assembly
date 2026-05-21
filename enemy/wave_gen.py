@@ -1,7 +1,12 @@
 import data_class
 import logging
+from time import time_ns
 
 class Wave_gen:
+    """
+    Automatically and dynamically generates enemy waves.
+    These depend on the configurable parameters below.
+    """
     def __init__(self, data : data_class.Data_class) -> None:
         self.data : data_class.Data_class = data
 
@@ -165,6 +170,10 @@ class Wave_gen:
 
 
     def Generate_wave(self, wave_number : int) -> dict[int, tuple[int, str]]:
+        """
+        Call this function to generate the wave data for a given wave number.
+        """
+        start_time : int = time_ns()
         wave : dict[int, tuple[int, str]] = {}
 
         rng = self.data.wave_gen_random
@@ -392,6 +401,12 @@ class Wave_gen:
                     tick += spacing
                 tick += rng.randint(self.mixed_rest_range[0], self.mixed_rest_range[1])
 
+        # Calculate needed time for generating the wave
+        end_time : int = time_ns()
+        gen_time_ms : float = (end_time - start_time) / 1_000_000
+        self.data._last_wave_gen_time = gen_time_ms
+
+        # Log the generated wave
         segments_text : str = "\n  - ".join(segments) if segments else "empty"
         if budget <= 0 and tick >= max_tick:
             stop_reason : str = "budget+time"

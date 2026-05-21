@@ -32,6 +32,9 @@ class Tiles:
 
 
     def Resize(self, force: bool = False) -> None:
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if self.current_zoom != self.data.tile_zoom or force:
             self.current_zoom = self.data.tile_zoom
             for key, image in self.original_images.items():
@@ -40,6 +43,9 @@ class Tiles:
 
 
     def Draw(self):
+        """
+        Draw the tile-map onto the screen
+        """
         self.Resize()
 
         for y, row in enumerate(self.data.world):
@@ -51,6 +57,9 @@ class Tiles:
                     ))
 
     def Draw_single(self, pos: tuple[int, int], tile: str):
+        """
+        Draw a single tile onto the screen at the specified pixel-coordinate.
+        """
         self.Resize()
 
         if tile not in ["", " ", None]:

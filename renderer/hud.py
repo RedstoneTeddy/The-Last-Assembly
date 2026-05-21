@@ -28,6 +28,9 @@ class Hud:
         self.original_images["fast_speed_selected"] = pg.image.load("assets/icons/buttons/fast_speed_selected.png").convert_alpha()
 
     def Resize(self):
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if self.current_zoom != self.data.tile_zoom:
             self.current_zoom = self.data.tile_zoom
             for key, image in self.original_images.items():
@@ -35,6 +38,9 @@ class Hud:
 
 
     def Draw(self) -> None:
+        """
+        Draw the side-hud
+        """
         self.Resize()
 
         # Show money

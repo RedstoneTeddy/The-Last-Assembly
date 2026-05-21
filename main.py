@@ -19,7 +19,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.4.3"
+version : str = "0.4.4"
 data : Data_class = Data_class(version)
 
 

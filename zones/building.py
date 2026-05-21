@@ -33,6 +33,9 @@ class Zone_building:
 
 
     def Resize(self, force: bool = False) -> None:
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if self.current_zoom != self.data.tile_zoom or force:
             self.current_zoom = self.data.tile_zoom
             for key, image in self.original_images.items():
@@ -40,6 +43,9 @@ class Zone_building:
 
 
     def Main(self) -> None:
+        """
+        If player is currently building a zone, render the hologram and handle the placing of the zone
+        """
         self.Resize()
 
         if self.build_zone != "":

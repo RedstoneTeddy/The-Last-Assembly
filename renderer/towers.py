@@ -44,6 +44,9 @@ class Towers:
 
 
     def __Load_original_images_of_tower(self, tower : base.Base_tower):
+        """
+        Load all images for a given tower automatically.
+        """
         general_path : str = f"assets/tower/{tower.internal_name}/{tower.internal_name}"
         shot_path : str = f"assets/tower/{tower.internal_name}/shot.png"
         for i in range(1, tower.number_of_frames+1):
@@ -54,6 +57,9 @@ class Towers:
 
 
     def Resize(self, force : bool = False) -> None:
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if self.current_zoom != self.data.tile_zoom or force:
             self.current_zoom = self.data.tile_zoom
             for name, image in self.original_images.items():
@@ -61,6 +67,10 @@ class Towers:
 
 
     def Draw(self) -> None:
+        """
+        Draw all the towers onto the screen.
+        Further display the shot (if there is one) for each tower.
+        """
         self.Resize()
 
         for tower in self.data.towers:

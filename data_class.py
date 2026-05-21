@@ -39,6 +39,7 @@ class Data_class():
         self.__font_objects : dict[str, pg.font.Font] = {}
 
         self.__id_counter : int = 0
+        self._last_wave_gen_time : float = 0.0 # in ms
 
     
 
@@ -92,6 +93,7 @@ class Data_class():
             else:
                 self.screen_size = self.screen_size_before_fullscreen
                 self.screen = pg.display.set_mode(self.screen_size, pg.RESIZABLE)
+            force = True
         elif not keys[pg.K_F11]:
             self.__fullscreen_clicked = False
 

@@ -8,6 +8,10 @@ class Zone_handler:
 
 
     def Main(self) -> None:
+        """
+        Handles the backend of most of the zones.
+        If not handled here, it is mentioned in the comments where the zone-backend is implemented.
+        """
         enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
         for enemy_id in list(enemies.position.keys()):
             pos : tuple[int, int] = enemies.position[enemy_id]

@@ -21,12 +21,18 @@ class Zones:
         self.Resize(force=True)
 
     def Resize(self, force: bool = False) -> None:
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if self.current_zoom != self.data.tile_zoom or force:
             self.current_zoom = self.data.tile_zoom
             for key, image in self.original_images.items():
                 self.images[key] = pg.transform.scale(image, (image.get_width() * self.current_zoom, image.get_height() * self.current_zoom))
 
     def Draw(self) -> None:
+        """
+        Draw all the placed zones onto the screen.
+        """
         self.Resize()
 
         current_offset : int = self.zone_offset * self.current_zoom

@@ -12,6 +12,10 @@ class Path_creation:
 
 
     def Main(self) -> None:
+        """
+        Main code for the function "Path Creation" of the Map-editor.
+        Draws the UI and handles the functionality for creating paths and jumps between them.
+        """
         # Draw the UI
         pg.draw.rect(self.data.screen,
                      (255, 255, 255),
@@ -110,6 +114,9 @@ class Path_creation:
     
 
     def Draw_single(self, path_list_i : int, path_j : int) -> None:
+        """
+        Draw a single path-element onto the screen
+        """
         path_element : data_class.PathPos = self.data.path[path_list_i][path_j]
         screen_pos : tuple[int, int] = self.data.Get_World_to_Screen((path_element["x"], path_element["y"]))
 
@@ -133,7 +140,7 @@ class Path_creation:
 
 
         # Get info for the next path element
-        next_screen_pos : tuple[int, int] = (-1, -1)
+        next_screen_pos : tuple[int, int]
         if path_j < len(self.data.path[path_list_i]) - 1:
             next_path_element : data_class.PathPos = self.data.path[path_list_i][path_j + 1]
             next_screen_pos = self.data.Get_World_to_Screen((next_path_element["x"], next_path_element["y"]))

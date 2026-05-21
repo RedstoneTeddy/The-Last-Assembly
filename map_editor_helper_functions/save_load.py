@@ -4,6 +4,9 @@ import logging
 from typing import Any
 
 def Save_World(data: data_class.Data_class, filename: str) -> None:
+    """
+    Save the world and path data to a file with the given filename.
+    """
     with open("maps/"+filename+".pkl", "wb") as f:
         save_data : dict[str, Any] = {
             "world": data.world,
@@ -13,6 +16,10 @@ def Save_World(data: data_class.Data_class, filename: str) -> None:
         logging.info(f"World saved to {filename}")
 
 def Load_World(data: data_class.Data_class, filename: str) -> None:
+    """
+    Load the world and path data from a file with the given filename.
+    After loading, calculates the weighted world and sorts the path for easier access during gameplay. (Precaching)
+    """
     with open("maps/"+filename+".pkl", "rb") as f:
         loaded_data = pickle.load(f)
         data.world = loaded_data["world"]

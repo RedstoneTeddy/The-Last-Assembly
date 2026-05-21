@@ -76,6 +76,9 @@ class Shop:
 
 
     def Resize(self, force = False) -> None:
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if force or self.current_zoom != self.data.tile_zoom:
             self.current_zoom = self.data.tile_zoom
             for key in self.original_images:
@@ -87,6 +90,10 @@ class Shop:
 
 
     def Close_shop(self) -> None:
+        """
+        Closes the shop and resets all related variables so it works again next time.
+        Starts next wave
+        """
         self.data.shop_minimized = True
         self.data.in_shop = False
         self.shop_animation = 0
@@ -100,6 +107,10 @@ class Shop:
     
 
     def Shop_main(self) -> None:
+        """
+        Main function (rendering and backend) for the shop.
+        Calls all other functions internally.
+        """
         self.Resize()
         if self.data.shop_minimized:
             if self.shop_animation > 0:
@@ -127,6 +138,10 @@ class Shop:
 
 
     def Show_shop(self) -> None:
+        """
+        Main function for the shop.
+        Shows the shop and handles buying stuff.
+        """
         shop_rect : tuple[int, int, int, int] = (
             self.data.Get_World_to_Screen((5.5, 0.5))[0],
             self.data.Get_World_to_Screen((5.5, 0.5))[1],
@@ -299,6 +314,10 @@ class Shop:
 
     
     def Show_reward(self) -> None:
+        """
+        Show the screen for the reward.
+        Further handles calculating and giving out the reward.
+        """
         shop_rect : tuple[int, int, int, int] = (
             self.data.Get_World_to_Screen((5.5, 0.5))[0],
             self.data.Get_World_to_Screen((5.5, 0.5))[1],
@@ -361,6 +380,9 @@ class Shop:
 
 
     def _Calculate_reward(self) -> tuple[int, list[str]]:
+        """
+        Calculates the reward and caches it.
+        """
         total_cash : int = self.data.money_per_round
         lines: list[str] = []
         # Base reward
@@ -405,6 +427,9 @@ class Shop:
 
 
     def __Clear_shop(self) -> None:
+        """
+        Clear and reset the shop
+        """
         self.shop_elements = []
         self.shop_element_costs = []
         self.shop_element_types = []

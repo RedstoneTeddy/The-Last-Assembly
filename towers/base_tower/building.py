@@ -6,6 +6,9 @@ import pygame as pg
 
 
 def Tick_building(tower : "base.Base_tower") -> None:
+    """
+    Handle the building of a tower.
+    """
     mouse_pos : tuple[int, int] = pg.mouse.get_pos()
     world_mouse_pos : tuple[int, int] = tower.data.Get_Screen_to_World(mouse_pos)
 

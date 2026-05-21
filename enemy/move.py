@@ -18,6 +18,11 @@ class EnemyMove:
 
 
     def Precache_enemy_locations(self) -> None:
+        """
+        Precaches and calculates all possible enemy path-locations with
+        their corresponding path_index and tile_index for faster movement
+        calculations during gameplay.
+        """
         if not self.data.path:
             logging.warning("No path found, calculate & cache enemy locations.")
             return
@@ -32,6 +37,9 @@ class EnemyMove:
 
 
     def Move_enemies(self) -> None:
+        """
+        Move all enemies.
+        """
         enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
 
         if not self.__cache_locations:
@@ -119,6 +127,9 @@ class EnemyMove:
 
 
     def __Set_pos_direction(self, enemy_id : int) -> None:
+        """
+        Depending on the next tile-position, rotate the enemy to the correct direction.
+        """
         enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
         current_pos : tuple[int, int] = enemies.position[enemy_id]
         next_pos : tuple[int, int] = enemies.next_position[enemy_id]
@@ -134,6 +145,9 @@ class EnemyMove:
 
 
     def __Set_next_position(self, enemy_id : int) -> None:
+        """
+        If an enemy reached the end of a path, decide where it should go next.
+        """
         enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
 
         current_pos : tuple[int, int] = enemies.position[enemy_id]

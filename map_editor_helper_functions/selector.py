@@ -22,6 +22,10 @@ class Selector:
 
 
     def Main(self) -> None:
+        """
+        Handles the functionality for the tile-drawing and selection UI of the Map-editor.
+        Draws the UI and handles the functionality for making maps
+        """
         pg.draw.rect(self.data.screen,
                      (255, 255, 255),
                      (0, 0, 50*self.data.tile_zoom,

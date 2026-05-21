@@ -22,6 +22,9 @@ class Enemy_data_class:
 
 
     def Remove_enemy(self, enemy_id : int) -> None:
+        """
+        Handles the removing of an enemy from the game.
+        """
         self.health.pop(enemy_id, None)
         self.position.pop(enemy_id, None)
         self.pos_exact_frame_offset.pop(enemy_id, None)

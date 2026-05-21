@@ -42,6 +42,9 @@ class Tower_info():
 
 
     def Resize(self, force : bool = False) -> None:
+        """
+        Resize the original images based on the current tile zoom level. 
+        """
         if self.zoom != self.data.tile_zoom or force:
             self.zoom = self.data.tile_zoom
 
@@ -53,6 +56,11 @@ class Tower_info():
 
 
     def Draw(self) -> None:
+        """
+        Checks if a tower need the info-box.
+        If a tower needs it display the info-box.
+        Further draws the sell button for the selected tower.
+        """
         self.Resize()
 
         self.delete_tower_i : int = -1
