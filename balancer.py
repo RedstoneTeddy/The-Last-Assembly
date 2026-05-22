@@ -41,10 +41,11 @@ all_towers.append(towers.combat_robot.Combat_robot(data))
 print("DpS := Damage per second (= damage / cooldown)")
 print("DpSC := DpS per cost (= DpS / (build_cost/10)^0.5)")
 print("DRpSC:= DpSC multiplied by range (DpSC * range^0.5)")
+print("DRBpSC:= DpSC multiplied by blast radius (DRpSC * (blast_radius/3)^0.33)")
 
 # Generate table
 print("\n-- All Towers --")
-column_names : list[str] = ["Name", "Rarity", "Damage", "Fire Rate", "Range", "Cost", "DpS", "DpSC", "DRpSC"]
+column_names : list[str] = ["Name", "Rarity", "Damage", "Fire Rate", "Range", "Blast", "Cost", "DpS", "DpSC", "DRpSC", "DRBpSC"]
 table : list[list[str]] = []
 for tower in all_towers:
     line : list[str] = []
@@ -53,10 +54,16 @@ for tower in all_towers:
     line.append(str(tower.damage))
     line.append(str(round(tower.cooldown/60, 2))+" s")
     line.append(str(round(tower.range/ 12, 1))+" tiles")
+    line.append(str(round(tower.blast_radius/ 12, 1))+" tiles")
     line.append(str(tower.build_cost))
     line.append(str(round(tower.damage / (tower.cooldown/60), 2)))
     line.append(str(round((tower.damage / (tower.cooldown/60)) / ((tower.build_cost / 10) ** 0.5), 2)))
     line.append(str(round(((tower.damage / (tower.cooldown/60)) / ((tower.build_cost / 10) ** 0.5)) * (tower.range ** 0.5), 2)))
+    if tower.blast_radius > 0:
+        line.append(str(round(((tower.damage / (tower.cooldown/60)) / ((tower.build_cost / 10) ** 0.5)) * (tower.range ** 0.5) * ((tower.blast_radius/3) ** 0.33), 2))) 
+    else:
+        line.append(str(round(((tower.damage / (tower.cooldown/60)) / ((tower.build_cost / 10) ** 0.5)) * (tower.range ** 0.5), 2)))
+
 
     table.append(line)
 

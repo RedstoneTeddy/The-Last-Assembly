@@ -70,7 +70,8 @@ class Top_handler:
             f"Wave Gen Time: {round(self.data._last_wave_gen_time, 2)} ms",
             "F1 - FPS & Info",
             "F2 - Sorted World", 
-            "F3 - No Clock"
+            "F3 - No Clock",
+            "F4 - Slow Clock"
         ]
         pg.draw.rect(self.data.screen, (255, 255, 255), (0, 0, 70*self.data.tile_zoom, len(lines)*6*self.data.tile_zoom+10))
         for i, line in enumerate(lines):

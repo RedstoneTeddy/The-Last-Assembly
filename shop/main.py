@@ -283,9 +283,11 @@ class Shop:
                         elif self.shop_element_types[i] == "zone":
                             if self.shop_elements[i] in get_args(data_class.ZoneTypes):
                                 self.data.is_building = "zone"
+                                self.zone_building._clicked = True
                                 # shop_elements stores strings; cast to ZoneTypes for static type checkers
                                 self.zone_building.build_zone = cast(data_class.ZoneTypes, self.shop_elements[i])
                                 self.data.shop_minimized = True
+
 
 
             # Show Info-Box

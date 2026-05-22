@@ -34,10 +34,11 @@ class Base_tower:
         self.build_cost : int = 0                       # The cost to build the tower
 
         self.range : int = 0                            # The towers range in pixels * tile_zoom
-        self.damage : int = 0                           # Damage of the tower per hit
+        self.damage : float = 0                           # Damage of the tower per hit
         self.cooldown : int = 0                         # Cooldown between hits in ticks
         self.shot_speed : int = 0                       # Max distance a shot can travel in one tick in tiles
         self.damage_type : DAMAGE_TYPES = "Physical"    # The towers damage type
+        self.blast_radius : int = 0                     # The radius of the towers blast damage in pixels * tile_zoom, 0 means no blast damage
 
         self.dont_rotate : bool = False                 # Whether the tower should not rotate towards the enemy, used for towers that shoot in a fixed direction
 
@@ -55,6 +56,7 @@ class Base_tower:
         self._is_selected : bool = False
         self._selected_clicked : bool = False
         self._sell_value : int = 0
+        self._mods : dict[data_class.ModTypes, int] = []
 
         # Shot / Shooting variables
         self._cooldown_timer : int = 0
@@ -89,6 +91,9 @@ class Base_tower:
         output.append((str(self.damage), (0,0,0), self.damage_type.lower(), False))
         output.append((str(round(self.cooldown/60, 2))+" s", (0,0,0), "time", False))
         output.append((str(round(self.range/ 12, 1))+" tiles", (0,0,0), "range", False))
+
+        if self.blast_radius > 0:
+            output.append(("Blast: " + str(round(self.blast_radius/ 12, 1))+" tiles", (0,0,0), "", False))
 
         output.extend(self.Get_specific_info_texts())
 

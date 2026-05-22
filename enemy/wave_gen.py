@@ -17,9 +17,9 @@ class Wave_gen:
         #### CONFIGURABLE PARAMETERS ####
         # === Difficulty curve (budget growth) ===
         # Base amount of "budget" used to buy enemies in early waves.
-        self.budget_base : int = 80
+        self.budget_base : int = 50
         # Exponential scaling per wave; 1.22 means +22% budget each wave.
-        self.budget_growth : float = 1.30
+        self.budget_growth : float = 1.38
         self.budget_growth_endless : float = 1.35
         # Randomize budget slightly so waves do not feel identical.
         self.budget_jitter_min : float = 0.9
@@ -34,9 +34,9 @@ class Wave_gen:
         # Extends the max wave length as waves get higher.
         self.max_tick_growth_per_wave : int = 60*1
         # Starting speed multiplier for spacing; higher means more time between enemies.
-        self.speed_base : float = 1.5
+        self.speed_base : float = 2.0
         # Global speed-up per wave (lower spacing as wave increases).
-        self.speed_decay_per_wave : float = 0.08
+        self.speed_decay_per_wave : float = 0.1
         # Minimum speed multiplier so spacing does not become too small.
         self.speed_floor : float = 0.5
 

@@ -50,7 +50,7 @@ class Data_class():
         self.sorted_path : list[tuple[int, int]] = [] 
 
         self.wave : int = 0
-        self.money : int = 300
+        self.money : int = 350
         self.health : int = 100
         self.fast_forward : bool = False
 
@@ -61,9 +61,10 @@ class Data_class():
 
         # Game parameters
         self.money_per_round : int = 100
-        self.interest_per_100 : int = 10
+        self.interest_per_100 : int = 20
         self.interest_cap : int = 100
         self.zone_cost : int = 150
+        self.mod_cost : int = 150
         
 
         # Menu variables
@@ -194,6 +195,6 @@ class PathPos(TypedDict):
 
 
 ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
-
+ModTypes = Literal[""]
 
             

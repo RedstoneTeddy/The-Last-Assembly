@@ -19,14 +19,18 @@ logging.info("Logging started")
 
 
 
-version : str = "0.4.4"
+version : str = "0.4.5"
 data : Data_class = Data_class(version)
-
+data.screen.fill((0, 0, 0))
+data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
+pg.display.flip()
+from time import sleep
+sleep(1)
 
 
 # Load map
 import map_editor_helper_functions.save_load
-file_name : str = "test"
+file_name : str = "roundabout"
 map_editor_helper_functions.save_load.Load_World(data, file_name)
 
 
@@ -129,7 +133,10 @@ try:
                     data.mouse_wheel_down = True
 
         if not pg.key.get_pressed()[pg.K_F3]:
-            data.clock.tick(60)
+            if pg.key.get_pressed()[pg.K_F4]:
+                data.clock.tick(20)
+            else:
+                data.clock.tick(60)
         
 except Exception as e:
     logging.exception("An exception occurred")  # logs the exception with traceback
