@@ -23,7 +23,7 @@ class Combat_robot(base.Base_tower):
         self.damage_type : base.DAMAGE_TYPES = "Physical"
 
 
-    def Get_specific_info_texts(self) -> list[tuple[str, tuple[int, int, int], str, bool]]:
+    def Get_specific_info_texts(self) -> list[data_class.TextLine]:
         return [
-            ("+20% damage for;> 10 health", (255, 255, 255), "", True)
+            data_class.TextLine(text="+20% damage for;> 10 health", color=(255, 255, 255), icon="", is_small=True)
         ]

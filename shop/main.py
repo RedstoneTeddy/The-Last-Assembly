@@ -37,7 +37,7 @@ class Shop:
         self.shop_elements : list[str] = []
         self.shop_element_types : list[Literal["tower", "specialist", "research", "mod", "zone"]] = []
         self.shop_element_costs : list[int] = []
-        self.shop_element_descriptions : list[list[tuple[str, tuple[int, int, int], str, bool]]] = []
+        self.shop_element_descriptions : list[list[data_class.TextLine]] = []
         self.shop_element_bought : list[bool] = []
         self._selected_shop_element : int = -1  
 
@@ -49,11 +49,11 @@ class Shop:
         self.__tower_names : list[str] = []
         self.__tower_rarities : list[towers.base_tower.base.RARITIES] = []
         self.__tower_costs : list[int] = []
-        self.__tower_info_box : list[list[tuple[str, tuple[int, int, int], str, bool]]] = [] # List of info box lines for each tower. Each line is a tuple of (text, color, icon, is_small)
+        self.__tower_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each tower.
         self.__Load_shop_element_data()
 
         self.__zone_names : list[str] = []
-        self.__info_box : list[list[tuple[str, tuple[int, int, int], str, bool]]] = []
+        self.__info_box : list[list[data_class.TextLine]] = []
         self.__Load_zone_data()
 
 
@@ -224,7 +224,7 @@ class Shop:
             if len(self.shop_elements) == 0:
                 self.Generate_shop()
 
-            info_text : list[tuple[str, tuple[int, int, int], str, bool]] = []
+            info_text : list[data_class.TextLine] = []
             
             for i in range(len(self.shop_elements)):
                 if self.shop_element_bought[i]:
@@ -250,11 +250,11 @@ class Shop:
                 # If hovered, show info box and buy option
                 if element_is_hovered:
                     cost : int = self.shop_element_costs[i]
-                    info_text = deepcopy(self.shop_element_descriptions[i])
+                    info_text = cast(list[data_class.TextLine], deepcopy(self.shop_element_descriptions[i]))
                     if cost > self.data.money:
-                        info_text.insert(0, (f"{cost}", (255, 100, 100), "money", False))
+                        info_text.insert(0, data_class.TextLine(text=f"{cost}", color=(255, 100, 100), icon="money", is_small=False))
                     else:
-                        info_text.insert(0, (f"{cost}", (238, 168, 25), "money", False))
+                        info_text.insert(0, data_class.TextLine(text=f"{cost}", color=(238, 168, 25), icon="money", is_small=False))
                     
                     # Check if user clicks on the element
                     if pg.mouse.get_pressed()[0] and not self._button_pressed and not self.data.shop_minimized and self.data.money >= cost:
@@ -292,7 +292,7 @@ class Shop:
 
             # Show Info-Box
             if info_text != []:
-                    self.tower_info_renderer.Draw_box_at_mouse(info_text)
+                self.tower_info_renderer.Draw_box_at_mouse(info_text)
 
 
                     
@@ -502,11 +502,11 @@ class Shop:
         """
         Loads the data for the zones into the shop_element_data dictionary
         """
-        zone_info_data : list[tuple[str, list[tuple[str, tuple[int, int, int], str, bool]]]] = zones.info_data.Get_zone_info_data()
-        for zone_data in zone_info_data:
-            self.__zone_names.append(zone_data[0])
-            self.__info_box.append(zone_data[1])
-            self.original_images[zone_data[0]] = pg.transform.scale(pg.image.load(f"assets/zones/{zone_data[0]}.png").convert_alpha(), (32, 32))
+        zone_info_data : dict[str, list[data_class.TextLine]] = zones.info_data.Get_zone_info_data()
+        for zone_id, info_lines in zone_info_data.items():
+            self.__zone_names.append(zone_id)
+            self.__info_box.append(info_lines)
+            self.original_images[zone_id] = pg.transform.scale(pg.image.load(f"assets/zones/{zone_id}.png").convert_alpha(), (32, 32))
 
 
     def __Kill_building_process(self) -> None:

@@ -69,7 +69,7 @@ class Base_tower:
 
 
 
-    def Get_info_texts(self) -> list[tuple[str, tuple[int, int, int], str, bool]]:
+    def Get_info_texts(self) -> list[data_class.TextLine]:
         """
         Returns a list of tuples, each is one line of text to be displayed 
         The tuple contains in the following order:
@@ -78,30 +78,31 @@ class Base_tower:
         3. (str) : the icon to be displayed before the text
         4. (bool) : whether the line is small
         """
-        output : list[tuple[str, tuple[int, int, int], str, bool]] = []
+        output : list[data_class.TextLine] = []
 
-        output.append((self.name, (0,0,0), "", False))
+        output.append(data_class.TextLine(text=self.name, color=(0,0,0), icon="", is_small=False))
 
         if self.rarity == "Common":
-            output.append(("Common", (0,0,0), "", False))
+            output.append(data_class.TextLine(text="Common", color=(0,0,0), icon="", is_small=False))
         elif self.rarity == "Uncommon":
-            output.append(("Uncommon", (0,0,255), "", False))
+            output.append(data_class.TextLine(text="Uncommon", color=(0,0,255), icon="", is_small=False))
         elif self.rarity == "Rare":
-            output.append(("Rare", (200,100,0), "", False))
+            output.append(data_class.TextLine(text="Rare", color=(200,100,0), icon="", is_small=False))
 
-        output.append((str(round(self.damage, 1)), (0,0,0), self.damage_type.lower(), False))
-        output.append((str(round(self.cooldown/60, 2))+" s", (0,0,0), "time", False))
-        output.append((str(round(self.range/ 12, 1))+" tiles", (0,0,0), "range", False))
+        output.append(data_class.TextLine(text=str(round(self.damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))
+        output.append(data_class.TextLine(text=str(round(self.cooldown/60, 2))+" s", color=(0,0,0), icon="time", is_small=False))
+        output.append(data_class.TextLine(text=str(round(self.range/ 12, 1))+" tiles", color=(0,0,0), icon="range", is_small=False))
 
         if self.blast_radius > 0:
-            output.append(("Blast: " + str(round(self.blast_radius/ 12, 1))+" tiles", (0,0,0), "", False))
+            output.append(data_class.TextLine(text="Blast: " + str(round(self.blast_radius/ 12, 1))+" tiles", color=(0,0,0), icon="", is_small=False))
 
         output.extend(self.Get_specific_info_texts())
 
-        mod_info_lines : list[tuple[str, list[tuple[str, tuple[int, int, int], str, bool]]]] = mods.info_data.Get_mod_info_data()
+        mod_info_dict = mods.info_data.Get_mod_info_data()
         mod_names : dict[str, str] = {}
-        for mod_name, mod_info in mod_info_lines:
-            mod_names[mod_name] = mod_info[0][0]
+        for mod_name, mod_info in mod_info_dict.items():
+            if len(mod_info) > 0:
+                mod_names[mod_name] = mod_info[0]["text"]
 
 
         # Display mods
@@ -115,11 +116,11 @@ class Base_tower:
                 mod_lines.append("")
             for i in range(0, len(mod_lines), 2):
                 line : str = mod_lines[i] + ";" + mod_lines[i+1]
-                output.append((line, (0,0,0), "", True))
+                output.append(data_class.TextLine(text=line, color=(0,0,0), icon="", is_small=True))
 
         return output
     
-    def Get_specific_info_texts(self) -> list[tuple[str, tuple[int, int, int], str, bool]]:
+    def Get_specific_info_texts(self) -> list[data_class.TextLine]:
         """
         Tower specific info, if needed should be implemented by the child class
         For example a tower that has a special effect

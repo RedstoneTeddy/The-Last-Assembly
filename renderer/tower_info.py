@@ -69,7 +69,7 @@ class Tower_info():
         for tower in self.data.towers:
             i += 1
             if tower._is_selected and tower._is_placed:
-                texts : list[tuple[str, tuple[int, int, int], str, bool]] = tower.Get_info_texts()
+                texts : list[data_class.TextLine] = tower.Get_info_texts()
                 mouse_pos : tuple[int, int] = pg.mouse.get_pos()
                 tower_rect : tuple[int, int, int, int] = (
                     self.data.Get_World_to_Screen(tower._pos)[0],
@@ -118,9 +118,9 @@ class Tower_info():
 
 
 
-    def Draw_box_at_mouse(self, texts : list[tuple[str, tuple[int, int, int], str, bool]]) -> None:
+    def Draw_box_at_mouse(self, texts : list[data_class.TextLine]) -> None:
         """
-        Draw a box at the mouse position with the given texts. Each entry in texts is a tuple of (text, color, icon, is_small)
+        Draw a box at the mouse position with the given texts. Each entry in texts is a list of TextLine objects.
         """
         self.Resize()
         mouse_pos : tuple[int, int] = pg.mouse.get_pos()
@@ -137,7 +137,7 @@ class Tower_info():
         self.data.screen.blit(self.images["top_60"], box_pos)
         box_pos = (box_pos[0], box_pos[1] + 2*self.data.tile_zoom)
         for line_i in range(len(texts)):
-            self.__Draw_line(box_pos, texts[line_i][0], texts[line_i][1], texts[line_i][2], texts[line_i][3])
+            self.__Draw_line(box_pos, texts[line_i]["text"], texts[line_i]["color"], texts[line_i]["icon"], texts[line_i]["is_small"])
             box_pos = (box_pos[0], box_pos[1] + 14*self.data.tile_zoom)
         self.data.screen.blit(self.images["bottom_60"], box_pos)
 

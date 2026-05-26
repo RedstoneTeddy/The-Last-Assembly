@@ -1,132 +1,131 @@
 # This file is used by the shop to load the data
 import data_class
 
-def Get_mod_info_data() -> list[tuple[str, list[tuple[str, tuple[int, int, int], str, bool]]]]:
+
+def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
+    """Returns information for all possible mods as a dict keyed by mod id.
+
+    Each value is a list of `data_class.TextLine` objects describing the mod.
     """
-    Returns information for all possible mods in the following format:
-    - Mod name
-    - Info-Box (each line contains text, color, icon, is_small_text)
-    """
-    output : list[tuple[str, list[tuple[str, tuple[int, int, int], str, bool]]]] = []
+    output: dict[str, list[data_class.TextLine]] = {}
 
     # Targeting mods
-    output.append(("hunter_ai",[
-        ("Hunter AI", (0, 0, 0), "", False),
-        ("Target the", (0, 0, 0), "", False),
-        ("strongest enemy", (0, 0, 0), "", False)
-    ]))
+    output["hunter_ai"] = [
+        data_class.TextLine(text="Hunter AI", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="strongest enemy", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("first_one", [
-        ("First one", (0, 0, 0), "", False),
-        ("Target the", (0, 0, 0), "", False),
-        ("first enemy", (0, 0, 0), "", False)
-    ]))
+    output["first_one"] = [
+        data_class.TextLine(text="First one", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="first enemy", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("last_one", [
-        ("Last one", (0, 0, 0), "", False),
-        ("Target the", (0, 0, 0), "", False),
-        ("last enemy", (0, 0, 0), "", False)
-    ]))
+    output["last_one"] = [
+        data_class.TextLine(text="Last one", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="last enemy", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("close_sighted", [
-        ("Close sighted", (0, 0, 0), "", False),
-        ("Target the", (0, 0, 0), "", False),
-        ("closest enemy", (0, 0, 0), "", False)
-    ]))
+    output["close_sighted"] = [
+        data_class.TextLine(text="Close sighted", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="closest enemy", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("weak_spotter", [
-        ("Weak Spotter", (0, 0, 0), "", False),
-        ("Target the", (0, 0, 0), "", False),
-        ("weakest enemy", (0, 0, 0), "", False)
-    ]))
+    output["weak_spotter"] = [
+        data_class.TextLine(text="Weak Spotter", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="weakest enemy", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
     # Base stat mods
-    output.append(("rapid_loader", [
-        ("Rapid Loader", (0, 0, 0), "", False),
-        ("- 15% cooldown", (0, 0, 0), "", False)
-    ]))
+    output["rapid_loader"] = [
+        data_class.TextLine(text="Rapid Loader", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="- 15% cooldown", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("critical_core", [
-        ("Critical Core", (0, 0, 0), "", False),
-        ("20% for critical", (0, 0, 0), "", False),
-        ("hits (x2 damage)", (0, 0, 0), "", False)
-    ]))
+    output["critical_core"] = [
+        data_class.TextLine(text="Critical Core", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="20% for critical", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="hits (x2 damage)", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("cryo_rounds", [
-        ("Cryo Rounds", (0, 0, 0), "", False),
-        ("Slows enemy", (0, 0, 0), "", False),
-        ("briefly", (0, 0, 0), "", False)
-    ]))
+    output["cryo_rounds"] = [
+        data_class.TextLine(text="Cryo Rounds", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Slows enemy", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="briefly", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("spyglass", [
-        ("Spyglass", (0, 0, 0), "", False),
-        ("+ 30% range", (0, 0, 0), "", False),
-        ("+ 10% cooldown", (0, 0, 0), "", False)
-    ]))
+    output["spyglass"] = [
+        data_class.TextLine(text="Spyglass", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 30% range", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 10% cooldown", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("sharpshooter", [
-        ("Sharpshooter", (0, 0, 0), "", False),
-        ("+ 20% damage", (0, 0, 0), "", False)
-    ]))
+    output["sharpshooter"] = [
+        data_class.TextLine(text="Sharpshooter", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 20% damage", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("explosive", [
-        ("Explosive", (0, 0, 0), "", False),
-        ("+ 30% blast radius", (0, 0, 0), "", False)
-    ]))
+    output["explosive"] = [
+        data_class.TextLine(text="Explosive", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 30% blast radius", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("bounty_hunter", [
-        ("Bounty Hunter", (0, 0, 0), "", False),
-        ("30% chance to", (0, 0, 0), "", False),
-        ("gain 1$ when", (0, 0, 0), "", False),
-        ("enemy dies", (0, 0, 0), "", False)
-    ]))
-
-
+    output["bounty_hunter"] = [
+        data_class.TextLine(text="Bounty Hunter", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="30% chance to", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="gain 1$ when", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="enemy dies", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
     # Special / funny mods
-    output.append(("heavy_rounds", [
-        ("Heavy Rounds", (0, 0, 0), "", False),
-        ("+ 60% damage", (0, 0, 0), "", False),
-        ("+ 25% cooldown", (0, 0, 0), "", False)
-    ]))
+    output["heavy_rounds"] = [
+        data_class.TextLine(text="Heavy Rounds", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 60% damage", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 25% cooldown", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("bloodthirst", [
-        ("Bloodthirst", (0,0,0), "", False),
-        ("2% chance per", (0,0,0), "", False),
-        ("killed enemy", (0,0,0), "", False),
-        ("for permanent", (0,0,0), "", False),
-        ("+ 2% damage", (0,0,0), "", False)
-    ]))
+    output["bloodthirst"] = [
+        data_class.TextLine(text="Bloodthirst", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="2% chance per", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="killed enemy", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="for permanent", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 2% damage", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("Finisher", [
-        ("Finisher", (0,0,0), "", False),
-        ("+ 40% damage", (0,0,0), "", False),
-        ("to enemies", (0,0,0), "", False),
-        ("< 11 health", (0,0,0), "", False)
-    ]))
+    output["finisher"] = [
+        data_class.TextLine(text="Finisher", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 40% damage", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="to enemies", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="< 11 health", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("slow_shot", [
-        ("Slow Shot", (0,0,0), "", False),
-        ("+ 40% damage", (0,0,0), "", False),
-        ("to slowed", (0,0,0), "", False),
-        ("enemies", (0,0,0), "", False)
-    ]))
+    output["slow_shot"] = [
+        data_class.TextLine(text="Slow Shot", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="+ 40% damage", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="to slowed", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="enemies", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
-    output.append(("roulette_rounds", [
-        ("Roulette Rounds", (0,0,0), "", False),
-        ("Damage varies", (0,0,0), "", False),
-        ("between 50%", (0,0,0), "", False),
-        ("and 200%", (0,0,0), "", False)
-    ]))
-
+    output["roulette_round"] = [
+        data_class.TextLine(text="Roulette Rounds", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Damage varies", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="between 50%", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="and 200%", color=(0, 0, 0), icon="", is_small=False),
+    ]
 
     return output
 
-def Get_useless_towers(mod : data_class.ModTypes) -> list[str]:
-    """
-    Returns a list of tower names that are useless with the given mod.
-    """
-    output : list[str] = []
+
+def Get_useless_towers(mod: data_class.ModTypes) -> list[str]:
+    """Returns a list of tower names that are useless with the given mod."""
+    output: list[str] = []
+
+    if mod == "explosive":
+        output = ["combat_robot", "gear_thrower", "zapper"]
 
 
     return output
