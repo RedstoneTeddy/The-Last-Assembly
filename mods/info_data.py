@@ -14,64 +14,76 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="Hunter AI", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="strongest enemy", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["first_one"] = [
         data_class.TextLine(text="First one", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="first enemy", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["last_one"] = [
         data_class.TextLine(text="Last one", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="last enemy", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["close_sighted"] = [
         data_class.TextLine(text="Close sighted", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="closest enemy", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["weak_spotter"] = [
         data_class.TextLine(text="Weak Spotter", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="Target the", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="weakest enemy", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     # Base stat mods
     output["rapid_loader"] = [
         data_class.TextLine(text="Rapid Loader", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="- 15% cooldown", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["critical_core"] = [
         data_class.TextLine(text="Critical Core", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="20% for critical", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="hits (x2 damage)", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["cryo_rounds"] = [
         data_class.TextLine(text="Cryo Rounds", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="Slows enemy", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="briefly", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["spyglass"] = [
         data_class.TextLine(text="Spyglass", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="+ 30% range", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="+ 10% cooldown", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["sharpshooter"] = [
         data_class.TextLine(text="Sharpshooter", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="+ 20% damage", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["explosive"] = [
         data_class.TextLine(text="Explosive", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="+ 30% blast radius", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
+        
     ]
 
     output["bounty_hunter"] = [
@@ -79,6 +91,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="30% chance to", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="gain 1$ when", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="enemy dies", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     # Special / funny mods
@@ -86,6 +99,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="Heavy Rounds", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="+ 60% damage", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="+ 25% cooldown", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["bloodthirst"] = [
@@ -94,6 +108,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="killed enemy", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="for permanent", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="+ 2% damage", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["finisher"] = [
@@ -101,6 +116,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="+ 40% damage", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="to enemies", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="< 11 health", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["slow_shot"] = [
@@ -108,6 +124,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="+ 40% damage", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="to slowed", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="enemies", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     output["roulette_round"] = [
@@ -115,6 +132,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="Damage varies", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="between 50%", color=(0, 0, 0), icon="", is_small=False),
         data_class.TextLine(text="and 200%", color=(0, 0, 0), icon="", is_small=False),
+        data_class.TextLine(text="Modification;for Towers", color=(0, 0, 0), icon="", is_small=True),
     ]
 
     return output
