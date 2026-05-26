@@ -99,6 +99,9 @@ class Mod_building:
                 self.build_mod = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False
+                found_tower._sell_value += self.data.mod_cost // 2
+                # Install (and handle) the mod into the tower (and remove incompatible mods if necessary)
+                self.Install_mod_into_tower(found_tower)
 
             elif pg.mouse.get_pressed()[2]:
                 self.build_mod = ""
@@ -114,7 +117,11 @@ class Mod_building:
 
 
                             
-
+    def Install_mod_into_tower(self, tower : Base_tower) -> None:
+        """
+        Installs the currently selected mod into the given tower, if possible. Also handles the removal of incompatible mods.
+        """
+        pass
 
 
 

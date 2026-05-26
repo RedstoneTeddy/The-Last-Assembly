@@ -64,7 +64,7 @@ class Data_class():
         self.interest_per_100 : int = 20
         self.interest_cap : int = 100
         self.zone_cost : int = 150
-        self.mod_cost : int = 150
+        self.mod_cost : int = 100
         
 
         # Menu variables
@@ -193,8 +193,18 @@ class PathPos(TypedDict):
     y : int
     jump_to : list[int]
 
+class TextLine(TypedDict):
+    """
+    Represents a line of text in the info-box
+    Consists of : text, color, icon, is_small
+    """
+    text : str
+    color : tuple[int, int, int]
+    icon : str
+    is_small : bool
+
 
 ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
-ModTypes = Literal[""]
+ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
 
             

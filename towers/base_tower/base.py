@@ -5,6 +5,7 @@ from typing import Literal
 
 import towers.base_tower.shooting
 import towers.base_tower.building
+import mods.info_data
 
 
 RARITIES = Literal["Common", "Uncommon", "Rare", ""]
@@ -56,7 +57,7 @@ class Base_tower:
         self._is_selected : bool = False
         self._selected_clicked : bool = False
         self._sell_value : int = 0
-        self._mods : dict[data_class.ModTypes, int] = []
+        self._mods : dict[data_class.ModTypes, int] = {}
 
         # Shot / Shooting variables
         self._cooldown_timer : int = 0
@@ -88,7 +89,7 @@ class Base_tower:
         elif self.rarity == "Rare":
             output.append(("Rare", (200,100,0), "", False))
 
-        output.append((str(self.damage), (0,0,0), self.damage_type.lower(), False))
+        output.append((str(round(self.damage, 1)), (0,0,0), self.damage_type.lower(), False))
         output.append((str(round(self.cooldown/60, 2))+" s", (0,0,0), "time", False))
         output.append((str(round(self.range/ 12, 1))+" tiles", (0,0,0), "range", False))
 
@@ -97,6 +98,24 @@ class Base_tower:
 
         output.extend(self.Get_specific_info_texts())
 
+        mod_info_lines : list[tuple[str, list[tuple[str, tuple[int, int, int], str, bool]]]] = mods.info_data.Get_mod_info_data()
+        mod_names : dict[str, str] = {}
+        for mod_name, mod_info in mod_info_lines:
+            mod_names[mod_name] = mod_info[0][0]
+
+
+        # Display mods
+        mod_lines : list[str] = []
+        for mod, level in self._mods.items():
+            if mod != "":
+                mod_lines.append(f"{level}x {mod_names[mod]}")
+        if len(mod_lines) > 0:
+            mod_lines.insert(0, "Modifications:")
+            if (len(mod_lines)) % 2 == 1:
+                mod_lines.append("")
+            for i in range(0, len(mod_lines), 2):
+                line : str = mod_lines[i] + ";" + mod_lines[i+1]
+                output.append((line, (0,0,0), "", True))
 
         return output
     
