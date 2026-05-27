@@ -18,6 +18,6 @@ class Zapper(base.Base_tower):
 
         self.range : int = 6*12
         self.damage : float = 3
-        self.cooldown : int = 60
+        self.cooldown : float = 60.0
         self.shot_speed : int = 2
         self.damage_type : base.DAMAGE_TYPES = "Electrical"

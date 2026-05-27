@@ -18,7 +18,7 @@ class Tesla_coil(base.Base_tower):
 
         self.range : int = 3*12
         self.damage : float = 1
-        self.cooldown : int = 20
+        self.cooldown : float = 20.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Electrical"
         self.blast_radius : int = 6

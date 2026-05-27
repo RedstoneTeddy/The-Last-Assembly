@@ -59,14 +59,9 @@ class Mod_building:
             
             found_tower : None | Base_tower = None
             if can_build == "True":
-                for check_pos in [(grid_pos[0], grid_pos[1]), (grid_pos[0]-1, grid_pos[1]), (grid_pos[0], grid_pos[1]-1), (grid_pos[0]-1, grid_pos[1]-1)]:
-                    if check_pos[0] < 5 or check_pos[1] < 0 or check_pos[1] >= len(self.data.world) or check_pos[0] >= len(self.data.world[0]) or self.data.world[check_pos[1]][check_pos[0]] != "":
-                        break
-                    for tower in self.data.towers:
-                        if tower._pos == check_pos:
-                            found_tower = tower
-                            break
-                    if found_tower is not None:
+                for tower in self.data.towers:
+                    if tower._pos == grid_pos:
+                        found_tower = tower
                         break
                 if found_tower is None:
                     can_build = "False"
@@ -95,13 +90,13 @@ class Mod_building:
 
             if pg.mouse.get_pressed()[0] and can_build != "False" and not self._clicked and found_tower is not None:
                 self._clicked = True
+                # Install (and handle) the mod into the tower (and remove incompatible mods if necessary)
+                self.Install_mod_into_tower(found_tower)
                 found_tower._mods[self.build_mod] = found_tower._mods.get(self.build_mod, 0) + 1
                 self.build_mod = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False
                 found_tower._sell_value += self.data.mod_cost // 2
-                # Install (and handle) the mod into the tower (and remove incompatible mods if necessary)
-                self.Install_mod_into_tower(found_tower)
 
             elif pg.mouse.get_pressed()[2]:
                 self.build_mod = ""
@@ -119,9 +114,63 @@ class Mod_building:
                             
     def Install_mod_into_tower(self, tower : Base_tower) -> None:
         """
-        Installs the currently selected mod into the given tower, if possible. Also handles the removal of incompatible mods.
+        Installs the currently selected mod into the given tower, 
+        if possible. Also handles the removal of incompatible mods.
         """
-        pass
+
+        # Targeting mods
+        if self.build_mod == "hunter_ai":
+            tower._shoot_decision = "strong"
+        elif self.build_mod == "first_one":
+            tower._shoot_decision = "first"
+        elif self.build_mod == "last_one":
+            tower._shoot_decision = "last"
+        elif self.build_mod == "close_sighted":
+            tower._shoot_decision = "close"
+        elif self.build_mod == "weak_spotter":
+            tower._shoot_decision = "weak"
+
+        # Base stat mods
+        elif self.build_mod == "rapid_loader":
+            tower.cooldown *= 0.85
+        elif self.build_mod == "critical_core":
+            if tower._crit_chance <= 0.1:
+                tower._crit_chance = 0.2
+            else:
+                before = 1 - tower._crit_chance
+                tower._crit_chance = 1 - (before * 0.8)
+        elif self.build_mod == "cryo_rounds":
+            pass # Cryo rounds is handled in towers.base_tower.shooting.Tick_shooting
+        elif self.build_mod == "spyglass":
+            tower.range = int(tower.range * 1.3)
+            tower.cooldown *= 1.1
+        elif self.build_mod == "sharpshooter":
+            tower.damage *= 1.2
+        elif self.build_mod == "explosive":
+            tower.blast_radius = int(tower.blast_radius * 1.3)
+        elif self.build_mod == "bounty_hunter":
+            if tower._bounty_chance <= 0.1:
+                tower._bounty_chance = 0.3
+            else:
+                before = 1 - tower._bounty_chance
+                tower._bounty_chance = 1 - (before * 0.7)
+
+        # Special / funny mods
+        elif self.build_mod == "heavy_rounds":
+            tower.damage *= 1.6
+            tower.cooldown *= 1.25
+        elif self.build_mod == "bloodthirst":
+            if tower._bloodthirst_chance <= 0.01:
+                tower._bloodthirst_chance = 0.02
+            else:
+                before = 1 - tower._bloodthirst_chance
+                tower._bloodthirst_chance = 1 - (before * 0.98)
+        elif self.build_mod == "finisher":
+            tower._extra_dmg_for_low_health *= 1.4
+        elif self.build_mod == "slow_shot":
+            tower._extra_dmg_for_slowed *= 1.4
+        elif self.build_mod == "roulette":
+            tower._roulette_multiplier *= 2
 
 
 

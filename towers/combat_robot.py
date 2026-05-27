@@ -18,7 +18,7 @@ class Combat_robot(base.Base_tower):
 
         self.range : int = 6*12
         self.damage : float = 2
-        self.cooldown : int = 35
+        self.cooldown : float = 35.0
         self.shot_speed : int = 2
         self.damage_type : base.DAMAGE_TYPES = "Physical"
 

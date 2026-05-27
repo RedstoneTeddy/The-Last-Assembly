@@ -19,7 +19,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.4.8"
+version : str = "0.5.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -30,7 +30,7 @@ sleep(1)
 
 # Load map
 import map_editor_helper_functions.save_load
-file_name : str = "roundabout"
+file_name : str = "classic"
 map_editor_helper_functions.save_load.Load_World(data, file_name)
 
 
@@ -64,8 +64,11 @@ zone_building : zones.building.Zone_building = zones.building.Zone_building(data
 import zones.handle
 zone_handler : zones.handle.Zone_handler = zones.handle.Zone_handler(data)
 
+import mods.building
+mod_building : mods.building.Mod_building = mods.building.Mod_building(data)
+
 import shop.main
-shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_building)
+shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_building, mod_building)
 
 
 
@@ -96,6 +99,7 @@ try:
                     zone_handler.Main()
 
             zone_building.Main()
+            mod_building.Main()
             tower_info_renderer.Draw()
 
             if data.start_next_wave:

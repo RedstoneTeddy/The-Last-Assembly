@@ -36,7 +36,7 @@ class Base_tower:
 
         self.range : int = 0                            # The towers range in pixels * tile_zoom
         self.damage : float = 0                           # Damage of the tower per hit
-        self.cooldown : int = 0                         # Cooldown between hits in ticks
+        self.cooldown : float = 0                         # Cooldown between hits in ticks
         self.shot_speed : int = 0                       # Max distance a shot can travel in one tick in tiles
         self.damage_type : DAMAGE_TYPES = "Physical"    # The towers damage type
         self.blast_radius : int = 0                     # The radius of the towers blast damage in pixels * tile_zoom, 0 means no blast damage
@@ -67,6 +67,15 @@ class Base_tower:
         self._shot_direction : Literal["Up", "Down", "Left", "Right"] = "Up" # Only used for rendering
         self._marked_for_removal : bool = False
 
+        # Modification variables
+        self._shoot_decision : str = "first"
+        self._crit_chance : float = 0.0
+        self._bounty_chance : float = 0.0
+        self._bloodthirst_chance : float = 0.0
+        self._extra_dmg_for_low_health : float = 1.0
+        self._extra_dmg_for_slowed : float = 1.0
+        self._roulette_multiplier : float = 1.0
+
 
 
     def Get_info_texts(self) -> list[data_class.TextLine]:
@@ -80,7 +89,7 @@ class Base_tower:
         """
         output : list[data_class.TextLine] = []
 
-        output.append(data_class.TextLine(text=self.name, color=(0,0,0), icon="", is_small=False))
+        output.append(data_class.TextLine(text=self.name, color=(0,0,100), icon="", is_small=False))
 
         if self.rarity == "Common":
             output.append(data_class.TextLine(text="Common", color=(0,0,0), icon="", is_small=False))
@@ -94,7 +103,7 @@ class Base_tower:
         output.append(data_class.TextLine(text=str(round(self.range/ 12, 1))+" tiles", color=(0,0,0), icon="range", is_small=False))
 
         if self.blast_radius > 0:
-            output.append(data_class.TextLine(text="Blast: " + str(round(self.blast_radius/ 12, 1))+" tiles", color=(0,0,0), icon="", is_small=False))
+            output.append(data_class.TextLine(text="Blast: " + str(round(self.blast_radius/ 12, 1))+" t", color=(0,0,0), icon="", is_small=False))
 
         output.extend(self.Get_specific_info_texts())
 

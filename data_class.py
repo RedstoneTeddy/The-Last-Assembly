@@ -50,7 +50,7 @@ class Data_class():
         self.sorted_path : list[tuple[int, int]] = [] 
 
         self.wave : int = 0
-        self.money : int = 350
+        self.money : int = 400
         self.health : int = 100
         self.fast_forward : bool = False
 
@@ -64,7 +64,7 @@ class Data_class():
         self.interest_per_100 : int = 20
         self.interest_cap : int = 100
         self.zone_cost : int = 150
-        self.mod_cost : int = 100
+        self.mod_cost : int = 80
         
 
         # Menu variables
@@ -72,14 +72,21 @@ class Data_class():
         self.in_shop : bool = True
         self.shop_minimized : bool = False
         self.start_next_wave : bool = False 
-        self.is_building : Literal["", "tower", "zone"] = ""
+        self.is_building : Literal["", "tower", "zone", "mod"] = ""
 
 
         # Random generators
-        self.path_random  : random.Random = random.Random(time())
-        self.wave_gen_random  : random.Random = random.Random(time())
-        self.shop_random  : random.Random = random.Random(time())
-        self.other_random : random.Random = random.Random(time())
+        self.path_random  : random.Random
+        self.wave_gen_random  : random.Random
+        self.shop_random  : random.Random
+        self.other_random : random.Random
+        self.Set_random_seed(int(time()))
+
+    def Set_random_seed(self, seed : int) -> None:
+        self.path_random = random.Random(seed)
+        self.wave_gen_random = random.Random(seed)
+        self.shop_random = random.Random(seed)
+        self.other_random = random.Random(seed)
 
     
     def Check_resize(self, force : bool = False) -> bool:
@@ -205,6 +212,6 @@ class TextLine(TypedDict):
 
 
 ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
-ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
+ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "explosive", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
 
             

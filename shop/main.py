@@ -8,6 +8,8 @@ from typing import Literal, get_args, cast
 import renderer.tower_info
 import zones.building
 import zones.info_data
+import mods.building
+import mods.info_data
 
 import towers.base_tower.base
 import towers.combat_robot
@@ -16,11 +18,11 @@ import towers.tesla_coil
 import towers.zapper
 
 class Shop:
-    def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info, zone_building : zones.building.Zone_building) -> None:
+    def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info, zone_building : zones.building.Zone_building, mod_building : mods.building.Mod_building) -> None:
         self.data : data_class.Data_class = data
         self.tower_info_renderer : renderer.tower_info.Tower_info = tower_info_renderer
         self.zone_building : zones.building.Zone_building = zone_building
-
+        self.mod_building : mods.building.Mod_building = mod_building
 
         # Shop variables
         self.shop_animation : int = 0
@@ -55,6 +57,10 @@ class Shop:
         self.__zone_names : list[str] = []
         self.__info_box : list[list[data_class.TextLine]] = []
         self.__Load_zone_data()
+
+        self.__mod_names : list[str] = []
+        self.__mod_info_box : list[list[data_class.TextLine]] = []
+        self.__Load_mod_data()
 
 
         # Images
@@ -190,22 +196,23 @@ class Shop:
 
         # Reroll button
         needed_money_for_reroll : int = 100 + self._rerolled_shop * 50
-        if (mouse_pos[0] >= reroll_rect[0] and mouse_pos[0] <= reroll_rect[0] + reroll_rect[2] and
-            mouse_pos[1] >= reroll_rect[1] and mouse_pos[1] <= reroll_rect[1] + reroll_rect[3] and
-            self.data.money >= needed_money_for_reroll and self.data.shop_minimized == False):
-            self.data.screen.blit(self.images["reroll_btn_selected"], (reroll_rect[0], reroll_rect[1]))
-            if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run reroll-function
-                self._button_pressed = True
-                self._rerolled_shop += 1
-                self.data.money -= needed_money_for_reroll
-                self.Generate_shop()
-        else:
-            self.data.screen.blit(self.images["reroll_btn"], (reroll_rect[0], reroll_rect[1]))
-        reroll_color : tuple[int, int, int] = (238, 168, 25) if self.data.money >= needed_money_for_reroll else (255, 100, 100)
-        if len(str(needed_money_for_reroll)) > 999:
-            self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 12*self.data.tile_zoom, reroll_rect[1] + 16*self.data.tile_zoom), self.data.tile_zoom * 4, reroll_color)
-        else:
-            self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 12*self.data.tile_zoom, reroll_rect[1] + 17*self.data.tile_zoom), self.data.tile_zoom * 6, reroll_color)
+        if not(self.data.wave == 0 and needed_money_for_reroll > 100):
+            if (mouse_pos[0] >= reroll_rect[0] and mouse_pos[0] <= reroll_rect[0] + reroll_rect[2] and
+                mouse_pos[1] >= reroll_rect[1] and mouse_pos[1] <= reroll_rect[1] + reroll_rect[3] and
+                self.data.money >= needed_money_for_reroll and self.data.shop_minimized == False):
+                self.data.screen.blit(self.images["reroll_btn_selected"], (reroll_rect[0], reroll_rect[1]))
+                if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run reroll-function
+                    self._button_pressed = True
+                    self._rerolled_shop += 1
+                    self.data.money -= needed_money_for_reroll
+                    self.Generate_shop()
+            else:
+                self.data.screen.blit(self.images["reroll_btn"], (reroll_rect[0], reroll_rect[1]))
+            reroll_color : tuple[int, int, int] = (238, 168, 25) if self.data.money >= needed_money_for_reroll else (255, 100, 100)
+            if len(str(needed_money_for_reroll)) > 999:
+                self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 12*self.data.tile_zoom, reroll_rect[1] + 16*self.data.tile_zoom), self.data.tile_zoom * 4, reroll_color)
+            else:
+                self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 12*self.data.tile_zoom, reroll_rect[1] + 17*self.data.tile_zoom), self.data.tile_zoom * 6, reroll_color)
 
         # Close button
         if (mouse_pos[0] >= close_rect[0] and mouse_pos[0] <= close_rect[0] + close_rect[2] and
@@ -286,6 +293,14 @@ class Shop:
                                 self.zone_building._clicked = True
                                 # shop_elements stores strings; cast to ZoneTypes for static type checkers
                                 self.zone_building.build_zone = cast(data_class.ZoneTypes, self.shop_elements[i])
+                                self.data.shop_minimized = True
+
+                        elif self.shop_element_types[i] == "mod":
+                            if self.shop_elements[i] in get_args(data_class.ModTypes):
+                                self.data.is_building = "mod"
+                                self.mod_building._clicked = True
+                                # shop_elements stores strings; cast to ModTypes for static type checkers
+                                self.mod_building.build_mod = cast(data_class.ModTypes, self.shop_elements[i])
                                 self.data.shop_minimized = True
 
 
@@ -416,6 +431,7 @@ class Shop:
         """
         logging.info("Generating new shop-elements")
         self.__Clear_shop()
+
         if self.data.wave == 0: # First wave
             for _ in range(5):
                 self.__Generate_tower("Common")
@@ -442,11 +458,13 @@ class Shop:
         """
         Generates a random shop element. Can be a tower, zone.
         """
-        element_type : int = self.data.shop_random.randint(0, 1)
+        element_type : int = self.data.shop_random.randint(0, 2) 
         if element_type == 0:
             self.__Generate_tower("")
         elif element_type == 1:
             self.__Generate_zone()
+        elif element_type == 2:
+            self.__Generate_mod()
         else:
             logging.error(f"Invalid shop element type generated: {element_type}")
 
@@ -474,6 +492,17 @@ class Shop:
         self.shop_element_types.append("zone")
         self.shop_element_costs.append(self.data.zone_cost)
         self.shop_element_descriptions.append(self.__info_box[random_index])
+        self.shop_element_bought.append(False)
+
+    def __Generate_mod(self) -> None:
+        """
+        Generates a random mod.
+        """
+        random_index : int = self.data.shop_random.randint(0, len(self.__mod_names)-1)
+        self.shop_elements.append(self.__mod_names[random_index])
+        self.shop_element_types.append("mod")
+        self.shop_element_costs.append(self.data.mod_cost)
+        self.shop_element_descriptions.append(self.__mod_info_box[random_index])
         self.shop_element_bought.append(False)
 
 
@@ -508,6 +537,16 @@ class Shop:
             self.__info_box.append(info_lines)
             self.original_images[zone_id] = pg.transform.scale(pg.image.load(f"assets/zones/{zone_id}.png").convert_alpha(), (32, 32))
 
+    def __Load_mod_data(self) -> None:
+        """
+        Loads the data for the mods into the shop_element_data dictionary
+        """
+        mod_info_data : dict[str, list[data_class.TextLine]] = mods.info_data.Get_mod_info_data()
+        for mod_id, info_lines in mod_info_data.items():
+            self.__mod_names.append(mod_id)
+            self.__mod_info_box.append(info_lines)
+            self.original_images[mod_id] = pg.transform.scale(pg.image.load(f"assets/mods/{mod_id}.png").convert_alpha(), (32, 32))
+
 
     def __Kill_building_process(self) -> None:
         """
@@ -520,6 +559,8 @@ class Shop:
                     self.data.money += tower.build_cost
         elif self.data.is_building == "zone":
             self.data.money += self.data.zone_cost
+        elif self.data.is_building == "mod":
+            self.data.money += self.data.mod_cost
 
         # Kill all building process
         self.data.is_building = ""
@@ -528,6 +569,7 @@ class Shop:
             if tower._is_placed == False:
                 tower._marked_for_removal = True
         self.zone_building.build_zone = ""
+        self.mod_building.build_mod = ""
 
 
 

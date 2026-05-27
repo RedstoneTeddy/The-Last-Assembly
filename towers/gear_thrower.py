@@ -18,6 +18,6 @@ class Gear_thrower(base.Base_tower):
 
         self.range : int = 5*12
         self.damage : float = 1
-        self.cooldown : int = 23
+        self.cooldown : float = 23.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Physical"

@@ -162,17 +162,24 @@ class Tower_info():
         else: # Normal / bigger text
             text_pos = (pos[0] + 3*self.data.tile_zoom, pos[1] + 4*self.data.tile_zoom)
 
-            if (len(text) > 12 and icon == "") or (len(text) > 10 and icon != ""):
-                test_size : int = 4 * self.data.tile_zoom
-                text_pos = (text_pos[0], text_pos[1] + 1*self.data.tile_zoom)
+            text_size : int = 6 * self.data.tile_zoom
+            len_text : int = len(text)
+            if icon != "":
+                len_text += 2
+
+            if len_text <= 12:
+                text_size = 6 * self.data.tile_zoom
+            elif len_text <= 17:
+                text_size = 5 * self.data.tile_zoom
             else:
-                test_size = 6 * self.data.tile_zoom
+                text_size = 4 * self.data.tile_zoom
+                text_pos = (text_pos[0], text_pos[1] + self.data.tile_zoom) 
 
             if icon != "":
                 self.data.screen.blit(self.images["icon_"+icon], (pos[0] + 3*self.data.tile_zoom, pos[1] + 1*self.data.tile_zoom))
                 text_pos = (text_pos[0] + 14*self.data.tile_zoom, text_pos[1])
 
-            self.data.Draw_text(text, text_pos, test_size, color)
+            self.data.Draw_text(text, text_pos, text_size, color)
 
 
 
