@@ -17,7 +17,7 @@ class Gear_thrower(base.Base_tower):
         self.build_cost : int = 100
 
         self.range : int = 5*12
-        self.damage : float = 1
+        self.damage : float = 2
         self.cooldown : float = 23.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Physical"

@@ -64,14 +64,20 @@ class Shop:
 
 
         # Images
-        self.original_images["close_btn"] = pg.image.load("assets/icons/buttons/close.png").convert_alpha()
-        self.original_images["close_btn_selected"] = pg.image.load("assets/icons/buttons/close_selected.png").convert_alpha()
-        self.original_images["minimize_btn"] = pg.image.load("assets/icons/buttons/minimize.png").convert_alpha()
-        self.original_images["minimize_btn_selected"] = pg.image.load("assets/icons/buttons/minimize_selected.png").convert_alpha()
-        self.original_images["reroll_btn"] = pg.image.load("assets/icons/buttons/reroll.png").convert_alpha()
-        self.original_images["reroll_btn_selected"] = pg.image.load("assets/icons/buttons/reroll_selected.png").convert_alpha()
-        self.original_images["outline"] = pg.image.load("assets/icons/buttons/outline.png").convert_alpha()
-        self.original_images["outline_selected"] = pg.image.load("assets/icons/buttons/outline_selected.png").convert_alpha()
+        self.original_images["close_btn"] = pg.image.load("assets/shop/buttons/close.png").convert_alpha()
+        self.original_images["close_btn_selected"] = pg.image.load("assets/shop/buttons/close_selected.png").convert_alpha()
+        self.original_images["minimize_btn"] = pg.image.load("assets/shop/buttons/minimize.png").convert_alpha()
+        self.original_images["minimize_btn_selected"] = pg.image.load("assets/shop/buttons/minimize_selected.png").convert_alpha()
+        self.original_images["reroll_btn"] = pg.image.load("assets/shop/buttons/reroll.png").convert_alpha()
+        self.original_images["reroll_btn_selected"] = pg.image.load("assets/shop/buttons/reroll_selected.png").convert_alpha()
+        self.original_images["outline"] = pg.image.load("assets/shop/buttons/outline.png").convert_alpha()
+        self.original_images["outline_selected"] = pg.image.load("assets/shop/buttons/outline_selected.png").convert_alpha()
+
+        # Pack images
+        for i in range(1,33):            
+            self.original_images[f"tower_pack_{i}"] = pg.image.load(f"assets/shop/tower_pack/tower_pack_{i}.png").convert_alpha()
+            self.original_images[f"zone_pack_{i}"] = pg.image.load(f"assets/shop/zone_pack/zone_pack_{i}.png").convert_alpha()
+            self.original_images[f"mod_pack_{i}"] = pg.image.load(f"assets/shop/mod_pack/mod_pack_{i}.png").convert_alpha()
 
         self.images : dict[str, pg.Surface] = {}
         self.current_zoom : int = -1
@@ -110,6 +116,10 @@ class Shop:
         self._selected_shop_element = -1
         self._rewards_total_cash = -1
         self._rewards_lines = []
+
+        for tower in self.data.towers:
+            tower._selected_clicked = True
+            tower._is_selected = False
     
 
     def Shop_main(self) -> None:
@@ -237,7 +247,7 @@ class Shop:
                 if self.shop_element_bought[i]:
                     continue
                 element_rect : tuple[int, int, int, int] = (
-                    shop_rect[0] + shop_rect[2]//2 - (16+40+40)*self.data.tile_zoom + i * 40 * self.data.tile_zoom,
+                    shop_rect[0] + shop_rect[2]//2 - (16+2*40)*self.data.tile_zoom + i * 40 * self.data.tile_zoom,
                     minimize_rect[1] + 60 * self.data.tile_zoom,
                     32 * self.data.tile_zoom,
                     32 * self.data.tile_zoom
@@ -438,9 +448,8 @@ class Shop:
         else:
             self.__Generate_tower("Common")
             self.__Generate_tower("")
-            self.__Generate_random_element()
-            self.__Generate_random_element()
-            self.__Generate_random_element()
+            for _ in range(3):
+                self.__Generate_random_element()
 
 
 
@@ -458,7 +467,10 @@ class Shop:
         """
         Generates a random shop element. Can be a tower, zone.
         """
-        element_type : int = self.data.shop_random.randint(0, 2) 
+        element_type : int = self.data.shop_random.choices(
+            population=[0, 1, 2],
+            weights = [0.2, 0.3, 0.4]
+        )[0]
         if element_type == 0:
             self.__Generate_tower("")
         elif element_type == 1:

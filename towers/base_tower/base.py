@@ -116,11 +116,14 @@ class Base_tower:
 
         # Display mods
         mod_lines : list[str] = []
+        mod_amount : int = 0
         for mod, level in self._mods.items():
             if mod != "":
-                mod_lines.append(f"{level}x {mod_names[mod]}")
-        if len(mod_lines) > 0:
-            mod_lines.insert(0, "Modifications:")
+                if level > 0:
+                    mod_lines.append(f"{level}x {mod_names[mod]}")
+                    mod_amount += level
+        if mod_amount > 0:
+            mod_lines.insert(0, f"Mods ({mod_amount} / {self.data.max_mods_per_tower}):")
             if (len(mod_lines)) % 2 == 1:
                 mod_lines.append("")
             for i in range(0, len(mod_lines), 2):

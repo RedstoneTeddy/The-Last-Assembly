@@ -40,7 +40,6 @@ class Tower_info():
 
 
 
-
     def Resize(self, force : bool = False) -> None:
         """
         Resize the original images based on the current tile zoom level. 
@@ -134,12 +133,20 @@ class Tower_info():
 
         # Show box
         box_pos : tuple[int, int] = (mouse_pos[0] + 6*self.data.tile_zoom + offset[0], mouse_pos[1] - 12*self.data.tile_zoom + offset[1])
+
+        # Draw box background
         self.data.screen.blit(self.images["top_60"], box_pos)
         box_pos = (box_pos[0], box_pos[1] + 2*self.data.tile_zoom)
+        second_box_pos : tuple[int, int] = box_pos
+        for line_i in range(len(texts)):
+            self.data.screen.blit(self.images["line_60"], second_box_pos)
+            second_box_pos = (second_box_pos[0], second_box_pos[1] + 14*self.data.tile_zoom)
+        self.data.screen.blit(self.images["bottom_60"], second_box_pos)
+        
+        # Draw text
         for line_i in range(len(texts)):
             self.__Draw_line(box_pos, texts[line_i]["text"], texts[line_i]["color"], texts[line_i]["icon"], texts[line_i]["is_small"])
             box_pos = (box_pos[0], box_pos[1] + 14*self.data.tile_zoom)
-        self.data.screen.blit(self.images["bottom_60"], box_pos)
 
         
 
@@ -150,7 +157,6 @@ class Tower_info():
         If icon != "", draw the icon with the name at the beginning
         If is_small is True, print two lines in the same segment. Separate them with a \\n or ; in text
         """
-        self.data.screen.blit(self.images["line_60"], pos)
         
         if is_small:
             lines : list[str] = text.replace("\\n", ";").split(";")
@@ -169,7 +175,7 @@ class Tower_info():
 
             if len_text <= 12:
                 text_size = 6 * self.data.tile_zoom
-            elif len_text <= 17:
+            elif len_text <= 16:
                 text_size = 5 * self.data.tile_zoom
             else:
                 text_size = 4 * self.data.tile_zoom

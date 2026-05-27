@@ -60,10 +60,11 @@ class Data_class():
 
 
         # Game parameters
+        self.max_mods_per_tower : int = 8
         self.money_per_round : int = 100
         self.interest_per_100 : int = 20
         self.interest_cap : int = 100
-        self.zone_cost : int = 150
+        self.zone_cost : int = 130
         self.mod_cost : int = 80
         
 

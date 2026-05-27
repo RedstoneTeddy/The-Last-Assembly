@@ -155,10 +155,10 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
         else:
             # Cryo_rounds
             if tower._mods.get("cryo_rounds", 0) > 0:
-                new_slowness : int = tower.data.enemies.slowness[tower._shoot_at_id] + 10*tower._mods["cryo_rounds"]
-                if new_slowness > 40:
-                    new_slowness = 40
-                if new_slowness > tower.data.enemies.slowness[tower._shoot_at_id]:
+                new_slowness : int = 7*tower._mods["cryo_rounds"]
+                if new_slowness > 20:
+                    new_slowness = 20
+                if new_slowness > tower.data.enemies.slowness.get(tower._shoot_at_id, 0):
                     tower.data.enemies.slowness[tower._shoot_at_id] = new_slowness
 
     if (left_damage) < 0.5:
@@ -178,12 +178,12 @@ def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
     # Combat-robot special effect
     if tower.internal_name == "combat_robot":
         if tower.data.enemies.health[tower._shoot_at_id] > 10:
-            damage_to_deal *= 1.2
+            damage_to_deal *= 1.3
 
     # Critical hit
     if tower._crit_chance > 0:
         if tower.data.path_random.random() < tower._crit_chance:
-            damage_to_deal *= 2
+            damage_to_deal *= 3
 
     # Roulette Round
     if tower._roulette_multiplier > 1:

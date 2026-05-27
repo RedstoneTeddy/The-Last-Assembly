@@ -55,7 +55,7 @@ class Zone_handler:
                             enemies.slowness[enemy_id] = 30
                         
                         case "tax":
-                            if self.data.path_random.random() < 0.2:
+                            if self.data.path_random.random() < 0.1:
                                 self.data.money += 1
 
 

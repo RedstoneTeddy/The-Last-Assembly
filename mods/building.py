@@ -70,6 +70,14 @@ class Mod_building:
                 if found_tower.internal_name in Get_useless_towers(self.build_mod):
                     can_build = "Partial"
 
+            if can_build != "False" and found_tower is not None:
+                # Count currently installed mods
+                mod_count : int = 0
+                for mod_name, count in found_tower._mods.items():
+                    mod_count += count
+                if mod_count >= self.data.max_mods_per_tower and self.build_mod not in ["first_one", "last_one", "close_sighted", "weak_spotter", "hunter_ai"]:
+                    can_build = "False"
+
             # Render build hologram
             draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(grid_pos)
             draw_pos = (draw_pos[0] - current_offset, draw_pos[1] - current_offset)
@@ -120,44 +128,53 @@ class Mod_building:
 
         # Targeting mods
         if self.build_mod == "hunter_ai":
+            self.__Reset_target_decision(tower)
             tower._shoot_decision = "strong"
+
         elif self.build_mod == "first_one":
+            self.__Reset_target_decision(tower)
             tower._shoot_decision = "first"
+
         elif self.build_mod == "last_one":
+            self.__Reset_target_decision(tower)
             tower._shoot_decision = "last"
+
         elif self.build_mod == "close_sighted":
+            self.__Reset_target_decision(tower)
             tower._shoot_decision = "close"
+
         elif self.build_mod == "weak_spotter":
+            self.__Reset_target_decision(tower)
             tower._shoot_decision = "weak"
 
         # Base stat mods
         elif self.build_mod == "rapid_loader":
-            tower.cooldown *= 0.85
+            tower.cooldown *= 0.8
         elif self.build_mod == "critical_core":
             if tower._crit_chance <= 0.1:
-                tower._crit_chance = 0.2
+                tower._crit_chance = 0.25
             else:
                 before = 1 - tower._crit_chance
-                tower._crit_chance = 1 - (before * 0.8)
+                tower._crit_chance = 1 - (before * 0.75)
         elif self.build_mod == "cryo_rounds":
             pass # Cryo rounds is handled in towers.base_tower.shooting.Tick_shooting
         elif self.build_mod == "spyglass":
-            tower.range = int(tower.range * 1.3)
-            tower.cooldown *= 1.1
+            tower.range = int(tower.range * 1.25)
+            tower.cooldown *= 1.05
         elif self.build_mod == "sharpshooter":
-            tower.damage *= 1.2
+            tower.damage *= 1.25
         elif self.build_mod == "explosive":
-            tower.blast_radius = int(tower.blast_radius * 1.3)
+            tower.blast_radius = int(tower.blast_radius * 1.35)
         elif self.build_mod == "bounty_hunter":
             if tower._bounty_chance <= 0.1:
-                tower._bounty_chance = 0.3
+                tower._bounty_chance = 0.25
             else:
                 before = 1 - tower._bounty_chance
-                tower._bounty_chance = 1 - (before * 0.7)
+                tower._bounty_chance = 1 - (before * 0.75)
 
         # Special / funny mods
         elif self.build_mod == "heavy_rounds":
-            tower.damage *= 1.6
+            tower.damage *= 1.7
             tower.cooldown *= 1.25
         elif self.build_mod == "bloodthirst":
             if tower._bloodthirst_chance <= 0.01:
@@ -166,11 +183,22 @@ class Mod_building:
                 before = 1 - tower._bloodthirst_chance
                 tower._bloodthirst_chance = 1 - (before * 0.98)
         elif self.build_mod == "finisher":
-            tower._extra_dmg_for_low_health *= 1.4
+            tower._extra_dmg_for_low_health *= 1.5
         elif self.build_mod == "slow_shot":
-            tower._extra_dmg_for_slowed *= 1.4
+            tower._extra_dmg_for_slowed *= 1.5
         elif self.build_mod == "roulette":
             tower._roulette_multiplier *= 2
 
+
+
+    def __Reset_target_decision(self, tower : Base_tower) -> None:
+        """
+        Resets the shoot decision of the given tower to its original state
+        """
+        tower._mods.pop("first_one", None)
+        tower._mods.pop("last_one", None)
+        tower._mods.pop("close_sighted", None)
+        tower._mods.pop("weak_spotter", None)
+        tower._mods.pop("hunter_ai", None)
 
 

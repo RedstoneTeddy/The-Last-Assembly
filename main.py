@@ -1,25 +1,41 @@
 import pygame as pg
 from data_class import Data_class
+from pathlib import Path
 
 pg.init()
 
 import logging
-logging.basicConfig(
-    filename="Log.txt",
-    filemode="w",
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s"
-)
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
+class PathFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        try:
+            source_path = Path(record.pathname).resolve().relative_to(PROJECT_ROOT)
+            record.source_file = str(source_path).replace("\\", "/")
+        except Exception:
+            record.source_file = record.filename
+        return super().format(record)
+
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler("Log.txt", mode="w")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(PathFormatter("%(asctime)s - %(levelname)s - %(source_file)s - %(message)s"))
+
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.ERROR)
-console_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(filename)s - %(message)s")
+console_formatter = PathFormatter("%(asctime)s - %(levelname)s - %(source_file)s - %(message)s")
 console_handler.setFormatter(console_formatter)
-logging.getLogger().addHandler(console_handler)
+
+root_logger.addHandler(file_handler)
+root_logger.addHandler(console_handler)
 logging.info("Logging started")
 
 
 
-version : str = "0.5.0"
+version : str = "0.5.1"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))

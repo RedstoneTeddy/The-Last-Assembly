@@ -61,7 +61,7 @@ def Get_zone_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["tax"] = [
         data_class.TextLine(text="Tax Zone", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 0.2$", color=default_color, icon="money", is_small=False),
+        data_class.TextLine(text="+ 0.1$", color=default_color, icon="money", is_small=False),
         data_class.TextLine(text="per enemy passed", color=default_color, icon="", is_small=False),
     ]
 
