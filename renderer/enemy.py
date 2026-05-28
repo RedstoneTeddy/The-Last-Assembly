@@ -13,6 +13,9 @@ class Enemy:
         self.original_images.update({
             f"enemy_{i}" : pg.image.load(f"assets/enemy/enemy{i}.png").convert_alpha() for i in range(1, 11)
         })
+        self.original_images["faraday"] = pg.image.load("assets/enemy/faraday.png").convert_alpha()
+        self.original_images["ironclad"] = pg.image.load("assets/enemy/ironclad.png").convert_alpha()
+
 
     def Resize(self) -> None:
         """
@@ -50,6 +53,12 @@ class Enemy:
 
     def __Get_image(self, enemy_id : int) -> str:
         health : int = self.data.enemies.health[enemy_id]
+
+        if self.data.enemies.special_type.get(enemy_id, "") == "faraday":
+            return "faraday"
+        if self.data.enemies.special_type.get(enemy_id, "") == "ironclad":
+            return "ironclad"
+
         if health > 40:
             return "enemy_10"
         elif health > 30:

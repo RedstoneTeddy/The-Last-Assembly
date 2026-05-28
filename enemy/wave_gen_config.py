@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+import data_class
+
+
+@dataclass(frozen=True)
+class EnemyTier:
+    """Defines a spawnable enemy tier for wave generation."""
+
+    health: int
+    special: data_class.SpecialEnemyTypes
+    unlock_wave: int
+    cost: int
+
 
 @dataclass
 class WaveGenConfig:
@@ -11,22 +23,24 @@ class WaveGenConfig:
     last_wave: int = 30
 
     # === Difficulty curve (budget growth) ===
-    budget_base: int = 50
-    budget_growth: float = 1.22
+    budget_base: int = 60
+    budget_growth: float = 1.25
     budget_growth_endless: float = 1.40
     budget_jitter_min: float = 0.9
     budget_jitter_max: float = 1.1
 
     # === Timing curve ===
     start_tick: int = 10
-    max_tick_base: int = 60 * 40
-    max_tick_growth_per_wave: int = 60 * 3
+    max_tick_base: int = 60 * 50
+    max_tick_growth_per_wave: int = int(60 * 2.8)
     speed_base: float = 2.0
-    speed_decay_per_wave: float = 0.08
+    speed_decay_per_wave: float = 0.09
     speed_floor: float = 0.5
 
     # === Style weights (how often each style appears) ===
     normal_weight: float = 12.0
+    anti_damage_weight_base: float = 0.3
+    anti_damage_weight_growth: float = 0.01
     rapid_weight_base: float = 6.0
     rapid_weight_decay: float = 0.15
     pulse_weight_base: float = 1.6
@@ -48,9 +62,15 @@ class WaveGenConfig:
     normal_spacing_range: tuple[int, int] = (10, 14)
     normal_rest_range: tuple[int, int] = (10, 25)
 
+    anti_damage_unlock_wave: int = 12
+    anti_damage_count_range: tuple[int, int] = (3, 6)
+    anti_damage_spacing_range: tuple[int, int] = (10, 14)
+    anti_damage_rest_range: tuple[int, int] = (10, 20)
+    anti_damage_specials: tuple[data_class.SpecialEnemyTypes, ...] = ("faraday", "ironclad")
+
     rapid_count_range: tuple[int, int] = (4, 8)
     rapid_spacing_range: tuple[int, int] = (6, 12)
-    rapid_rest_range: tuple[int, int] = (5, 15)
+    rapid_rest_range: tuple[int, int] = (5, 15)     
 
     pulse_burst_count_range: tuple[int, int] = (2, 4)
     pulse_burst_size_range: tuple[int, int] = (3, 6)
@@ -90,18 +110,19 @@ class WaveGenConfig:
     mixed_rest_range: tuple[int, int] = (10, 30)
 
     # === Enemy tiers and costs ===
-    health_values: list[int] = field(default_factory=lambda: [1, 2, 3, 4, 5, 10, 50])
-    unlock_enemy_wave: list[int] = field(default_factory=lambda: [1, 3, 4, 5, 6, 8, 14])
-    health_costs: dict[int, int] = field(
-        default_factory=lambda: {
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 4,
-            5: 5,
-            10: 8,
-            50: 35,
-        }
+    tier_unlock_ramp_waves: float = 3.0
+    enemy_tiers: list[EnemyTier] = field(
+        default_factory=lambda: [
+            EnemyTier(health=1, special="", unlock_wave=1, cost=1),
+            EnemyTier(health=2, special="", unlock_wave=3, cost=2),
+            EnemyTier(health=3, special="", unlock_wave=4, cost=3),
+            EnemyTier(health=4, special="", unlock_wave=5, cost=4),
+            EnemyTier(health=5, special="", unlock_wave=6, cost=5),
+            EnemyTier(health=10, special="", unlock_wave=8, cost=8),
+            EnemyTier(health=50, special="", unlock_wave=16, cost=45),
+            EnemyTier(health=20, special="faraday", unlock_wave=17, cost=30),
+            EnemyTier(health=20, special="ironclad", unlock_wave=17, cost=30)
+        ]
     )
 
     # === Health selection shaping ===
@@ -124,4 +145,6 @@ class WaveGenConfig:
     target_group_count: int = 10
     # Clamp how much group durations can be stretched or shrunk.
     group_duration_scale_min: float = 0.75
-    group_duration_scale_max: float = 2.5
+    group_duration_scale_max: float = 8.0
+    # Clamp how much group sizes can be scaled when duration scaling hits the cap.
+    group_count_scale_max: float = 4.0

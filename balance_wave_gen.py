@@ -1,5 +1,6 @@
 import pygame as pg
 from data_class import Data_class
+import data_class
 import renderer.tiles
 import random
 
@@ -42,7 +43,7 @@ for i in range(1, 31):
     temp_time : list[int] = []
 
     for _ in range(1000):
-        new_wave : dict[int, tuple[int, str]] = wave_gen_obj.Generate_wave(i)
+        new_wave : dict[int, tuple[int, data_class.SpecialEnemyTypes]] = wave_gen_obj.Generate_wave(i)
         total_health : int = 0
         max_time : int = 0
         for tick, (health, style) in new_wave.items():
@@ -86,5 +87,10 @@ plt.ylabel("Health/Time Ratio")
 plt.legend()
 plt.tight_layout()
 plt.show()
+
+# Print out all the data
+print("\nWave\tAvg Health\tAvg Time\tHealth/Time Ratio\tDerivative of Ratio")
+for i in range(30):
+    print(f"{i+1}\t{health_costs[i]}\t\t{time_costs[i]}\t\t{health_time_ratios[i]:.4f}\t\t\t{ht_ratio_derivative[i]:.4f}")
 
 

@@ -17,6 +17,8 @@ import towers.gear_thrower
 import towers.tesla_coil
 import towers.zapper
 
+import shop.packs
+
 class Shop:
     def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info, zone_building : zones.building.Zone_building, mod_building : mods.building.Mod_building) -> None:
         self.data : data_class.Data_class = data
@@ -37,11 +39,14 @@ class Shop:
 
         # The current shop elements.
         self.shop_elements : list[str] = []
-        self.shop_element_types : list[Literal["tower", "specialist", "research", "mod", "zone"]] = []
+        self.shop_element_types : list[Literal["tower", "specialist", "research", "mod", "zone", "pack"]] = []
         self.shop_element_costs : list[int] = []
         self.shop_element_descriptions : list[list[data_class.TextLine]] = []
         self.shop_element_bought : list[bool] = []
         self._selected_shop_element : int = -1  
+
+        self.pack_obj : shop.packs.Packs = shop.packs.Packs(data, tower_info_renderer, self)
+        
 
 
         # Load shop-element-data
@@ -62,6 +67,8 @@ class Shop:
         self.__mod_info_box : list[list[data_class.TextLine]] = []
         self.__Load_mod_data()
 
+        self.__Load_pack_data()
+
 
         # Images
         self.original_images["close_btn"] = pg.image.load("assets/shop/buttons/close.png").convert_alpha()
@@ -72,12 +79,7 @@ class Shop:
         self.original_images["reroll_btn_selected"] = pg.image.load("assets/shop/buttons/reroll_selected.png").convert_alpha()
         self.original_images["outline"] = pg.image.load("assets/shop/buttons/outline.png").convert_alpha()
         self.original_images["outline_selected"] = pg.image.load("assets/shop/buttons/outline_selected.png").convert_alpha()
-
-        # Pack images
-        for i in range(1,33):            
-            self.original_images[f"tower_pack_{i}"] = pg.image.load(f"assets/shop/tower_pack/tower_pack_{i}.png").convert_alpha()
-            self.original_images[f"zone_pack_{i}"] = pg.image.load(f"assets/shop/zone_pack/zone_pack_{i}.png").convert_alpha()
-            self.original_images[f"mod_pack_{i}"] = pg.image.load(f"assets/shop/mod_pack/mod_pack_{i}.png").convert_alpha()
+        self.original_images["gray_out"] = pg.image.load("assets/shop/buttons/gray_out.png").convert_alpha()
 
         self.images : dict[str, pg.Surface] = {}
         self.current_zoom : int = -1
@@ -193,47 +195,48 @@ class Shop:
         close_rect : tuple[int, int, int, int] = (minimize_rect[0] + (70)*self.data.tile_zoom, minimize_rect[1], self.images["close_btn"].get_width(), self.images["close_btn"].get_height())
         mouse_pos : tuple[int, int] = pg.mouse.get_pos()
 
-        # Minimize button
-        if (mouse_pos[0] >= minimize_rect[0] and mouse_pos[0] <= minimize_rect[0] + minimize_rect[2] and
-            mouse_pos[1] >= minimize_rect[1] and mouse_pos[1] <= minimize_rect[1] + minimize_rect[3] and
-            self.data.shop_minimized == False):
-            self.data.screen.blit(self.images["minimize_btn_selected"], (minimize_rect[0], minimize_rect[1]))
-            if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run minimize-function
-                self._button_pressed = True
-                self.data.shop_minimized = not self.data.shop_minimized
-        else:
-            self.data.screen.blit(self.images["minimize_btn"], (minimize_rect[0], minimize_rect[1]))
-
-        # Reroll button
-        needed_money_for_reroll : int = 100 + self._rerolled_shop * 50
-        if not(self.data.wave == 0 and needed_money_for_reroll > 100):
-            if (mouse_pos[0] >= reroll_rect[0] and mouse_pos[0] <= reroll_rect[0] + reroll_rect[2] and
-                mouse_pos[1] >= reroll_rect[1] and mouse_pos[1] <= reroll_rect[1] + reroll_rect[3] and
-                self.data.money >= needed_money_for_reroll and self.data.shop_minimized == False):
-                self.data.screen.blit(self.images["reroll_btn_selected"], (reroll_rect[0], reroll_rect[1]))
-                if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run reroll-function
+        if self.pack_obj.pack_type == "":
+            # Minimize button
+            if (mouse_pos[0] >= minimize_rect[0] and mouse_pos[0] <= minimize_rect[0] + minimize_rect[2] and
+                mouse_pos[1] >= minimize_rect[1] and mouse_pos[1] <= minimize_rect[1] + minimize_rect[3] and
+                self.data.shop_minimized == False):
+                self.data.screen.blit(self.images["minimize_btn_selected"], (minimize_rect[0], minimize_rect[1]))
+                if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run minimize-function
                     self._button_pressed = True
-                    self._rerolled_shop += 1
-                    self.data.money -= needed_money_for_reroll
-                    self.Generate_shop()
+                    self.data.shop_minimized = not self.data.shop_minimized
             else:
-                self.data.screen.blit(self.images["reroll_btn"], (reroll_rect[0], reroll_rect[1]))
-            reroll_color : tuple[int, int, int] = (238, 168, 25) if self.data.money >= needed_money_for_reroll else (255, 100, 100)
-            if len(str(needed_money_for_reroll)) > 999:
-                self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 12*self.data.tile_zoom, reroll_rect[1] + 16*self.data.tile_zoom), self.data.tile_zoom * 4, reroll_color)
-            else:
-                self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 12*self.data.tile_zoom, reroll_rect[1] + 17*self.data.tile_zoom), self.data.tile_zoom * 6, reroll_color)
+                self.data.screen.blit(self.images["minimize_btn"], (minimize_rect[0], minimize_rect[1]))
 
-        # Close button
-        if (mouse_pos[0] >= close_rect[0] and mouse_pos[0] <= close_rect[0] + close_rect[2] and
-            mouse_pos[1] >= close_rect[1] and mouse_pos[1] <= close_rect[1] + close_rect[3] and
-            self.data.shop_minimized == False):
-            self.data.screen.blit(self.images["close_btn_selected"], (close_rect[0], close_rect[1]))
-            if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run close-function
-                self._button_pressed = True
-                self.Close_shop()
-        else:
-            self.data.screen.blit(self.images["close_btn"], (close_rect[0], close_rect[1]))
+            # Reroll button
+            needed_money_for_reroll : int = 100 + self._rerolled_shop * 50
+            if not(self.data.wave == 0 and needed_money_for_reroll > 100):
+                if (mouse_pos[0] >= reroll_rect[0] and mouse_pos[0] <= reroll_rect[0] + reroll_rect[2] and
+                    mouse_pos[1] >= reroll_rect[1] and mouse_pos[1] <= reroll_rect[1] + reroll_rect[3] and
+                    self.data.money >= needed_money_for_reroll and self.data.shop_minimized == False):
+                    self.data.screen.blit(self.images["reroll_btn_selected"], (reroll_rect[0], reroll_rect[1]))
+                    if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run reroll-function
+                        self._button_pressed = True
+                        self._rerolled_shop += 1
+                        self.data.money -= needed_money_for_reroll
+                        self.Generate_shop()
+                else:
+                    self.data.screen.blit(self.images["reroll_btn"], (reroll_rect[0], reroll_rect[1]))
+                reroll_color : tuple[int, int, int] = (238, 168, 25) if self.data.money >= needed_money_for_reroll else (255, 100, 100)
+                if len(str(needed_money_for_reroll)) > 999:
+                    self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 13*self.data.tile_zoom, reroll_rect[1] + 17*self.data.tile_zoom), self.data.tile_zoom * 4, reroll_color)
+                else:
+                    self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 13*self.data.tile_zoom, reroll_rect[1] + 18*self.data.tile_zoom), self.data.tile_zoom * 6, reroll_color)
+
+            # Close button
+            if (mouse_pos[0] >= close_rect[0] and mouse_pos[0] <= close_rect[0] + close_rect[2] and
+                mouse_pos[1] >= close_rect[1] and mouse_pos[1] <= close_rect[1] + close_rect[3] and
+                self.data.shop_minimized == False):
+                self.data.screen.blit(self.images["close_btn_selected"], (close_rect[0], close_rect[1]))
+                if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run close-function
+                    self._button_pressed = True
+                    self.Close_shop()
+            else:
+                self.data.screen.blit(self.images["close_btn"], (close_rect[0], close_rect[1]))
 
 
         # Display shop elements
@@ -243,7 +246,7 @@ class Shop:
 
             info_text : list[data_class.TextLine] = []
             
-            for i in range(len(self.shop_elements)):
+            for i in range(5):
                 if self.shop_element_bought[i]:
                     continue
                 element_rect : tuple[int, int, int, int] = (
@@ -252,66 +255,18 @@ class Shop:
                     32 * self.data.tile_zoom,
                     32 * self.data.tile_zoom
                 )
+
+                if self.pack_obj.pack_type != "":
+                    element_rect = (element_rect[0], 
+                                    element_rect[1] - int(58 * self.data.tile_zoom * min((self.pack_obj.animation_progress / 40), 1.0)), 
+                                    element_rect[2], element_rect[3])
+
                 element_is_hovered : bool = (mouse_pos[0] >= element_rect[0] and mouse_pos[0] <= element_rect[0] + element_rect[2] and
                                             mouse_pos[1] >= element_rect[1] and mouse_pos[1] <= element_rect[1] + element_rect[3] and 
-                                            self.data.shop_minimized == False)
-                if element_is_hovered:
-                    self.data.screen.blit(self.images["outline_selected"], (element_rect[0], element_rect[1]))
-                else:
-                    self.data.screen.blit(self.images["outline"], (element_rect[0], element_rect[1]))
-
-                element_image : pg.Surface = self.images[self.shop_elements[i]]
-                self.data.screen.blit(element_image, (element_rect[0], element_rect[1]))
-                
-                
-                # If hovered, show info box and buy option
-                if element_is_hovered:
-                    cost : int = self.shop_element_costs[i]
-                    info_text = cast(list[data_class.TextLine], deepcopy(self.shop_element_descriptions[i]))
-                    if cost > self.data.money:
-                        info_text.insert(0, data_class.TextLine(text=f"{cost}", color=(255, 100, 100), icon="money", is_small=False))
-                    else:
-                        info_text.insert(0, data_class.TextLine(text=f"{cost}", color=(238, 168, 25), icon="money", is_small=False))
-                    
-                    # Check if user clicks on the element
-                    if pg.mouse.get_pressed()[0] and not self._button_pressed and not self.data.shop_minimized and self.data.money >= cost:
-                        self._button_pressed = True
-                        self.shop_element_bought[i] = True
-                        self.data.money -= cost
-                        
-                        # Build tower if element is a tower
-                        if self.shop_element_types[i] == "tower":
-                            tower_class : type | None = None
-                            for j in range(len(self.__tower_names)):
-                                if self.__tower_names[j] == self.shop_elements[i]:
-                                    tower_class = self.__tower_classes[j]
-                                    break
-                            if tower_class is None:
-                                logging.error(f"Could not find tower class for shop element {self.shop_elements[i]}")
-                            else:
-                                self.data.is_building = "tower"
-                                new_tower : towers.base_tower.base.Base_tower = tower_class(self.data)
-                                new_tower._is_placed = False
-                                new_tower._selected_clicked = True
-                                self.data.towers.append(new_tower)
-                                self.data.shop_minimized = True
-
-                        # Build zone if element is a zone
-                        elif self.shop_element_types[i] == "zone":
-                            if self.shop_elements[i] in get_args(data_class.ZoneTypes):
-                                self.data.is_building = "zone"
-                                self.zone_building._clicked = True
-                                # shop_elements stores strings; cast to ZoneTypes for static type checkers
-                                self.zone_building.build_zone = cast(data_class.ZoneTypes, self.shop_elements[i])
-                                self.data.shop_minimized = True
-
-                        elif self.shop_element_types[i] == "mod":
-                            if self.shop_elements[i] in get_args(data_class.ModTypes):
-                                self.data.is_building = "mod"
-                                self.mod_building._clicked = True
-                                # shop_elements stores strings; cast to ModTypes for static type checkers
-                                self.mod_building.build_mod = cast(data_class.ModTypes, self.shop_elements[i])
-                                self.data.shop_minimized = True
+                                            self.data.shop_minimized == False and self.pack_obj.pack_type == "")
+                new_info_text = self._Shop_element(i, element_rect, element_is_hovered)
+                if new_info_text != []:
+                    info_text = new_info_text
 
 
 
@@ -319,7 +274,8 @@ class Shop:
             if info_text != []:
                 self.tower_info_renderer.Draw_box_at_mouse(info_text)
 
-
+            # Show pack
+            self.pack_obj.Main()
                     
                 
 
@@ -335,6 +291,91 @@ class Shop:
                 if pg.mouse.get_pressed()[0] and not self._button_pressed:
                     self._button_pressed = True
                     self.data.shop_minimized = False
+
+    def _Shop_element(self, i, element_rect, element_is_hovered) -> list[data_class.TextLine]:
+        info_text : list[data_class.TextLine] = []
+        if element_is_hovered:
+            self.data.screen.blit(self.images["outline_selected"], (element_rect[0], element_rect[1]))
+        else:
+            self.data.screen.blit(self.images["outline"], (element_rect[0], element_rect[1]))
+
+        if (i >= len(self.shop_elements)):
+            logging.warning(f"Trying to display shop element with index {i} but only {len(self.shop_elements)} elements exist.")
+            return info_text
+
+        element_image : pg.Surface = self.images[self.shop_elements[i]]
+        self.data.screen.blit(element_image, (element_rect[0], element_rect[1]))
+
+        if self.pack_obj.pack_type != "" and i < 5:
+            self.data.screen.blit(self.images["gray_out"], (element_rect[0], element_rect[1]))
+                 
+                # If hovered, show info box and buy option
+        if element_is_hovered:
+            element_bought : bool = False
+            cost : int = self.shop_element_costs[i]
+            info_text = cast(list[data_class.TextLine], deepcopy(self.shop_element_descriptions[i]))
+            if cost > self.data.money:
+                info_text.insert(0, data_class.TextLine(text=f"{cost}", color=(255, 100, 100), icon="money", is_small=False))
+            else:
+                info_text.insert(0, data_class.TextLine(text=f"{cost}", color=(238, 168, 25), icon="money", is_small=False))
+                    
+                    # Check if user clicks on the element
+            if pg.mouse.get_pressed()[0] and not self._button_pressed and not self.data.shop_minimized and self.data.money >= cost:
+                self._button_pressed = True
+                self.shop_element_bought[i] = True
+                self.data.money -= cost
+                        
+                        # Build tower if element is a tower
+                if self.shop_element_types[i] == "tower":
+                    tower_class : type | None = None
+                    for j in range(len(self.__tower_names)):
+                        if self.__tower_names[j] == self.shop_elements[i]:
+                            tower_class = self.__tower_classes[j]
+                            break
+                    if tower_class is None:
+                        logging.error(f"Could not find tower class for shop element {self.shop_elements[i]}")
+                    else:
+                        self.data.is_building = "tower"
+                        new_tower : towers.base_tower.base.Base_tower = tower_class(self.data)
+                        new_tower._is_placed = False
+                        new_tower._selected_clicked = True
+                        self.data.towers.append(new_tower)
+                        element_bought = True
+
+                        # Build zone if element is a zone
+                elif self.shop_element_types[i] == "zone":
+                    if self.shop_elements[i] in get_args(data_class.ZoneTypes):
+                        self.data.is_building = "zone"
+                        self.zone_building._clicked = True
+                                # shop_elements stores strings; cast to ZoneTypes for static type checkers
+                        self.zone_building.build_zone = cast(data_class.ZoneTypes, self.shop_elements[i])
+                        element_bought = True
+
+                elif self.shop_element_types[i] == "mod":
+                    if self.shop_elements[i] in get_args(data_class.ModTypes):
+                        self.data.is_building = "mod"
+                        self.mod_building._clicked = True
+                                # shop_elements stores strings; cast to ModTypes for static type checkers
+                        self.mod_building.build_mod = cast(data_class.ModTypes, self.shop_elements[i])
+                        element_bought = True
+
+                elif self.shop_element_types[i] == "pack":
+                    pack_type : str = self.shop_elements[i].split("_")[0]
+                    if self.shop_elements[i][-1] == "2":
+                        pack_type += "2"
+                    if pack_type in get_args(shop.packs.PackType):
+                        self.pack_obj.pack_type = cast(shop.packs.PackType, pack_type)
+                        self.pack_obj.start_position = (element_rect[0], element_rect[1])
+                        self.pack_obj.animation_progress = 0
+                        # element_bought = True
+                
+                if element_bought:
+                    self.pack_obj._Clear_pack_shop_elements()
+                    self.pack_obj.start_position = (-1, -1)
+                    self.pack_obj.animation_progress = 0
+                    self.pack_obj.pack_type = ""
+                    self.data.shop_minimized = True
+        return info_text
 
 
 
@@ -444,11 +485,11 @@ class Shop:
 
         if self.data.wave == 0: # First wave
             for _ in range(5):
-                self.__Generate_tower("Common")
+                self._Generate_tower("Common")
         else:
-            self.__Generate_tower("Common")
-            self.__Generate_tower("")
-            for _ in range(3):
+            self._Generate_tower("Common")
+            # self._Generate_tower("")
+            for _ in range(4):
                 self.__Generate_random_element()
 
 
@@ -468,20 +509,82 @@ class Shop:
         Generates a random shop element. Can be a tower, zone.
         """
         element_type : int = self.data.shop_random.choices(
-            population=[0, 1, 2],
-            weights = [0.2, 0.3, 0.4]
+            population=[0, 1, 2, 3],
+            weights = [0.2, 0.1, 0.2, 0.5]
         )[0]
         if element_type == 0:
-            self.__Generate_tower("")
+            self._Generate_tower("")
         elif element_type == 1:
-            self.__Generate_zone()
+            self._Generate_zone()
         elif element_type == 2:
-            self.__Generate_mod()
+            self._Generate_mod()
+        elif element_type == 3:
+            self._Generate_pack()
         else:
             logging.error(f"Invalid shop element type generated: {element_type}")
 
+    def _Generate_pack(self) -> None:
+        """
+        Generates a random pack.
+        """
+        pack_type : int = self.data.shop_random.choices(
+            population=[0, 1, 2, 3, 4, 5],
+            weights = [0.2, 0.1, 0.3, 0.15, 0.5, 0.25]
+        )[0]
+        if pack_type == 0:
+            self.shop_elements.append("tower_pack")
+            self.shop_element_costs.append(int(120))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Tower Box", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 2 towers", color=(0, 0, 0), icon="" , is_small=False)
+            ])
+        elif pack_type == 1:
+            self.shop_elements.append("tower_pack2")
+            self.shop_element_costs.append(int(120*1.5))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Tower Box 2", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 4 towers", color=(0, 0, 0), icon="" , is_small=False)
+            ])
+        elif pack_type == 2:
+            self.shop_elements.append("zone_pack")
+            self.shop_element_costs.append(int(self.data.zone_cost))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Zone Box", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 2 zones", color=(0, 0, 0), icon="" , is_small=False)
+            ])
+        elif pack_type == 3:
+            self.shop_elements.append("zone_pack2")
+            self.shop_element_costs.append(int(self.data.zone_cost * 1.5))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Zone Box 2", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 4 zones", color=(0, 0, 0), icon="" , is_small=False)
+            ])
+        elif pack_type == 4:
+            self.shop_elements.append("mod_pack")
+            self.shop_element_costs.append(int(self.data.mod_cost))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Mod Box", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 3 mods", color=(0, 0, 0), icon="" , is_small=False)
+            ])
+        elif pack_type == 5:
+            self.shop_elements.append("mod_pack2")
+            self.shop_element_costs.append(int(self.data.mod_cost * 1.5))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Mod Box 2", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 5 mods", color=(0, 0, 0), icon="" , is_small=False)
+            ])
+        self.shop_element_types.append("pack")
+        self.shop_element_bought.append(False)
 
-    def __Generate_tower(self, rarity : towers.base_tower.base.RARITIES = "") -> None:
+
+
+    def _Generate_tower(self, rarity : towers.base_tower.base.RARITIES = "") -> None:
         """
         Generates a random tower of the given rarity. If rarity is empty, it will be randomized.
         """
@@ -495,7 +598,7 @@ class Shop:
                 self.shop_element_bought.append(False)
                 break
 
-    def __Generate_zone(self) -> None:
+    def _Generate_zone(self) -> None:
         """
         Generates a random zone.
         """
@@ -506,7 +609,7 @@ class Shop:
         self.shop_element_descriptions.append(self.__info_box[random_index])
         self.shop_element_bought.append(False)
 
-    def __Generate_mod(self) -> None:
+    def _Generate_mod(self) -> None:
         """
         Generates a random mod.
         """
@@ -558,6 +661,19 @@ class Shop:
             self.__mod_names.append(mod_id)
             self.__mod_info_box.append(info_lines)
             self.original_images[mod_id] = pg.transform.scale(pg.image.load(f"assets/mods/{mod_id}.png").convert_alpha(), (32, 32))
+
+
+    def __Load_pack_data(self) -> None:
+        """
+        Loads the data for the packs into the shop_element_data dictionary
+        """
+        self.original_images["tower_pack"] = pg.image.load("assets/shop/tower_pack/tower_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["tower_pack2"] = pg.image.load("assets/shop/tower_pack/tower_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["mod_pack"] = pg.image.load("assets/shop/mod_pack/mod_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["mod_pack2"] = pg.image.load("assets/shop/mod_pack/mod_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["zone_pack"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["zone_pack2"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+
 
 
     def __Kill_building_process(self) -> None:

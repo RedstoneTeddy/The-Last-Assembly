@@ -68,6 +68,7 @@ class Top_handler:
             f"FPS: {round(self.data.clock.get_fps(), 2)}",
             f"Frame Time: {round(sum(self.mspf_list) / len(self.mspf_list) if len(self.mspf_list) > 0 else 0, 2)} ms",
             f"Wave Gen Time: {round(self.data._last_wave_gen_time, 2)} ms",
+            f"Zoom: {self.data.tile_zoom}x",
             "F1 - FPS & Info",
             "F2 - Sorted World", 
             "F3 - No Clock",

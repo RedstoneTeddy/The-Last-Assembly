@@ -47,6 +47,8 @@ class Zone_handler:
                                 self.data.money += 10
 
                         case "shock":
+                            if enemies.special_type.get(enemy_id, "") == "faraday":
+                                continue
                             enemies.health[enemy_id] -= 1
                             if enemies.health[enemy_id] <= 0:
                                 enemies.Remove_enemy(enemy_id)

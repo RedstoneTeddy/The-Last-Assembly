@@ -3,11 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 import random
 
-from enemy.wave_gen_config import WaveGenConfig
+from enemy.wave_gen_config import EnemyTier, WaveGenConfig
 from enemy.wave_gen_selection import WaveGenSelector
 
 
-WaveSpawnMap = dict[int, tuple[int, str]]
+import data_class
+
+WaveSpawnMap = dict[int, tuple[int, data_class.SpecialEnemyTypes]]
 
 
 @dataclass
@@ -25,7 +27,7 @@ class WaveGenContext:
     group_time_target: float
 
 
-def add_spawn(wave: WaveSpawnMap, tick: int, health: int, special: str) -> int:
+def add_spawn(wave: WaveSpawnMap, tick: int, health: int, special: data_class.SpecialEnemyTypes) -> int:
     """Insert a spawn at the next free tick and return the final tick."""
     while tick in wave:
         tick += 1
@@ -65,9 +67,9 @@ def get_budget_pressure(ctx: WaveGenContext, tick: int, budget: int) -> float:
 def adjust_band_offsets(base_offsets: tuple[int, int], pressure: float) -> tuple[int, int]:
     """Shift tier bands upward when pressure is high."""
     shift = 0
-    if pressure > 1.25:
+    if pressure > 1.6:
         shift = 1
-    if pressure > 2.0:
+    if pressure > 2.6:
         shift = 2
     return (base_offsets[0] + shift, base_offsets[1] + shift)
 
@@ -91,6 +93,21 @@ def get_duration_scale(ctx: WaveGenContext, base_duration: float) -> float:
     )
 
 
+def scale_group_count(ctx: WaveGenContext, count: int, base_duration: float) -> int:
+    """Increase group size when duration scaling hits the cap."""
+    if count <= 0:
+        return count
+    if base_duration <= 0 or ctx.group_time_target <= 0:
+        return count
+    desired_scale = ctx.group_time_target / base_duration
+    if desired_scale <= ctx.config.group_duration_scale_max:
+        return count
+    extra_scale = min(ctx.config.group_count_scale_max, desired_scale / ctx.config.group_duration_scale_max)
+    if extra_scale <= 1.0:
+        return count
+    return max(1, int(round(count * extra_scale)))
+
+
 def generate_normal(
     ctx: WaveGenContext,
     wave: WaveSpawnMap,
@@ -107,6 +124,10 @@ def generate_normal(
     spacing = get_scaled_spacing(ctx, tick, budget, spacing)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.normal_rest_range)
     base_duration = count * spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     spacing = max(1, int(spacing * duration_scale))
     rest = int(rest_base * duration_scale)
@@ -115,7 +136,7 @@ def generate_normal(
     segment_budget = ctx.selector.get_segment_budget(ctx.budget_start, budget)
     segment_budget = scale_segment_budget(segment_budget, pressure)
     band_offsets = adjust_band_offsets(cfg.band_normal_offsets, pressure)
-    health = ctx.selector.pick_health_for_segment(
+    tier = ctx.selector.pick_tier_for_segment(
         ctx.wave_number,
         budget,
         ctx.wave_progress,
@@ -124,13 +145,73 @@ def generate_normal(
         bias_type="normal",
         band_offsets=band_offsets,
     )
-    cost = cfg.health_costs[health]
-    segments.append(f"normal(count={count},spacing={spacing},health={health})")
-
+    cost = tier.cost
+    segments.append(f"normal(count={count},spacing={spacing},health={tier.health})")
+    
     for _ in range(count):
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
+        budget -= cost
+        tick += spacing
+    tick += rest
+
+    return budget, tick
+
+def generate_anti_damage(
+    ctx: WaveGenContext,
+    wave: WaveSpawnMap,
+    budget: int,
+    tick: int,
+    segments: list[str],
+) -> tuple[int, int]:
+    """Generate a steady group of identical enemies with a special anti-damage type."""
+    cfg = ctx.config
+    rng = ctx.rng
+    pressure = get_budget_pressure(ctx, tick, budget)
+    count = rng.randint(cfg.anti_damage_count_range[0], cfg.anti_damage_count_range[1])
+    spacing = max(4, int(rng.randint(cfg.anti_damage_spacing_range[0], cfg.anti_damage_spacing_range[1]) * ctx.speed_factor))
+    spacing = get_scaled_spacing(ctx, tick, budget, spacing)
+    rest_base = get_scaled_rest(ctx, tick, budget, cfg.anti_damage_rest_range)
+    base_duration = count * spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing + rest_base
+    duration_scale = get_duration_scale(ctx, base_duration)
+    spacing = max(1, int(spacing * duration_scale))
+    rest = int(rest_base * duration_scale)
+
+    # Choose a tier that fits the segment budget while following wave bias.
+    segment_budget = ctx.selector.get_segment_budget(ctx.budget_start, budget)
+    segment_budget = scale_segment_budget(segment_budget, pressure)
+    special = rng.choice(cfg.anti_damage_specials)
+    special_tiers = [tier for tier in cfg.enemy_tiers if tier.special == special]
+    if not special_tiers:
+        segments.append("anti_damage(empty)")
+        tick += rest
+        return budget, tick
+
+    candidates = [tier for tier in special_tiers if tier.cost <= budget]
+    if not candidates:
+        candidates = special_tiers
+
+    exponent = ctx.selector.get_bias_exponent(ctx.wave_progress, "normal")
+    target_cost = segment_budget / max(1, count)
+    weights: list[float] = []
+    for candidate in candidates:
+        relative_delta = abs(candidate.cost - target_cost) / max(1.0, target_cost)
+        closeness = 1.0 / (1.0 + relative_delta * relative_delta)
+        bias_weight = candidate.health ** exponent
+        weights.append(max(0.0001, bias_weight * closeness))
+    tier = rng.choices(candidates, weights=weights, k=1)[0]
+    cost = tier.cost
+    segments.append(f"anti_damage(count={count},spacing={spacing},health={tier.health},special={tier.special})")
+    
+    for _ in range(count):
+        if cost > budget:
+            break
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
     tick += rest
@@ -155,23 +236,27 @@ def generate_rapid(
     spacing = get_scaled_spacing(ctx, tick, budget, spacing)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.rapid_rest_range)
     base_duration = count * spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     spacing = max(1, int(spacing * duration_scale))
     rest = int(rest_base * duration_scale)
     segments.append(f"rapid(count={count},spacing={spacing})")
 
     for _ in range(count):
-        health = ctx.selector.pick_health(
+        tier = ctx.selector.pick_tier(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             bias_type="burst",
             band_offsets=band_offsets,
         )
-        cost = cfg.health_costs[health]
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
     tick += rest
@@ -197,6 +282,10 @@ def generate_pulse(
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.pulse_rest_range)
     avg_burst_size = (cfg.pulse_burst_size_range[0] + cfg.pulse_burst_size_range[1]) / 2
     base_duration = burst_count * (avg_burst_size * burst_spacing + rest_base)
+    scaled_burst_count = scale_group_count(ctx, burst_count, base_duration)
+    if scaled_burst_count != burst_count:
+        burst_count = scaled_burst_count
+        base_duration = burst_count * (avg_burst_size * burst_spacing + rest_base)
     duration_scale = get_duration_scale(ctx, base_duration)
     burst_spacing = max(1, int(burst_spacing * duration_scale))
     segments.append(f"pulse(bursts={burst_count},spacing={burst_spacing})")
@@ -204,17 +293,17 @@ def generate_pulse(
     for _ in range(burst_count):
         burst_size = rng.randint(cfg.pulse_burst_size_range[0], cfg.pulse_burst_size_range[1])
         for _ in range(burst_size):
-            health = ctx.selector.pick_health(
+            tier = ctx.selector.pick_tier(
                 ctx.wave_number,
                 budget,
                 ctx.wave_progress,
                 bias_type="burst",
                 band_offsets=band_offsets,
             )
-            cost = cfg.health_costs[health]
+            cost = tier.cost
             if cost > budget:
                 break
-            tick = add_spawn(wave, tick, health, "")
+            tick = add_spawn(wave, tick, tier.health, tier.special)
             budget -= cost
             tick += burst_spacing
         tick += int(get_scaled_rest(ctx, tick, budget, cfg.pulse_rest_range) * duration_scale)
@@ -239,6 +328,10 @@ def generate_ramp_up(
     spacing = get_scaled_spacing(ctx, tick, budget, spacing)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.ramp_rest_range)
     base_duration = count * spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     spacing = max(1, int(spacing * duration_scale))
     rest = int(rest_base * duration_scale)
@@ -246,18 +339,18 @@ def generate_ramp_up(
 
     for i in range(count):
         progress = i / max(1, count - 1)
-        allowed = ctx.selector.get_allowed_healths(
+        allowed = ctx.selector.get_allowed_tiers(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             band_offsets=band_offsets,
         )
         index = int(progress * (len(allowed) - 1))
-        health = allowed[index]
-        cost = cfg.health_costs[health]
+        tier = allowed[index]
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
     tick += rest
@@ -282,6 +375,10 @@ def generate_ramp_down(
     spacing = get_scaled_spacing(ctx, tick, budget, spacing)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.ramp_rest_range)
     base_duration = count * spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     spacing = max(1, int(spacing * duration_scale))
     rest = int(rest_base * duration_scale)
@@ -289,18 +386,18 @@ def generate_ramp_down(
 
     for i in range(count):
         progress = i / max(1, count - 1)
-        allowed = ctx.selector.get_allowed_healths(
+        allowed = ctx.selector.get_allowed_tiers(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             band_offsets=band_offsets,
         )
         index = int((1.0 - progress) * (len(allowed) - 1))
-        health = allowed[index]
-        cost = cfg.health_costs[health]
+        tier = allowed[index]
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
     tick += rest
@@ -325,23 +422,27 @@ def generate_heavy(
     spacing = get_scaled_spacing(ctx, tick, budget, spacing)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.heavy_rest_range)
     base_duration = count * spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     spacing = max(1, int(spacing * duration_scale))
     rest = int(rest_base * duration_scale)
     segments.append(f"heavy(count={count},spacing={spacing})")
 
     for _ in range(count):
-        health = ctx.selector.pick_health(
+        tier = ctx.selector.pick_tier(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             bias_type="heavy",
             band_offsets=band_offsets,
         )
-        cost = cfg.health_costs[health]
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
     tick += rest
@@ -370,6 +471,10 @@ def generate_staggered_elites(
     elite_spacing = get_scaled_spacing(ctx, tick, budget, elite_spacing)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.staggered_rest_range)
     base_duration = elite_count * (filler_count * filler_spacing + elite_spacing) + rest_base
+    scaled_elite_count = scale_group_count(ctx, elite_count, base_duration)
+    if scaled_elite_count != elite_count:
+        elite_count = scaled_elite_count
+        base_duration = elite_count * (filler_count * filler_spacing + elite_spacing) + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     filler_spacing = max(1, int(filler_spacing * duration_scale))
     elite_spacing = max(1, int(elite_spacing * duration_scale))
@@ -378,31 +483,31 @@ def generate_staggered_elites(
 
     for _ in range(elite_count):
         for _ in range(filler_count):
-            health = ctx.selector.pick_health(
+            tier = ctx.selector.pick_tier(
                 ctx.wave_number,
                 budget,
                 ctx.wave_progress,
                 bias_type="burst",
                 band_offsets=band_burst_offsets,
             )
-            cost = cfg.health_costs[health]
+            cost = tier.cost
             if cost > budget:
                 break
-            tick = add_spawn(wave, tick, health, "")
+            tick = add_spawn(wave, tick, tier.health, tier.special)
             budget -= cost
             tick += filler_spacing
 
-        health = ctx.selector.pick_health(
+        tier = ctx.selector.pick_tier(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             bias_type="heavy",
             band_offsets=band_heavy_offsets,
         )
-        cost = cfg.health_costs[health]
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += elite_spacing
     tick += rest
@@ -421,18 +526,18 @@ def generate_double_heavy(
     cfg = ctx.config
     pressure = get_budget_pressure(ctx, tick, budget)
     band_offsets = adjust_band_offsets(cfg.band_heavy_offsets, pressure)
-    health = ctx.selector.pick_health(
+    tier = ctx.selector.pick_tier(
         ctx.wave_number,
         budget,
         ctx.wave_progress,
         bias_type="heavy",
         band_offsets=band_offsets,
     )
-    cost = cfg.health_costs[health]
-    segments.append(f"double_heavy(health={health})")
+    cost = tier.cost
+    segments.append(f"double_heavy(health={tier.health})")
 
     if cost * 2 <= budget:
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         pair_spacing = max(6, int(cfg.double_pair_spacing * ctx.speed_factor))
         pair_spacing = get_scaled_spacing(ctx, tick, budget, pair_spacing)
         rest_base = get_scaled_rest(ctx, tick, budget, cfg.double_rest_range)
@@ -441,7 +546,7 @@ def generate_double_heavy(
         pair_spacing = max(1, int(pair_spacing * duration_scale))
         rest = int(rest_base * duration_scale)
         tick += pair_spacing
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost * 2
         tick += rest
     else:
@@ -469,41 +574,45 @@ def generate_mirror(
     pause_base = get_scaled_rest(ctx, tick, budget, cfg.mirror_pause_range)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.mirror_rest_range)
     base_duration = count * spacing * 2 + pause_base + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing * 2 + pause_base + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     spacing = max(1, int(spacing * duration_scale))
     pause = int(pause_base * duration_scale)
     rest = int(rest_base * duration_scale)
     segments.append(f"mirror(count={count},spacing={spacing})")
 
-    first_half: list[int] = []
+    first_half: list[EnemyTier] = []
     for i in range(count):
         heavy_bias = (i % 2 == 1)
         bias_type = "heavy" if heavy_bias else "normal"
         base_offsets = cfg.band_heavy_offsets if heavy_bias else cfg.band_normal_offsets
         band_offsets = adjust_band_offsets(base_offsets, pressure)
-        health = ctx.selector.pick_health(
+        tier = ctx.selector.pick_tier(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             bias_type=bias_type,
             band_offsets=band_offsets,
         )
-        cost = cfg.health_costs[health]
+        cost = tier.cost
         if cost > budget:
             break
-        first_half.append(health)
-        tick = add_spawn(wave, tick, health, "")
+        first_half.append(tier)
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
 
     tick += pause
 
     # Replay the sequence in reverse for the mirror effect.
-    for health in reversed(first_half):
-        cost = cfg.health_costs[health]
+    for tier in reversed(first_half):
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
 
@@ -531,6 +640,10 @@ def generate_zigzag(
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.zigzag_rest_range)
     avg_spacing = (short_spacing + long_spacing) / 2
     base_duration = count * avg_spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * avg_spacing + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     short_spacing = max(1, int(short_spacing * duration_scale))
     long_spacing = max(1, int(long_spacing * duration_scale))
@@ -542,17 +655,17 @@ def generate_zigzag(
         bias_type = "heavy" if heavy_bias else "normal"
         base_offsets = cfg.band_heavy_offsets if heavy_bias else cfg.band_normal_offsets
         band_offsets = adjust_band_offsets(base_offsets, pressure)
-        health = ctx.selector.pick_health(
+        tier = ctx.selector.pick_tier(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             bias_type=bias_type,
             band_offsets=band_offsets,
         )
-        cost = cfg.health_costs[health]
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += short_spacing if (i % 2 == 0) else long_spacing
     tick += rest
@@ -576,6 +689,10 @@ def generate_mixed(
     spacing = get_scaled_spacing(ctx, tick, budget, spacing)
     rest_base = get_scaled_rest(ctx, tick, budget, cfg.mixed_rest_range)
     base_duration = count * spacing + rest_base
+    scaled_count = scale_group_count(ctx, count, base_duration)
+    if scaled_count != count:
+        count = scaled_count
+        base_duration = count * spacing + rest_base
     duration_scale = get_duration_scale(ctx, base_duration)
     spacing = max(1, int(spacing * duration_scale))
     rest = int(rest_base * duration_scale)
@@ -586,17 +703,17 @@ def generate_mixed(
         bias_type = "heavy" if heavy_bias else "normal"
         base_offsets = cfg.band_heavy_offsets if heavy_bias else cfg.band_normal_offsets
         band_offsets = adjust_band_offsets(base_offsets, pressure)
-        health = ctx.selector.pick_health(
+        tier = ctx.selector.pick_tier(
             ctx.wave_number,
             budget,
             ctx.wave_progress,
             bias_type=bias_type,
             band_offsets=band_offsets,
         )
-        cost = cfg.health_costs[health]
+        cost = tier.cost
         if cost > budget:
             break
-        tick = add_spawn(wave, tick, health, "")
+        tick = add_spawn(wave, tick, tier.health, tier.special)
         budget -= cost
         tick += spacing
     tick += rest
@@ -606,6 +723,7 @@ def generate_mixed(
 
 STYLE_GENERATORS = {
     "normal": generate_normal,
+    "anti_damage": generate_anti_damage,
     "rapid": generate_rapid,
     "pulse": generate_pulse,
     "ramp_up": generate_ramp_up,

@@ -10,7 +10,7 @@ class Wave_handler:
 
         self.__wave_counter : int = 0
 
-        self.wave : dict[int, tuple[int, str]] = {}
+        self.wave : dict[int, tuple[int, data_class.SpecialEnemyTypes]] = {}
         self.last_wave_tick : int = 0
         self.wave_gen : enemy.wave_gen.Wave_gen = enemy.wave_gen.Wave_gen(data)
 
@@ -68,6 +68,7 @@ class Wave_handler:
             enemies.position[new_id] = self.data.path[0][0]["x"], self.data.path[0][0]["y"]
             enemies.pos_exact_frame_offset[new_id] = 0
             enemies.health[new_id] = self.wave[self.__wave_counter][0]
+            enemies.special_type[new_id] = self.wave[self.__wave_counter][1]
             enemies.exact_pos[new_id] = (-1, -1)
             enemies.pos_direction[new_id] = "Up"
             enemies.pos_exact_frame_offset[new_id] = 0

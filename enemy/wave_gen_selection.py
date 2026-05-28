@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import random
 
-from enemy.wave_gen_config import WaveGenConfig
+from enemy.wave_gen_config import EnemyTier, WaveGenConfig
 
 
 class WaveGenSelector:
-    """Helper for style and health selection logic."""
+    """Helper for style and tier selection logic."""
 
     def __init__(self, config: WaveGenConfig, rng: random.Random) -> None:
         """Store config and RNG used for weighted selections."""
@@ -27,9 +27,13 @@ class WaveGenSelector:
         heavy_weight = cfg.heavy_weight_base + wave_number * cfg.heavy_weight_growth
         staggered_weight = cfg.staggered_weight_base + wave_number * cfg.staggered_weight_growth
         double_weight = cfg.double_weight_base + wave_number * cfg.double_weight_growth
+        anti_damage_weight = 0.0
+        if cfg.anti_damage_specials and wave_number >= cfg.anti_damage_unlock_wave:
+            anti_damage_weight = cfg.anti_damage_weight_base + wave_number * cfg.anti_damage_weight_growth
 
         styles = [
             "normal",
+            "anti_damage",
             "rapid",
             "pulse",
             "ramp_up",
@@ -43,6 +47,7 @@ class WaveGenSelector:
         ]
         weights = [
             cfg.normal_weight,
+            anti_damage_weight,
             rapid_weight,
             pulse_weight,
             cfg.ramp_up_weight,
@@ -56,21 +61,20 @@ class WaveGenSelector:
         ]
         return self.rng.choices(styles, weights=weights, k=1)[0]
 
-    def get_unlocked_healths(self, wave_number: int) -> list[int]:
-        """Return the health tiers unlocked by the current wave."""
-        max_index = 0
-        for i in range(len(self.config.health_values)):
-            if wave_number >= self.config.unlock_enemy_wave[i]:
-                max_index = i
-        return self.config.health_values[:max_index + 1]
+    def get_unlocked_tiers(self, wave_number: int) -> list[EnemyTier]:
+        """Return the enemy tiers unlocked by the current wave."""
+        unlocked = [tier for tier in self.config.enemy_tiers if wave_number >= tier.unlock_wave]
+        if not unlocked:
+            return [self.config.enemy_tiers[0]]
+        return unlocked
 
     def apply_band(
         self,
-        unlocked: list[int],
-        allowed: list[int],
+        unlocked: list[EnemyTier],
+        allowed: list[EnemyTier],
         wave_progress: float,
         band_offsets: tuple[int, int] | None,
-    ) -> list[int]:
+    ) -> list[EnemyTier]:
         """Clamp allowed tiers to a band around the wave-progress target."""
         if band_offsets is None or len(unlocked) <= 1:
             return allowed
@@ -79,21 +83,21 @@ class WaveGenSelector:
         min_index = max(0, target_index + band_offsets[0])
         max_index = min(len(unlocked) - 1, target_index + band_offsets[1])
         band_set = set(unlocked[min_index:max_index + 1])
-        band_allowed = [h for h in allowed if h in band_set]
+        band_allowed = [tier for tier in allowed if tier in band_set]
         return band_allowed if band_allowed else allowed
 
-    def get_allowed_healths(
+    def get_allowed_tiers(
         self,
         wave_number: int,
         budget: int,
         wave_progress: float,
         band_offsets: tuple[int, int] | None = None,
-    ) -> list[int]:
-        """Return health tiers that fit the budget and band constraints."""
-        unlocked = self.get_unlocked_healths(wave_number)
-        allowed = [h for h in unlocked if self.config.health_costs[h] <= budget]
+    ) -> list[EnemyTier]:
+        """Return enemy tiers that fit the budget and band constraints."""
+        unlocked = self.get_unlocked_tiers(wave_number)
+        allowed = [tier for tier in unlocked if tier.cost <= budget]
         if not allowed:
-            allowed = [unlocked[0]]
+            allowed = [min(unlocked, key=lambda tier: tier.cost)]
         return self.apply_band(unlocked, allowed, wave_progress, band_offsets)
 
     def get_bias_exponent(self, wave_progress: float, bias_type: str) -> float:
@@ -111,7 +115,13 @@ class WaveGenSelector:
         )
         return max(1, min(segment_budget, budget_remaining))
 
-    def pick_health_for_segment(
+    def get_unlock_weight(self, tier: EnemyTier, wave_number: int) -> float:
+        """Return a smoothing weight for newly unlocked tiers."""
+        ramp = max(1.0, self.config.tier_unlock_ramp_waves)
+        progress = (wave_number - tier.unlock_wave + 1) / ramp
+        return max(0.0, min(1.0, progress))
+
+    def pick_tier_for_segment(
         self,
         wave_number: int,
         budget: int,
@@ -120,9 +130,9 @@ class WaveGenSelector:
         segment_budget: int,
         bias_type: str,
         band_offsets: tuple[int, int] | None,
-    ) -> int:
+    ) -> EnemyTier:
         """Pick a tier that fits a segment budget while respecting bias and banding."""
-        candidates = self.get_allowed_healths(
+        candidates = self.get_allowed_tiers(
             wave_number,
             budget,
             wave_progress,
@@ -131,30 +141,34 @@ class WaveGenSelector:
         exponent = self.get_bias_exponent(wave_progress, bias_type)
         target_cost = segment_budget / max(1, count)
         weights: list[float] = []
-        for h in candidates:
-            cost = self.config.health_costs[h]
+        for tier in candidates:
+            cost = tier.cost
             # Relative distance keeps tier selection stable as costs scale up.
             relative_delta = abs(cost - target_cost) / max(1.0, target_cost)
             closeness = 1.0 / (1.0 + relative_delta * relative_delta)
-            bias_weight = h ** exponent
-            weights.append(max(0.0001, bias_weight * closeness))
+            bias_weight = tier.health ** exponent
+            unlock_weight = self.get_unlock_weight(tier, wave_number)
+            weights.append(max(0.0001, bias_weight * closeness * unlock_weight))
         return self.rng.choices(candidates, weights=weights, k=1)[0]
 
-    def pick_health(
+    def pick_tier(
         self,
         wave_number: int,
         budget: int,
         wave_progress: float,
         bias_type: str,
         band_offsets: tuple[int, int] | None,
-    ) -> int:
+    ) -> EnemyTier:
         """Pick a tier based on bias and banding only."""
-        candidates = self.get_allowed_healths(
+        candidates = self.get_allowed_tiers(
             wave_number,
             budget,
             wave_progress,
             band_offsets=band_offsets,
         )
         exponent = self.get_bias_exponent(wave_progress, bias_type)
-        weights = [max(0.0001, h ** exponent) for h in candidates]
+        weights = [
+            max(0.0001, tier.health ** exponent * self.get_unlock_weight(tier, wave_number))
+            for tier in candidates
+        ]
         return self.rng.choices(candidates, weights=weights, k=1)[0]

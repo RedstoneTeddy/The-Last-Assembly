@@ -136,11 +136,23 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
         if tower.data.enemies.health.get(tower._shoot_at_id, 0) > 0:
             damage_to_deal *= tower._extra_dmg_for_slowed
 
+        
+        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") == "faraday" and tower.damage_type == "Electrical":
+            damage_to_deal = 0
+        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") == "ironclad" and tower.damage_type == "Physical":
+            damage_to_deal = 0
+
         tower.data.enemies.health[tower._shoot_at_id] -= int(damage_to_deal)
         damage_to_deal -= int(damage_to_deal)
         if damage_to_deal > 0:
             if tower.data.path_random.random() < damage_to_deal:
                 tower.data.enemies.health[tower._shoot_at_id] -= 1
+
+        # Check if enemy loses special-status
+        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") in ["faraday", "ironclad"]:
+            if tower.data.enemies.health[tower._shoot_at_id] <= 10:
+                tower.data.enemies.special_type[tower._shoot_at_id] = ""
+
         if tower.data.enemies.health[tower._shoot_at_id] <= 0:
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
             # Bounty_hunter
@@ -214,6 +226,10 @@ def Get_nearby_enemy(tower : 'base_tower.Base_tower', center_pos : tuple[int, in
             continue
         enemy_screen_pos : tuple[int, int] = tower.data.Get_World_to_Screen((enemy_pos[0] + 0.5, enemy_pos[1] + 0.5))
         distance : int = (enemy_screen_pos[0] - center_pos[0]) ** 2 + (enemy_screen_pos[1] - center_pos[1]) ** 2
+        if tower.data.enemies.special_type.get(enemy_id, "") == "faraday" and tower.damage_type == "Electrical":
+            continue
+        if tower.data.enemies.special_type.get(enemy_id, "") == "ironclad" and tower.damage_type == "Physical":
+            continue
         if distance <= radius ** 2:
             possible_enemy_ids.append(enemy_id)
             distances[enemy_id] = distance

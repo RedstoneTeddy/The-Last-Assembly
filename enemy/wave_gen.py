@@ -22,10 +22,10 @@ class Wave_gen:
 
         
 
-    def Generate_wave(self, wave_number: int) -> dict[int, tuple[int, str]]:
+    def Generate_wave(self, wave_number: int) -> dict[int, tuple[int, data_class.SpecialEnemyTypes]]:
         """Call this function to generate the wave data for a given wave number."""
         start_time = time_ns()
-        wave: dict[int, tuple[int, str]] = {}
+        wave: dict[int, tuple[int, data_class.SpecialEnemyTypes]] = {}
 
         rng = self.selector.rng
         wave_number = max(1, wave_number)

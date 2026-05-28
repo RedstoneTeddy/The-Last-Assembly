@@ -45,6 +45,7 @@ class EnemyMove:
         if not self.__cache_locations:
             self.Precache_enemy_locations()
 
+
             
         pos_exact_frame_offset_max : int = 12
         
