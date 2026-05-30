@@ -27,13 +27,16 @@ class Zone_handler:
                             pass  # focus-zone is implemented in towers.base_tower.shooting
                         
                         case "freeze":
-                            enemies.frozen[enemy_id] = 20 
+                            if enemies.frozen.get(enemy_id, 0) < 20:
+                                enemies.frozen[enemy_id] = 24
                         
                         case "gamble":
                             if self.data.path_random.random() >= 0.25:
-                                enemies.slowness[enemy_id] = 60
+                                if enemies.slowness.get(enemy_id, 0) < 60:
+                                    enemies.slowness[enemy_id] = 72
                             else:
-                                enemies.speed[enemy_id] = 20
+                                if enemies.speed.get(enemy_id, 0) < 20:
+                                    enemies.speed[enemy_id] = 24
                             
                         case "gold":
                             pass # gold-zone is implemented in shop.main.reward_screen
@@ -54,7 +57,8 @@ class Zone_handler:
                                 enemies.Remove_enemy(enemy_id)
 
                         case "slow":
-                            enemies.slowness[enemy_id] = 30
+                            if enemies.slowness.get(enemy_id, 0) < 30:
+                                enemies.slowness[enemy_id] = 36
                         
                         case "tax":
                             if self.data.path_random.random() < 0.1:

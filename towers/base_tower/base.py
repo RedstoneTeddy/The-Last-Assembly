@@ -172,7 +172,7 @@ class Base_tower:
                     self._is_selected = not self._is_selected
                     self._selected_clicked = True
 
-            if self._is_selected:
+            if self._is_selected and self.range > 0:
                 center_pos : tuple[int, int] = self.data.Get_World_to_Screen((self._pos[0]+1, self._pos[1]+1))
                 pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self.range*self.data.tile_zoom, self.data.tile_zoom)
 
@@ -180,7 +180,7 @@ class Base_tower:
             if self.data.in_shop:
                 return
 
-            if self.data.wave_in_progress:
+            if self.data.wave_in_progress and self.range > 0:
                 if self.data.fast_forward:
                     towers.base_tower.shooting.Tick_shooting(self)
                 towers.base_tower.shooting.Tick_shooting(self)

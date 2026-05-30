@@ -153,7 +153,16 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
             if tower.data.enemies.health[tower._shoot_at_id] <= 10:
                 tower.data.enemies.special_type[tower._shoot_at_id] = ""
 
+        # Economist special effect
+        if tower.internal_name == "economist":
+            tower.data.enemies.golden[tower._shoot_at_id] = 12*10
+
         if tower.data.enemies.health[tower._shoot_at_id] <= 0:
+            # Golden effect
+            if tower.data.enemies.golden.get(tower._shoot_at_id, 0) > 0:
+                if tower.data.path_random.random() < 0.5:
+                    tower.data.money += 1
+            # Kill enemy
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
             # Bounty_hunter
             if tower._bounty_chance > 0:

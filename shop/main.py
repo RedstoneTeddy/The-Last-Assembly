@@ -16,6 +16,7 @@ import towers.combat_robot
 import towers.gear_thrower
 import towers.tesla_coil
 import towers.zapper
+import towers.economist
 
 import shop.packs
 
@@ -629,7 +630,8 @@ class Shop:
             towers.combat_robot.Combat_robot,
             towers.gear_thrower.Gear_thrower,
             towers.tesla_coil.Tesla_coil,
-            towers.zapper.Zapper
+            towers.zapper.Zapper,
+            towers.economist.Economist
         ]
 
         for tower_class in self.__tower_classes:

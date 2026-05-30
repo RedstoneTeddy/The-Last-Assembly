@@ -82,6 +82,12 @@ class EnemyMove:
                     enemies.speed[enemy_id] -= 1
                 if enemies.speed[enemy_id] <= 0:
                     enemies.speed.pop(enemy_id, None)
+            if enemies.golden.get(enemy_id, 0) > 0:
+                enemies.golden[enemy_id] -= 1
+                if self.data.fast_forward:
+                    enemies.golden[enemy_id] -= 1
+                if enemies.golden[enemy_id] <= 0:
+                    enemies.golden.pop(enemy_id, None)
 
 
             # Set the enemy's next position if it doesn't have one

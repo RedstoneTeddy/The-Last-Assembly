@@ -7,6 +7,7 @@ import towers.combat_robot
 import towers.gear_thrower
 import towers.tesla_coil
 import towers.zapper
+import towers.economist
 
 
 
@@ -29,6 +30,8 @@ class Towers:
         temp_tower = towers.tesla_coil.Tesla_coil(self.data)
         self.__Load_original_images_of_tower(temp_tower)
         temp_tower = towers.zapper.Zapper(self.data)
+        self.__Load_original_images_of_tower(temp_tower)
+        temp_tower = towers.economist.Economist(self.data)
         self.__Load_original_images_of_tower(temp_tower)
 
         # Red and green alpha overlay for build-hologram

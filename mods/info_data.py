@@ -151,5 +151,10 @@ def Get_useless_towers(mod: data_class.ModTypes) -> list[str]:
     if mod == "explosive":
         output = ["combat_robot", "gear_thrower", "zapper"]
 
+        
+    output.append("economist") # For the economist, all mods are useless
+    
+    
+
 
     return output
