@@ -14,6 +14,7 @@ import mods.info_data
 import towers.base_tower.base
 import towers.combat_robot
 import towers.gear_thrower
+import towers.cannon
 import towers.tesla_coil
 import towers.zapper
 import towers.economist
@@ -629,6 +630,7 @@ class Shop:
         self.__tower_classes = [
             towers.combat_robot.Combat_robot,
             towers.gear_thrower.Gear_thrower,
+            towers.cannon.Cannon,
             towers.tesla_coil.Tesla_coil,
             towers.zapper.Zapper,
             towers.economist.Economist

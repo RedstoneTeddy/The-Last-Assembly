@@ -19,7 +19,7 @@ console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.4.3"
+version : str = "0.6.1"
 data : Data_class = Data_class(version)
 
 
@@ -30,6 +30,8 @@ import towers.base_tower.base
 all_towers : list[towers.base_tower.base.Base_tower] = []
 import towers.gear_thrower
 all_towers.append(towers.gear_thrower.Gear_thrower(data))
+import towers.cannon
+all_towers.append(towers.cannon.Cannon(data))
 import towers.tesla_coil
 all_towers.append(towers.tesla_coil.Tesla_coil(data))
 import towers.zapper

@@ -5,6 +5,7 @@ import towers.base_tower.base as base
 
 import towers.combat_robot
 import towers.gear_thrower
+import towers.cannon
 import towers.tesla_coil
 import towers.zapper
 import towers.economist
@@ -26,6 +27,8 @@ class Towers:
         temp_tower : base.Base_tower = towers.combat_robot.Combat_robot(self.data)
         self.__Load_original_images_of_tower(temp_tower)
         temp_tower = towers.gear_thrower.Gear_thrower(self.data)
+        self.__Load_original_images_of_tower(temp_tower)
+        temp_tower = towers.cannon.Cannon(self.data)
         self.__Load_original_images_of_tower(temp_tower)
         temp_tower = towers.tesla_coil.Tesla_coil(self.data)
         self.__Load_original_images_of_tower(temp_tower)
@@ -55,7 +58,10 @@ class Towers:
         for i in range(1, tower.number_of_frames+1):
             for dir in range(4):
                 dir_name : str = ["Up", "Right", "Down", "Left"][dir]
-                self.original_images[tower.internal_name + f"_{i}_{dir_name}"] = pg.transform.rotate(pg.image.load(general_path + f"{i}.png").convert_alpha(), -90 * dir)
+                if dir == 3:
+                    self.original_images[tower.internal_name + f"_{i}_{dir_name}"] = pg.transform.flip(pg.transform.rotate(pg.image.load(general_path + f"{i}.png").convert_alpha(), -90 * 1), True, False)
+                else:
+                    self.original_images[tower.internal_name + f"_{i}_{dir_name}"] = pg.transform.rotate(pg.image.load(general_path + f"{i}.png").convert_alpha(), -90 * dir)
         self.original_images[tower.internal_name + "_shot"] = pg.image.load(shot_path).convert_alpha()
 
 

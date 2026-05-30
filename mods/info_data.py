@@ -149,10 +149,33 @@ def Get_useless_towers(mod: data_class.ModTypes) -> list[str]:
     output: list[str] = []
 
     if mod == "explosive":
-        output = ["combat_robot", "gear_thrower", "zapper"]
+        output = ["combat_robot", "gear_thrower", "zapper", "economist"]
+
+    if mod == "critical_core":
+        output = ["economist"]
+
+    if mod == "sharpshooter":
+        output = ["economist"]
+
+    if mod == "bounty_hunter":
+        output = ["economist"]
+        
+    if mod == "heavy_rounds":
+        output = ["economist"]
+        
+    if mod == "bloodthirst":
+        output = ["economist"]
+
+    if mod == "finisher":
+        output = ["economist"]
+        
+    if mod == "slow_shot":
+        output = ["economist"]
+        
+    if mod == "roulette_round":
+        output = ["economist"]
 
         
-    output.append("economist") # For the economist, all mods are useless
     
     
 
