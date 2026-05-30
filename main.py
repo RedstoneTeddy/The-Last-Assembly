@@ -96,45 +96,45 @@ try:
         data.screen.fill((0, 0, 0))
         data.Check_resize()
 
+        if data.in_game:
+            tile_renderer.Draw()
+            zone_renderer.Draw()
+            hud_obj.Draw()
 
-        tile_renderer.Draw()
-        zone_renderer.Draw()
-        hud_obj.Draw()
+            if not data.in_shop or shop_obj.shop_animation < shop_obj._max_shop_animation: # Player is not in shop or shop animation is finished
+                tower_renderer.Draw()
+                for tower in data.towers:
+                    tower.Tick()    
 
-        if not data.in_shop or shop_obj.shop_animation < shop_obj._max_shop_animation: # Player is not in shop or shop animation is finished
-            tower_renderer.Draw()
-            for tower in data.towers:
-                tower.Tick()    
+                if not data.in_shop: # Player is not in shop
 
-            if not data.in_shop: # Player is not in shop
+                    if data.wave_in_progress:
+                        enemy_wave.Tick()
+                        enemy_move.Move_enemies()
+                        enemy_renderer.Draw()
+                        zone_handler.Main()
 
-                if data.wave_in_progress:
-                    enemy_wave.Tick()
-                    enemy_move.Move_enemies()
-                    enemy_renderer.Draw()
-                    zone_handler.Main()
+                zone_building.Main()
+                mod_building.Main()
+                tower_info_renderer.Draw()
 
-            zone_building.Main()
-            mod_building.Main()
-            tower_info_renderer.Draw()
-
-            if data.start_next_wave:
-                data.start_next_wave = False
-                enemy_wave.New_wave()
-            
-            # Delete unwanted towers
-            tower_delete_id : int = -1
-            for i in range(len(data.towers)):
-                if data.towers[i]._marked_for_removal:
-                    tower_delete_id = i
-                    break
-            if tower_delete_id != -1:
-                del data.towers[tower_delete_id]
+                if data.start_next_wave:
+                    data.start_next_wave = False
+                    enemy_wave.New_wave()
                 
-        if data.in_shop:
-            shop_obj.Shop_main()
+                # Delete unwanted towers
+                tower_delete_id : int = -1
+                for i in range(len(data.towers)):
+                    if data.towers[i]._marked_for_removal:
+                        tower_delete_id = i
+                        break
+                if tower_delete_id != -1:
+                    del data.towers[tower_delete_id]
+                    
+            if data.in_shop:
+                shop_obj.Shop_main()
 
-        debug_handler.Main()
+            debug_handler.Main()
 
 
 

@@ -186,7 +186,7 @@ class Mod_building:
             tower._extra_dmg_for_low_health *= 1.5
         elif self.build_mod == "slow_shot":
             tower._extra_dmg_for_slowed *= 1.5
-        elif self.build_mod == "roulette":
+        elif self.build_mod == "roulette_round":
             tower._roulette_multiplier *= 2
 
 
