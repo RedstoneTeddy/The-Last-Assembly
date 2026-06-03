@@ -7,6 +7,20 @@ import enemy.groups.speedy as speedy
 import enemy.groups.heavy as heavy
 import enemy.groups.ramp as ramp
 import enemy.groups.special as special
+import enemy.groups.chaos as chaos
+
+
+class WaveGenData:
+    """
+    Stores all the data needed for wave generation in one place
+    """
+    config : 'WaveGenConfig'
+    data : data_class.Data_class
+    rng : random.Random
+    wave: dict[int, tuple[int, data_class.SpecialEnemyTypes]]
+    wave_number : int
+
+
 
 
 class WaveGenConfig:
@@ -66,7 +80,7 @@ class WaveGenConfig:
     }
 
     #### - Group parameters - ####
-    group_functions : list[Callable] = [
+    group_functions : list[Callable[[WaveGenData, int, int], tuple[int, int]]] = [
         normal.Normal,
         normal.Normal_top,
         speedy.Doubles,
@@ -76,6 +90,7 @@ class WaveGenConfig:
         ramp.Ramp_up,
         ramp.Ramp_down,
         special.Anti_damage,
+        chaos.Chaos,
     ]
     # Wave-Group -> (first-wave-number, base-weight)
     group_base_weight : dict[Callable, tuple[int, int]] = {
@@ -88,6 +103,7 @@ class WaveGenConfig:
         special.Anti_damage : (11, 35),
         ramp.Ramp_up : (9, 20),
         ramp.Ramp_down : (9, 20),
+        chaos.Chaos : (15, 10),
     }
     # Wave-Group -> (first-wave-number, weight-increase-per-wave)
     group_weight_increase : dict[Callable, tuple[int, int]] = {
@@ -100,6 +116,7 @@ class WaveGenConfig:
         special.Anti_damage : (12, 10),
         ramp.Ramp_up : (9, 1),
         ramp.Ramp_down : (9, 1),
+        chaos.Chaos : (15, 4),
     }
     # Wave-Group -> (first-wave-number, weight_decrease_per_wave)
     group_weight_decrease : dict[Callable, tuple[int, int]] = {
@@ -112,20 +129,9 @@ class WaveGenConfig:
         special.Anti_damage : (14, 17),
         ramp.Ramp_up : (19, 1),
         ramp.Ramp_down : (14, 1),
+        chaos.Chaos : (22, 5),
     }
 
-
-
-
-class WaveGenData:
-    """
-    Stores all the data needed for wave generation in one place
-    """
-    config : WaveGenConfig
-    data : data_class.Data_class
-    rng : random.Random
-    wave: dict[int, tuple[int, data_class.SpecialEnemyTypes]]
-    wave_number : int
 
 
 
