@@ -25,9 +25,23 @@ version : str = "0.5.1"
 data : Data_class = Data_class(version)
 
 
+def fit_quadratic(points : list[float]) -> tuple[float, float, float]:
+    """Fit a quadratic using numpy.polyfit"""
+    import numpy as np
+    x = np.array([i+1 for i in range(len(points))])
+    y = np.array(points)
+    
+    # polyfit(x, y, degree) returns coefficients in descending order
+    coeffs = np.polyfit(x, y, deg=2)
+    a, b, c = coeffs
+    
+    return a, b, c
+
+
 print("\n---- Balacing Helper Script ----")
 
 import enemy.wave_gen
+import enemy.wave_gen_config
 wave_gen_obj : enemy.wave_gen.Wave_gen = enemy.wave_gen.Wave_gen(data)
 print("\n Generating enemy waves")
 
@@ -36,11 +50,14 @@ time_costs : list[int] = []
 health_time_ratios : list[float] = []
 ht_ratio_derivative : list[float] = []
 
+generation_time : list[float] = []
+from time import time
 
 for i in range(1, 31):
-    print(f"Simulating 100x Wave {i}")
+    print(f"Simulating 1000x Wave {i}")
     temp_health : list[int] = []
     temp_time : list[int] = []
+    start_time = time()
 
     for _ in range(1000):
         new_wave : dict[int, tuple[int, data_class.SpecialEnemyTypes]] = wave_gen_obj.Generate_wave(i)
@@ -52,6 +69,9 @@ for i in range(1, 31):
                 max_time = tick
         temp_health.append(total_health)
         temp_time.append(max_time)
+
+    end_time = time()
+    generation_time.append(end_time - start_time) # This is directly in ms per 1 generation
 
     # Average health and time for this wave
     avg_health = int(sum(temp_health) / len(temp_health))
@@ -67,24 +87,68 @@ for i in range(1, 31):
     else:
         ht_ratio_derivative.append(0.0)
 
+# Generate group-weights
+group_names : list[str] = []
+group_weights : list[list[int]] = []
+for group in wave_gen_obj.config.config.group_functions:
+    group_names.append(group.__name__)
+    group_weights.append([])
+    for wave in range(1, 31):
+        if wave_gen_obj.config.config.group_base_weight[group][0] > wave:
+            weight = 0
+        else:
+            weight = wave_gen_obj.config.config.group_base_weight[group][1]
+            weight += max(0, (wave - wave_gen_obj.config.config.group_weight_increase[group][0] + 1) * wave_gen_obj.config.config.group_weight_increase[group][1])
+            weight -= max(0, (wave - wave_gen_obj.config.config.group_weight_decrease[group][0] + 1) * wave_gen_obj.config.config.group_weight_decrease[group][1])
+            weight = max(0, weight)
+        group_weights[-1].append(weight)
+
+# Generate quadratic fits for the health/time ratio
+a, b, c = fit_quadratic(health_time_ratios)
+print(f"\nQuadratic fit for Health/Time Ratio: f(x) = {a:.6f}x^2 + {b:.6f}x + {c:.6f}")
+# Calculate points
+fitted_ratios : list[float] = []
+for i in range(1, 31):
+    fitted_value = a*(i**2) + b*i + c
+    fitted_ratios.append(fitted_value)
+
+
 # Display results in graph
 import matplotlib.pyplot as plt
 plt.figure(figsize=(12, 6))
-plt.subplot(1, 2, 1)
+plt.subplot(2, 2, 1)
 plt.plot(range(1, 31), health_costs, label="Average Health", marker="o")
 plt.plot(range(1, 31), time_costs, label="Average Time (ticks)", marker="o")
 plt.title("Average Health and Time per Wave")
 plt.xlabel("Wave Number")
 plt.ylabel("Average Value")
 plt.legend()
-plt.subplot(1, 2, 2)
+
+plt.subplot(2, 2, 2)
 plt.plot(range(1, 31), health_time_ratios, label="Health/Time Ratio", marker="o", color="green")
 plt.plot(range(1, 31), ht_ratio_derivative, label="Derivative of Ratio", marker="o", color="orange")
+plt.plot(range(1, 31), fitted_ratios, label=f"y = {a:.4f}x^2 + {b:.4f}x + {c:.4f}", linestyle="--", color="gray")
 plt.axhline(0, color="gray", linestyle="--", linewidth=0.5)
 plt.title("Health to Time Ratio per Wave")
 plt.xlabel("Wave Number")
 plt.ylabel("Health/Time Ratio")
 plt.legend()
+
+plt.subplot(2, 2, 3)
+for i in range(len(group_names)):
+    plt.plot(range(1, 31), group_weights[i], label=group_names[i], marker="o")
+plt.title("Group Weights per Wave")
+plt.xlabel("Wave Number")
+plt.ylabel("Group Weight")
+plt.legend()
+
+plt.subplot(2, 2, 4)
+plt.plot(range(1, 31), generation_time, label="Generation Time (ms)", marker="o", color="red")
+plt.title("Wave Generation Time per Wave")
+plt.xlabel("Wave Number")
+plt.ylabel("Generation Time (ms)")
+plt.legend()
+
 plt.tight_layout()
 plt.show()
 

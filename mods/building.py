@@ -178,10 +178,10 @@ class Mod_building:
             tower.cooldown *= 1.25
         elif self.build_mod == "bloodthirst":
             if tower._bloodthirst_chance <= 0.01:
-                tower._bloodthirst_chance = 0.02
+                tower._bloodthirst_chance = 0.025
             else:
                 before = 1 - tower._bloodthirst_chance
-                tower._bloodthirst_chance = 1 - (before * 0.98)
+                tower._bloodthirst_chance = 1 - (before * 0.975)
         elif self.build_mod == "finisher":
             tower._extra_dmg_for_low_health *= 1.5
         elif self.build_mod == "slow_shot":

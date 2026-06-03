@@ -171,7 +171,7 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
             # Bloodthirst
             if tower._bloodthirst_chance > 0:
                 if tower.data.path_random.random() < tower._bloodthirst_chance:
-                    tower.damage *= 1.02
+                    tower.damage *= 1.025
 
         else:
             # Cryo_rounds
@@ -194,7 +194,7 @@ def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
     enemy_pos : tuple[int, int] = tower.data.enemies.position[tower._shoot_at_id]
     if enemy_pos[0] >= 0 and enemy_pos[1] >= 0 and enemy_pos[1] < len(tower.data.zones) and enemy_pos[0] < len(tower.data.zones[0]):
         if tower.data.zones[enemy_pos[1]][enemy_pos[0]] == "focus":
-            damage_to_deal *= 1.3
+            damage_to_deal *= 1.5
     
     # Combat-robot special effect
     if tower.internal_name == "combat_robot":

@@ -19,7 +19,7 @@ class Enemy:
         }
 
         self.original_images.update({
-            f"enemy_{i}" : pg.image.load(f"assets/enemy/enemy{i}.png").convert_alpha() for i in range(1, 11)
+            f"enemy_{i}" : pg.image.load(f"assets/enemy/enemy{i}.png").convert_alpha() for i in range(1, 17)
         })
         self.original_images["faraday"] = pg.image.load("assets/enemy/faraday.png").convert_alpha()
         self.original_images["ironclad"] = pg.image.load("assets/enemy/ironclad.png").convert_alpha()
@@ -61,38 +61,53 @@ class Enemy:
             enemy_img : str = self.__Get_image(id)
             self.data.screen.blit(self.images[enemy_img], draw_pos)
 
-        # Draw effects
         effect_frame : int = (self.animation_timer // 10) % self.effect_max_frame["golden"] + 1
         effect_img : str = f"golden_{effect_frame}"
+        effect_big_img : str = f"golden_big_{effect_frame}"
         for id, _ in self.data.enemies.golden.items():
             if self.data.enemies.golden[id] <= 0:
                 continue
             draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            self.data.screen.blit(self.images[effect_img], draw_pos)
+            if self.data.enemies.health[id] > 50:
+                self.data.screen.blit(self.images[effect_big_img], draw_pos)
+            else:
+                self.data.screen.blit(self.images[effect_img], draw_pos)
 
         effect_frame = (self.animation_timer // 10) % self.effect_max_frame["frozen"] + 1
         effect_img = f"frozen_{effect_frame}"
+        effect_big_img = f"frozen_big_{effect_frame}"
         for id, _ in self.data.enemies.frozen.items():
             if self.data.enemies.frozen[id] <= 0:
                 continue
             draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            self.data.screen.blit(self.images[effect_img], draw_pos)
-        
+            if self.data.enemies.health[id] > 50:
+                self.data.screen.blit(self.images[effect_big_img], draw_pos)
+            else:
+                self.data.screen.blit(self.images[effect_img], draw_pos)
+
         effect_frame = (self.animation_timer // 12) % self.effect_max_frame["slowness"] + 1
         effect_img = f"slowness_{effect_frame}"
+        effect_big_img = f"slowness_big_{effect_frame}"
         for id, _ in self.data.enemies.slowness.items():
             if self.data.enemies.slowness[id] <= 0:
                 continue
             draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            self.data.screen.blit(self.images[effect_img], draw_pos)
+            if self.data.enemies.health[id] > 50:
+                self.data.screen.blit(self.images[effect_big_img], draw_pos)
+            else:
+                self.data.screen.blit(self.images[effect_img], draw_pos)
 
         effect_frame = (self.animation_timer // 10) % self.effect_max_frame["speed"] + 1
         effect_img = f"speed_{effect_frame}"
+        effect_big_img = f"speed_big_{effect_frame}"
         for id, _ in self.data.enemies.speed.items():
             if self.data.enemies.speed[id] <= 0:
                 continue
             draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            self.data.screen.blit(self.images[effect_img], draw_pos)
+            if self.data.enemies.health[id] > 50:
+                self.data.screen.blit(self.images[effect_big_img], draw_pos)
+            else:
+                self.data.screen.blit(self.images[effect_img], draw_pos)
 
             
 
@@ -109,7 +124,19 @@ class Enemy:
         if self.data.enemies.special_type.get(enemy_id, "") == "ironclad":
             return "ironclad"
 
-        if health > 40:
+        if health > 500:
+            return "enemy_16"
+        elif health > 400:
+            return "enemy_15"
+        elif health > 300:
+            return "enemy_14"
+        elif health > 200:
+            return "enemy_13"
+        elif health > 100:
+            return "enemy_12"
+        elif health > 50:
+            return "enemy_11"
+        elif health > 40:
             return "enemy_10"
         elif health > 30:
             return "enemy_9"
@@ -136,6 +163,8 @@ class Enemy:
         for i in range(1, num_frames+1):
             self.original_images[f"{effect_name}_{i}"] = pg.image.load(f"assets/enemy/effects/{effect_name}/{effect_name}{i}.png").convert_alpha()
             self.original_images[f"{effect_name}_{i}"].set_alpha(alpha_value)
+            self.original_images[f"{effect_name}_big_{i}"] = pg.image.load(f"assets/enemy/effects/{effect_name}/{effect_name}_big{i}.png").convert_alpha()
+            self.original_images[f"{effect_name}_big_{i}"].set_alpha(alpha_value)
 
     
 

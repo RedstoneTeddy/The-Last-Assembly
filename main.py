@@ -35,7 +35,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.6.1"
+version : str = "0.7.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -88,7 +88,6 @@ shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_build
 
 
 
-
 # Main loop
 try:
     while data.run:
@@ -103,24 +102,28 @@ try:
 
             if not data.in_shop or shop_obj.shop_animation < shop_obj._max_shop_animation: # Player is not in shop or shop animation is finished
                 tower_renderer.Draw()
-                for tower in data.towers:
-                    tower.Tick()    
 
-                if not data.in_shop: # Player is not in shop
+                if not data.is_paused:
+                    for tower in data.towers:
+                        tower.Tick()    
 
-                    if data.wave_in_progress:
-                        enemy_wave.Tick()
-                        enemy_move.Move_enemies()
-                        enemy_renderer.Draw()
-                        zone_handler.Main()
+                    if not data.in_shop: # Player is not in shop
 
-                zone_building.Main()
-                mod_building.Main()
-                tower_info_renderer.Draw()
+                        if data.wave_in_progress:
+                            enemy_wave.Tick()
+                            enemy_move.Move_enemies()
+                            zone_handler.Main()
 
-                if data.start_next_wave:
-                    data.start_next_wave = False
-                    enemy_wave.New_wave()
+                enemy_renderer.Draw()
+
+                if not data.is_paused:
+                    zone_building.Main()
+                    mod_building.Main()
+                    tower_info_renderer.Draw()
+
+                    if data.start_next_wave:
+                        data.start_next_wave = False
+                        enemy_wave.New_wave()
                 
                 # Delete unwanted towers
                 tower_delete_id : int = -1
@@ -130,9 +133,13 @@ try:
                         break
                 if tower_delete_id != -1:
                     del data.towers[tower_delete_id]
-                    
-            if data.in_shop:
-                shop_obj.Shop_main()
+
+            if not data.is_paused:    
+                if data.in_shop:
+                    shop_obj.Shop_main()
+
+            if data.is_paused:
+                pass
 
             debug_handler.Main()
 

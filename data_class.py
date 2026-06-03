@@ -70,6 +70,7 @@ class Data_class():
 
         # Menu variables
         self.in_game : bool = True
+        self.is_paused : bool = False
         self.wave_in_progress : bool = False
         self.in_shop : bool = True
         self.shop_minimized : bool = False

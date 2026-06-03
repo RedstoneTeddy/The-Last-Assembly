@@ -11,7 +11,7 @@ class Economist(base.Base_tower):
 
         self.number_of_frames : int = 64
         self.animation_speed : int = 6
-        self.chance_to_start_animation : float = 0.01
+        self.chance_to_start_animation : float = 0.003
 
         self.rarity : base.RARITIES = "Uncommon"
         self.build_cost : int = 160

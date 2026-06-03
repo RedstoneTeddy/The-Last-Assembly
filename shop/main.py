@@ -605,11 +605,15 @@ class Shop:
         Generates a random zone.
         """
         random_index : int = self.data.shop_random.randint(0, len(self.__zone_names)-1)
-        self.shop_elements.append(self.__zone_names[random_index])
-        self.shop_element_types.append("zone")
-        self.shop_element_costs.append(self.data.zone_cost)
-        self.shop_element_descriptions.append(self.__info_box[random_index])
-        self.shop_element_bought.append(False)
+        if (self.__zone_names[random_index] == "tax") and (self.data.shop_random.random() > 0.3):
+            # Tax zone is very strong, so only show it with ~50% chance
+            self._Generate_zone()
+        else:
+            self.shop_elements.append(self.__zone_names[random_index])
+            self.shop_element_types.append("zone")
+            self.shop_element_costs.append(self.data.zone_cost)
+            self.shop_element_descriptions.append(self.__info_box[random_index])
+            self.shop_element_bought.append(False)
 
     def _Generate_mod(self) -> None:
         """

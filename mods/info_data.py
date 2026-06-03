@@ -110,10 +110,10 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["bloodthirst"] = [
         data_class.TextLine(text="Bloodthirst", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="2% chance per", color=chance_color, icon="", is_small=False),
+        data_class.TextLine(text="2.5% chance per", color=chance_color, icon="", is_small=False),
         data_class.TextLine(text="killed enemy", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="for permanent", color=default_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 2%", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="+ 2.5%", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 

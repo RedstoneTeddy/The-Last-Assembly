@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import logging
 from time import time_ns
+from typing import Callable
 
 import data_class
 
-from enemy.wave_gen_config import WaveGenConfig
-from enemy.wave_gen_groups import STYLE_GENERATORS, WaveGenContext
-from enemy.wave_gen_selection import WaveGenSelector
+from enemy.wave_gen_config import WaveGenData, WaveGenConfig
+import enemy.groups.helpers as helpers
 
 
 class Wave_gen:
@@ -16,82 +16,92 @@ class Wave_gen:
     def __init__(self, data: data_class.Data_class) -> None:
         """Initialize the generator with shared data and configuration."""
         self.data = data
-        self.config = WaveGenConfig()
-        self.last_wave = self.config.last_wave
-        self.selector = WaveGenSelector(self.config, data.wave_gen_random)
+
+        self.config = WaveGenData()
+        self.config.data = data
+        self.config.rng = data.path_random
 
         
 
     def Generate_wave(self, wave_number: int) -> dict[int, tuple[int, data_class.SpecialEnemyTypes]]:
         """Call this function to generate the wave data for a given wave number."""
         start_time = time_ns()
-        wave: dict[int, tuple[int, data_class.SpecialEnemyTypes]] = {}
+        self.config.wave = {}
+        self.config.wave_number = wave_number
+        logging_text : str = ""
 
-        rng = self.selector.rng
-        wave_number = max(1, wave_number)
-        cfg = self.config
+        self.config.config = WaveGenConfig()
 
-        # Total wave "budget" controls how many enemies / how heavy they are.
-        if wave_number <= cfg.last_wave:
-            budget_float = cfg.budget_base * (cfg.budget_growth ** (wave_number - 1))
-        else:
-            budget_float = cfg.budget_base * (cfg.budget_growth ** (cfg.last_wave - 1))
-            budget_float *= cfg.budget_growth_endless ** (wave_number - cfg.last_wave)
-        budget = max(1, int(budget_float * rng.uniform(cfg.budget_jitter_min, cfg.budget_jitter_max)))
-        budget_start = budget
 
-        # Start time and maximum wave length.
-        tick = cfg.start_tick
-        max_tick = cfg.max_tick_base + wave_number * cfg.max_tick_growth_per_wave
+        # Config-changes based on wave number
+        if wave_number >= self.config.config.enemy_first_wave[(20, "faraday")]:
+            self.config.config.enemy_first_wave[(20, "faraday")] = 19
+            self.config.config.enemy_first_wave[(20, "ironclad")] = 19
 
-        # Global speed-up for later waves (lower values mean tighter spacing).
-        speed_factor = max(cfg.speed_floor, cfg.speed_base - wave_number * cfg.speed_decay_per_wave)
 
-        # Collect a short summary of the generated segments for logging.
-        segments: list[str] = []
-        wave_progress = self.selector.get_wave_progress(wave_number)
-        ctx = WaveGenContext(
-            config=cfg,
-            selector=self.selector,
-            rng=rng,
-            wave_number=wave_number,
-            speed_factor=speed_factor,
-            budget_start=budget_start,
-            max_tick=max_tick,
-            wave_progress=wave_progress,
-            group_time_target=0.0,
-        )
+        # Calculating the group-weights
+        group_weights : list[int] = []
+        for group in self.config.config.group_functions:
+            # Too early for this group
+            if self.config.config.group_base_weight[group][0] > wave_number:
+                group_weights.append(0)
+                continue
+            # Calculate weight
+            weight : int = self.config.config.group_base_weight[group][1]
+            weight += max(0, (wave_number - self.config.config.group_weight_increase[group][0] + 1) * self.config.config.group_weight_increase[group][1])
+            weight -= max(0, (wave_number - self.config.config.group_weight_decrease[group][0] + 1) * self.config.config.group_weight_decrease[group][1])
+            weight = max(0, weight)
+            group_weights.append(weight)
 
-        while budget > 0 and tick < max_tick:
-            # Select a style, then let its generator emit a segment.
-            remaining_groups = max(1, cfg.target_group_count - len(segments))
-            remaining_time = max(1, max_tick - tick)
-            ctx.group_time_target = remaining_time / remaining_groups
-            style = self.selector.pick_style(wave_number)
-            generator = STYLE_GENERATORS.get(style, STYLE_GENERATORS["mixed"])
-            budget, tick = generator(ctx, wave, budget, tick, segments)
+
+        # Choose base parameters for the current wave
+        budget : int = self.config.config.base_budget
+        budget = int(budget * self.config.config.budget_increase ** (wave_number - 1))
+        budget = int(budget * (1 + self.config.config.groups_random_factor * (self.config.rng.random() - 0.5) * 2))
+
+        time : int = self.config.config.base_time
+        time = int(time + self.config.config.time_increase_fix * (wave_number - 1))
+        time = int(time * (1 + self.config.config.groups_random_factor * (self.config.rng.random() - 0.5) * 2))
+
+        num_groups : int = int(self.config.config.base_num_groups)
+        num_groups = int(num_groups * self.config.config.num_groups_increase ** (wave_number - 1) * (1 + self.config.config.groups_random_factor * (self.config.rng.random() - 0.5) * 2))
+
+
+        # Choose groups and assign budget and time to them
+        groups : list[tuple[Callable, int, int]] = []
+        left_budget : int = budget
+        left_time : int = time
+
+        for i in range(num_groups):
+            assign_budget : int = int((left_budget / (num_groups - i)) * (1 + self.config.config.group_time_budget_random_factor * (self.config.rng.random() - 0.5) * 2))
+            assign_time : int = int((left_time / (num_groups - i)) * (1 + self.config.config.group_time_budget_random_factor * (self.config.rng.random() - 0.5) * 2))
+            if (assign_budget <= 0) or (assign_time <= 0):
+                continue
+            group = self.config.rng.choices(self.config.config.group_functions, weights=group_weights)[0]
+            used_budget : int
+            used_time : int
+            used_budget, used_time = group(self.config, assign_budget, assign_time)
+            groups.append((group, used_budget, used_time))
+            left_budget -= used_budget
+            left_time -= used_time
+            logging_text += f"\n  - Group {i+1}: {group.__name__}, budget = {used_budget}/{assign_budget}, time = {used_time}/{assign_time}"
+
+        # Wave 30 has a special final boss
+        if wave_number == 30:
+            budget += 1000
+            time += 50
+            num_groups += 1
+            spawn_time = helpers.Get_first_spawn_time(self.config)
+            self.config.wave[spawn_time+50]= (1000, "")
+
+
+        logging_text = f"Generating wave {wave_number}, budget = {budget-left_budget}/{budget}, time = {time-left_time}/{time}, num_groups = {num_groups}" + logging_text
+
+        logging.info(logging_text)
 
         # Calculate needed time for generating the wave.
         end_time = time_ns()
         gen_time_ms = (end_time - start_time) / 1_000_000
         self.data._last_wave_gen_time = gen_time_ms
 
-        # Log the generated wave.
-        segments_text = "\n  - ".join(segments) if segments else "empty"
-        if budget <= 0 and tick >= max_tick:
-            stop_reason = "budget+time"
-        elif budget <= 0:
-            stop_reason = "budget"
-        elif tick >= max_tick:
-            stop_reason = "time"
-        else:
-            stop_reason = "unknown"
-        logging.info(
-            "Generated wave %s | budget=%s used=%s | stop=%s\n  - %s",
-            wave_number,
-            budget_start,
-            budget_start - budget,
-            stop_reason,
-            segments_text,
-        )
-        return wave
+        return self.config.wave
