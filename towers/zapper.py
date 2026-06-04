@@ -6,7 +6,7 @@ class Zapper(base.Base_tower):
     def __init__(self, data : data_class.Data_class) -> None:
         super().__init__(data)
 
-        self.internal_name : str = "zapper"
+        self.internal_name : data_class.TowerNames = "zapper"
         self.name : str = "Zapper"
 
         self.number_of_frames : int = 43

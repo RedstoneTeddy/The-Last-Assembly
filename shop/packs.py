@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     import shop.main
 
 
-PackType = Literal["","tower", "zone", "mod", "tower2", "zone2", "mod2"]
+PackType = Literal["","tower", "zone", "mod", "tower2", "zone2", "mod2", "specialist", "specialist2"]
 
 
 class Packs:
@@ -25,6 +25,7 @@ class Packs:
             self.original_images[f"tower_pack_{i}"] = pg.image.load(f"assets/shop/tower_pack/tower_pack{i}.png").convert_alpha()
             self.original_images[f"zone_pack_{i}"] = pg.image.load(f"assets/shop/zone_pack/zone_pack{i}.png").convert_alpha()
             self.original_images[f"mod_pack_{i}"] = pg.image.load(f"assets/shop/mod_pack/mod_pack{i}.png").convert_alpha()
+            self.original_images[f"specialist_pack_{i}"] = pg.image.load(f"assets/shop/specialist_pack/specialist_pack{i}.png").convert_alpha()
 
         self.images : dict[str, pg.Surface] = {}
         self.current_zoom : int = -1
@@ -83,6 +84,10 @@ class Packs:
                 contained_elements = 4
             elif self.pack_type == "mod2":
                 contained_elements = 5
+            elif self.pack_type == "specialist":
+                contained_elements = 2
+            elif self.pack_type == "specialist2":
+                contained_elements = 3
 
 
             # Calculate pack-position and animation frame
@@ -152,6 +157,10 @@ class Packs:
                 elif self.pack_type in ["mod", "mod2"]:
                     for _ in range(contained_elements):
                         self.shop_main._Generate_mod()
+                        self.shop_main.shop_element_costs[-1] = 0
+                elif self.pack_type in ["specialist", "specialist2"]:
+                    for _ in range(contained_elements):
+                        self.shop_main._Generate_specialist()
                         self.shop_main.shop_element_costs[-1] = 0
 
 
@@ -226,6 +235,8 @@ class Packs:
                     self.data.screen.blit(self.images[f"zone_pack_{animation_image}"], draw_pos)
                 elif self.pack_type in ["mod", "mod2"]:
                     self.data.screen.blit(self.images[f"mod_pack_{animation_image}"], draw_pos)
+                elif self.pack_type in ["specialist", "specialist2"]:
+                    self.data.screen.blit(self.images[f"specialist_pack_{animation_image}"], draw_pos)
 
             
 

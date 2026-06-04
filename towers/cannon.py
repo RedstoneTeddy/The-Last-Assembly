@@ -6,7 +6,7 @@ class Cannon(base.Base_tower):
     def __init__(self, data : data_class.Data_class) -> None:
         super().__init__(data)
 
-        self.internal_name : str = "cannon"
+        self.internal_name : data_class.TowerNames = "cannon"
         self.name : str = "Cannon"
 
         self.number_of_frames : int = 16

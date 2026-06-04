@@ -16,7 +16,7 @@ class Base_specialist:
         self.data : data_class.Data_class = data
 
         # Variables to set by the child class
-        self.internal_name : str = "base_specialist"            # The specialists name, used to load images, all lowercase and no spaces
+        self.internal_name : data_class.SpecialistNames = "base_specialist"            # The specialists name, used to load images, all lowercase and no spaces
         self.name : str = "Base Specialist"                     # The specialists name, used for display purposes
         self.description : list[data_class.TextLine] = []       # The specialists description, used for display purposes, should be a list of TextLines
         
@@ -59,14 +59,15 @@ class Base_specialist:
         out_text : list[data_class.TextLine] = []
 
         out_text.append(data_class.TextLine(text=self.name, color=(0, 0, 100), icon="", is_small=False))
-        out_text.append(data_class.TextLine(text="Specialist", color=(0, 0, 0), icon="", is_small=False))
 
         if self.rarity == "Bachelor":
-            out_text.append(data_class.TextLine(text="Bachelor", color=(0,0,0), icon="", is_small=False))
+            out_text.append(data_class.TextLine(text="Specialist - Bachelor; ", color=(60,60,60), icon="", is_small=True))
         elif self.rarity == "Master":
-            out_text.append(data_class.TextLine(text="Master", color=(0,0,255), icon="", is_small=False))
+            out_text.append(data_class.TextLine(text="Specialist - Master; ", color=(0,0,255), icon="", is_small=True))
         elif self.rarity == "PhD":
-            out_text.append(data_class.TextLine(text="PhD", color=(200,100,0), icon="", is_small=False))
+            out_text.append(data_class.TextLine(text="Specialist - PhD; ", color=(200,100,0), icon="", is_small=True))
+        
+        out_text.append(data_class.TextLine(text=f"Wage: {self.wage}", color=(238, 168, 25), icon="money", is_small=False))
 
         for line in self.description:
             out_text.append(line)
@@ -88,8 +89,8 @@ class Base_specialist:
             specialist_rect : tuple[int, int, int, int] = (
                 self.data.Get_World_to_Screen(self._pos)[0],
                 self.data.Get_World_to_Screen(self._pos)[1],
-                self.data.tile_zoom,
-                self.data.tile_zoom
+                2*12*self.data.tile_zoom,
+                2*12*self.data.tile_zoom
             )
 
             # Check if the specialist is clicked

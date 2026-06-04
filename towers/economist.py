@@ -6,7 +6,7 @@ class Economist(base.Base_tower):
     def __init__(self, data : data_class.Data_class) -> None:
         super().__init__(data)
 
-        self.internal_name : str = "economist"
+        self.internal_name : data_class.TowerNames = "economist"
         self.name : str = "Economist"
 
         self.number_of_frames : int = 64

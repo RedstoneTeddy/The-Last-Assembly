@@ -29,6 +29,11 @@ def Tick_building(specialist : "base.Base_specialist") -> None:
             if tile_illegal:
                 can_place = False
                 break
+
+        if can_place:
+            pos : tuple[int, int] = specialist._pos
+            if specialist.data.world[pos[1]][pos[0]] != "hq_1":
+                can_place = False
         
         # Check if no other specialist is in the way
         for other_specialist in specialist.data.specialists:
@@ -50,6 +55,8 @@ def Tick_building(specialist : "base.Base_specialist") -> None:
                 specialist.data.is_building = ""
                 specialist.data.shop_minimized = False
                 specialist.data.bought_specialists.append(specialist.internal_name)
+                for tower in specialist.data.towers: # Update their values
+                    tower.Wave_start_calculations()
 
         else:
             specialist._build_hologram_allowed = False

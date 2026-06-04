@@ -19,6 +19,14 @@ import towers.tesla_coil
 import towers.zapper
 import towers.economist
 
+import specialists.base.base
+import specialists.tesla_coil_researcher
+import specialists.cannon_researcher
+import specialists.gear_thrower_researcher
+import specialists.zapper_researcher
+import specialists.combat_robot_researcher
+import specialists.economist_researcher
+
 import shop.packs
 
 class Shop:
@@ -59,7 +67,7 @@ class Shop:
         self.__tower_rarities : list[towers.base_tower.base.RARITIES] = []
         self.__tower_costs : list[int] = []
         self.__tower_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each tower.
-        self.__Load_shop_element_data()
+        self.__Load_tower_data()
 
         self.__zone_names : list[str] = []
         self.__info_box : list[list[data_class.TextLine]] = []
@@ -70,6 +78,13 @@ class Shop:
         self.__Load_mod_data()
 
         self.__Load_pack_data()
+
+        self.__specialist_classes : list[type] = []
+        self.__specialist_names : list[str] = []
+        self.__specialist_rarities : list[specialists.base.base.RARITIES] = []
+        self.__specialist_costs : list[int] = []
+        self.__specialist_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each specialist.
+        self.__Load_specialist_data()
 
 
         # Images
@@ -169,7 +184,7 @@ class Shop:
             (18-1) * self.data.tile_zoom * 12
         )
 
-        minimized_shop_y : int = self.data.screen_size[1] - 17 * self.data.tile_zoom
+        minimized_shop_y : int = self.data.screen_size[1] - 13 * self.data.tile_zoom
 
         # Adjust shop to the animation
         shop_rect = (
@@ -285,9 +300,9 @@ class Shop:
         # If minimized, option to maximize again
         if self.data.shop_minimized:
             if self.data.is_building != "":
-                self.data.Draw_text("Minimized - Click to maximize and abort building", (shop_rect[0] + shop_rect[2]//2 - 110 * self.data.tile_zoom, shop_rect[1] + 5 * self.data.tile_zoom), self.data.tile_zoom * 7, (255, 50, 50))
+                self.data.Draw_text("Minimized - Click to maximize and abort building", (shop_rect[0] + shop_rect[2]//2 - 95 * self.data.tile_zoom, shop_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 6, (255, 50, 50))
             else:
-                self.data.Draw_text("Minimized - Click to maximize", (shop_rect[0] + shop_rect[2]//2 - 70 * self.data.tile_zoom, shop_rect[1] + 5 * self.data.tile_zoom), self.data.tile_zoom * 7, (255, 255, 255))
+                self.data.Draw_text("Minimized - Click to maximize", (shop_rect[0] + shop_rect[2]//2 - 60 * self.data.tile_zoom, shop_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 6, (255, 255, 255))
             if (mouse_pos[0] >= shop_rect[0] and mouse_pos[0] <= shop_rect[0] + shop_rect[2] and
                 mouse_pos[1] >= shop_rect[1] and mouse_pos[1] <= shop_rect[1] + shop_rect[3]):
                 if pg.mouse.get_pressed()[0] and not self._button_pressed:
@@ -327,7 +342,7 @@ class Shop:
                 self.shop_element_bought[i] = True
                 self.data.money -= cost
                         
-                        # Build tower if element is a tower
+                # Build tower if element is a tower
                 if self.shop_element_types[i] == "tower":
                     tower_class : type | None = None
                     for j in range(len(self.__tower_names)):
@@ -344,7 +359,24 @@ class Shop:
                         self.data.towers.append(new_tower)
                         element_bought = True
 
-                        # Build zone if element is a zone
+                # Build specialist if element is a specialist
+                elif self.shop_element_types[i] == "specialist":
+                    specialist_class : type | None = None
+                    for j in range(len(self.__specialist_names)):
+                        if self.__specialist_names[j] == self.shop_elements[i]:
+                            specialist_class = self.__specialist_classes[j]
+                            break
+                    if specialist_class is None:
+                        logging.error(f"Could not find specialist class for shop element {self.shop_elements[i]}")
+                    else:
+                        self.data.is_building = "specialist"
+                        new_specialist : specialists.base.base.Base_specialist = specialist_class(self.data)
+                        new_specialist._is_placed = False
+                        new_specialist._selected_clicked = True
+                        self.data.specialists.append(new_specialist)
+                        element_bought = True
+
+                # Build zone if element is a zone
                 elif self.shop_element_types[i] == "zone":
                     if self.shop_elements[i] in get_args(data_class.ZoneTypes):
                         self.data.is_building = "zone"
@@ -353,6 +385,7 @@ class Shop:
                         self.zone_building.build_zone = cast(data_class.ZoneTypes, self.shop_elements[i])
                         element_bought = True
 
+                # Build mod if element is a mod
                 elif self.shop_element_types[i] == "mod":
                     if self.shop_elements[i] in get_args(data_class.ModTypes):
                         self.data.is_building = "mod"
@@ -361,6 +394,7 @@ class Shop:
                         self.mod_building.build_mod = cast(data_class.ModTypes, self.shop_elements[i])
                         element_bought = True
 
+                # Open a pack if element is a pack
                 elif self.shop_element_types[i] == "pack":
                     pack_type : str = self.shop_elements[i].split("_")[0]
                     if self.shop_elements[i][-1] == "2":
@@ -424,15 +458,18 @@ class Shop:
 
         # Display lines
         for i in range(len(lines)):
+            line_color : tuple[int, int, int] = (255, 255, 255)
+            if i == len(lines) - 1:
+                line_color = (238, 168, 25)
             self.data.Draw_text(lines[i], (
                 shop_rect[0] + shop_rect[2]//2  - int(len(lines[i]) * self.data.tile_zoom * 2.7),
-                shop_rect[1] + 40 * self.data.tile_zoom + i * 20 * self.data.tile_zoom
-            ), self.data.tile_zoom * 8, (255, 255, 255))
+                shop_rect[1] + 40 * self.data.tile_zoom + i * 18 * self.data.tile_zoom
+            ), self.data.tile_zoom * 8, line_color)
 
         # Show "Close button"
         close_button_rect : tuple[int, int, int, int] = (
             shop_rect[0] + shop_rect[2]//2 - self.images["close_btn"].get_width()//2,
-            shop_rect[1] + (len(lines) + 3) * 20 * self.data.tile_zoom,
+            shop_rect[1] + (len(lines) + 3) * 18 * self.data.tile_zoom,
             self.images["close_btn"].get_width(),
             self.images["close_btn"].get_height()
         )
@@ -473,6 +510,17 @@ class Shop:
             lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 30}$")
             total_cash += gold_zone_count * 30
 
+        # Specialist wages
+        total_wages : int = 0
+        for specialist in self.data.specialists:
+            total_wages += specialist.wage
+        if total_wages > 0:
+            lines.append(f"Specialist wages: -{total_wages}$")
+            total_cash -= total_wages
+
+        # Add total line
+        lines.append(f"Total reward: {total_cash}$")
+
         return total_cash, lines
 
 
@@ -510,10 +558,19 @@ class Shop:
         """
         Generates a random shop element. Can be a tower, zone.
         """
+        element_weights : list[float] = [
+            0.2, # tower
+            0.1, # zone
+            0.2, # mod
+            0.5, # pack
+            0.0 # specialist (can only be get from packs)
+        ]
+
         element_type : int = self.data.shop_random.choices(
-            population=[0, 1, 2, 3],
-            weights = [0.2, 0.1, 0.2, 0.5]
+            population=[0, 1, 2, 3, 4],
+            weights = element_weights
         )[0]
+
         if element_type == 0:
             self._Generate_tower("")
         elif element_type == 1:
@@ -522,6 +579,8 @@ class Shop:
             self._Generate_mod()
         elif element_type == 3:
             self._Generate_pack()
+        elif element_type == 4:
+            self._Generate_specialist()
         else:
             logging.error(f"Invalid shop element type generated: {element_type}")
 
@@ -529,9 +588,23 @@ class Shop:
         """
         Generates a random pack.
         """
+        pack_weights : list[float] = [
+            0.2,  # tower_pack
+            0.1,  # tower_pack2
+            0.3,  # zone_pack
+            0.15, # zone_pack2
+            0.5,  # mod_pack
+            0.25, # mod_pack2
+            0.14, # specialist_pack
+            0.07  # specialist_pack2
+        ]
+        if self.data.wave < 5:
+            # Disable specialist packs for the first 5 waves
+            pack_weights[6] = 0
+            pack_weights[7] = 0
         pack_type : int = self.data.shop_random.choices(
-            population=[0, 1, 2, 3, 4, 5],
-            weights = [0.2, 0.1, 0.3, 0.15, 0.5, 0.25]
+            population=[0, 1, 2, 3, 4, 5, 6, 7],
+            weights = pack_weights
         )[0]
         if pack_type == 0:
             self.shop_elements.append("tower_pack")
@@ -581,6 +654,22 @@ class Shop:
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
                 data_class.TextLine(text="of 5 mods", color=(0, 0, 0), icon="" , is_small=False)
             ])
+        elif pack_type == 6:
+            self.shop_elements.append("specialist_pack")
+            self.shop_element_costs.append(int(self.data.specialist_cost))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Specialist Box", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 2 specialists", color=(0, 0, 0), icon="" , is_small=False)
+            ])
+        elif pack_type == 7:
+            self.shop_elements.append("specialist_pack2")
+            self.shop_element_costs.append(int(self.data.specialist_cost * 1.5))
+            self.shop_element_descriptions.append([
+                data_class.TextLine(text="Specialist Box 2", color=(238, 168, 25), icon="" ,is_small=False),
+                data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
+                data_class.TextLine(text="of 3 specialists", color=(0, 0, 0), icon="" , is_small=False)
+            ])
         self.shop_element_types.append("pack")
         self.shop_element_bought.append(False)
 
@@ -599,6 +688,37 @@ class Shop:
                 self.shop_element_descriptions.append(self.__tower_info_box[random_index])
                 self.shop_element_bought.append(False)
                 break
+
+    def _Generate_specialist(self) -> None:
+        """
+        Generates a random specialist.
+        """
+        fails : int = 0
+        while True:
+            random_index : int = self.data.shop_random.randint(0, len(self.__specialist_classes)-1)
+            specialist_name : str = self.__specialist_names[random_index]
+            allowed : bool = True
+            # Check if specialist is allowed
+            if specialist_name in self.data.bought_specialists:
+                allowed = False
+            if specialist_name in self.shop_elements:
+                allowed = False
+            if not allowed:
+                fails += 1
+                if fails > 10:
+                    logging.warning("Failed to generate specialist after 10 tries. This can happen if there are only a few specialists and most of them are already bought or in the shop.")
+                    self._Generate_tower()
+                    break
+                continue
+            # Generate tower (if allowence-check passed)
+            self.shop_elements.append(specialist_name)
+            self.shop_element_types.append("specialist")
+            self.shop_element_costs.append(self.__specialist_costs[random_index])
+            self.shop_element_descriptions.append(self.__specialist_info_box[random_index])
+            self.shop_element_bought.append(False)
+            break
+
+
 
     def _Generate_zone(self) -> None:
         """
@@ -627,9 +747,9 @@ class Shop:
         self.shop_element_bought.append(False)
 
 
-    def __Load_shop_element_data(self) -> None:
+    def __Load_tower_data(self) -> None:
         """
-        Loads the data for the shop elements (towers, specialists, research, mods, zones) into the shop_element_data dictionary
+        Loads the data for the tower elements into the shop_element_data dictionary
         """
         self.__tower_classes = [
             towers.combat_robot.Combat_robot,
@@ -642,12 +762,35 @@ class Shop:
 
         for tower_class in self.__tower_classes:
             tower_instance : towers.base_tower.base.Base_tower = tower_class(self.data)
+            tower_instance.Wave_start_calculations()
 
             self.__tower_names.append(tower_instance.internal_name)
             self.__tower_rarities.append(tower_instance.rarity)
             self.__tower_costs.append(tower_instance.build_cost)
             self.__tower_info_box.append(tower_instance.Get_info_texts())
             self.original_images[tower_instance.internal_name] = pg.image.load(f"assets/tower/{tower_instance.internal_name}/{tower_instance.internal_name}1.png").convert_alpha()
+
+    def __Load_specialist_data(self) -> None:
+        """
+        Loads the data for the specialists into the shop_element_data dictionary
+        """
+        self.__specialist_classes = [
+            specialists.tesla_coil_researcher.Tesla_coil_researcher,
+            specialists.cannon_researcher.Cannon_researcher,
+            specialists.gear_thrower_researcher.Gear_thrower_researcher,
+            specialists.combat_robot_researcher.Combat_robot_researcher,
+            specialists.economist_researcher.Economist_researcher,
+            specialists.zapper_researcher.Zapper_researcher
+        ]
+
+        for specialist_class in self.__specialist_classes:
+            specialist_instance : specialists.base.base.Base_specialist = specialist_class(self.data)
+
+            self.__specialist_names.append(specialist_instance.internal_name)
+            self.__specialist_rarities.append(specialist_instance.rarity)
+            self.__specialist_costs.append(specialist_instance.cost)
+            self.__specialist_info_box.append(specialist_instance.Get_info_texts())
+            self.original_images[specialist_instance.internal_name] = pg.image.load(f"assets/specialist/{specialist_instance.internal_name}/{specialist_instance.internal_name}1.png").convert_alpha()
 
     
     def __Load_zone_data(self) -> None:
@@ -681,6 +824,8 @@ class Shop:
         self.original_images["mod_pack2"] = pg.image.load("assets/shop/mod_pack/mod_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
         self.original_images["zone_pack"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
         self.original_images["zone_pack2"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["specialist_pack"] = pg.image.load("assets/shop/specialist_pack/specialist_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["specialist_pack2"] = pg.image.load("assets/shop/specialist_pack/specialist_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
 
 
 
@@ -697,6 +842,8 @@ class Shop:
             self.data.money += self.data.zone_cost
         elif self.data.is_building == "mod":
             self.data.money += self.data.mod_cost
+        elif self.data.is_building == "specialist":
+            self.data.money += self.data.specialist_cost
 
         # Kill all building process
         self.data.is_building = ""
@@ -704,6 +851,10 @@ class Shop:
             tower._selected_clicked = False
             if tower._is_placed == False:
                 tower._marked_for_removal = True
+        for specialist in self.data.specialists:
+            specialist._selected_clicked = False
+            if specialist._is_placed == False:
+                specialist._marked_for_removal = True
         self.zone_building.build_zone = ""
         self.mod_building.build_mod = ""
 

@@ -6,7 +6,7 @@ class Tesla_coil(base.Base_tower):
     def __init__(self, data : data_class.Data_class) -> None:
         super().__init__(data)
 
-        self.internal_name : str = "tesla_coil"
+        self.internal_name : data_class.TowerNames = "tesla_coil"
         self.name : str = "Tesla Coil"
 
         self.number_of_frames : int = 7

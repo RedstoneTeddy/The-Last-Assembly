@@ -35,7 +35,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.7.2"
+version : str = "0.8.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -63,6 +63,8 @@ import renderer.specialists
 specialist_renderer : renderer.specialists.Specialists = renderer.specialists.Specialists(data)
 import renderer.tower_info
 tower_info_renderer : renderer.tower_info.Tower_info = renderer.tower_info.Tower_info(data)
+import renderer.specialist_info
+specialist_info_renderer : renderer.specialist_info.Specialist_info = renderer.specialist_info.Specialist_info(data, tower_info_renderer)
 import renderer.zones
 zone_renderer : renderer.zones.Zones = renderer.zones.Zones(data)
 
@@ -127,6 +129,7 @@ try:
                     zone_building.Main()
                     mod_building.Main()
                     tower_info_renderer.Draw()
+                    specialist_info_renderer.Draw()
 
                     if data.start_next_wave:
                         data.start_next_wave = False
@@ -140,6 +143,8 @@ try:
                         break
                 if tower_delete_id != -1:
                     del data.towers[tower_delete_id]
+                    for tower in data.towers: # Update their values
+                        tower.Wave_start_calculations()
                 # Delete unwanted specialists
                 specialist_delete_id : int = -1
                 for i in range(len(data.specialists)):
@@ -148,6 +153,9 @@ try:
                         break
                 if specialist_delete_id != -1:
                     del data.specialists[specialist_delete_id]
+                    del data.bought_specialists[specialist_delete_id]
+                    for tower in data.towers: # Update tower's values
+                        tower.Wave_start_calculations()
 
 
             if not data.is_paused:    

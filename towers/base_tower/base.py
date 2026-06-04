@@ -7,6 +7,8 @@ import towers.base_tower.shooting
 import towers.base_tower.building
 import mods.info_data
 
+import specialists.base.handle
+
 
 RARITIES = Literal["Common", "Uncommon", "Rare", ""]
 DAMAGE_TYPES = Literal["Physical", "Electrical", "Fire"]
@@ -24,7 +26,7 @@ class Base_tower:
 
 
         # Variables to set by the child class
-        self.internal_name : str = "base_tower"         # The towers name, used to load images, all lowercase and no spaces
+        self.internal_name : data_class.TowerNames = "base_tower"         # The towers name, used to load images, all lowercase and no spaces
         self.name : str = "Base Tower"                  # The towers name, used for display purposes
 
         self.number_of_frames : int = -1                # Total number of frames in the animation, including the idle frame
@@ -95,14 +97,13 @@ class Base_tower:
         output : list[data_class.TextLine] = []
 
         output.append(data_class.TextLine(text=self.name, color=(0,0,100), icon="", is_small=False))
-        output.append(data_class.TextLine(text="Tower", color=(0,0,0), icon="", is_small=False))
 
         if self.rarity == "Common":
-            output.append(data_class.TextLine(text="Common", color=(0,0,0), icon="", is_small=False))
+            output.append(data_class.TextLine(text="Common Tower; ", color=(60,60,60), icon="", is_small=True))
         elif self.rarity == "Uncommon":
-            output.append(data_class.TextLine(text="Uncommon", color=(0,0,255), icon="", is_small=False))
+            output.append(data_class.TextLine(text="Uncommon Tower; ", color=(0,0,255), icon="", is_small=True))
         elif self.rarity == "Rare":
-            output.append(data_class.TextLine(text="Rare", color=(200,100,0), icon="", is_small=False))
+            output.append(data_class.TextLine(text="Rare Tower; ", color=(200,100,0), icon="", is_small=True))
 
         output.append(data_class.TextLine(text=str(round(self._actual_damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))
         output.append(data_class.TextLine(text=str(round(self._actual_cooldown/60, 2))+" s", color=(0,0,0), icon="time", is_small=False))
@@ -153,6 +154,7 @@ class Base_tower:
         self._actual_damage = self.damage
         self._actual_cooldown = self.cooldown
         self._actual_range = self.range
+        specialists.base.handle.Tower_wave_start_calculations(self)
 
 
 

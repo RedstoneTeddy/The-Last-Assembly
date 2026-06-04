@@ -58,7 +58,7 @@ class Data_class():
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
         self.towers : list[base_tower.Base_tower] = []
         self.specialists : list[base_specialist.Base_specialist] = []
-        self.bought_specialists : list[str] = []        # Just a list of all internal names of the currently placed specialists
+        self.bought_specialists : list[SpecialistNames] = []        # Just a list of all internal names of the currently placed specialists
         self.zones : list[list[ZoneTypes]] = []
 
 
@@ -69,6 +69,7 @@ class Data_class():
         self.interest_cap : int = 100
         self.zone_cost : int = 130
         self.mod_cost : int = 80
+        self.specialist_cost : int = 150
         
 
         # Menu variables
@@ -78,7 +79,7 @@ class Data_class():
         self.in_shop : bool = True
         self.shop_minimized : bool = False
         self.start_next_wave : bool = False 
-        self.is_building : Literal["", "tower", "zone", "mod"] = ""
+        self.is_building : Literal["", "tower", "zone", "mod", "specialist"] = ""
 
 
         # Random generators
@@ -220,4 +221,7 @@ class TextLine(TypedDict):
 ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
 ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "explosive", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
 SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
+
+TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist"]
+SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher"]
             

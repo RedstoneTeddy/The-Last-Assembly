@@ -189,6 +189,8 @@ class Mod_building:
         elif self.build_mod == "roulette_round":
             tower._roulette_multiplier *= 2
 
+        tower.Wave_start_calculations()
+
 
 
     def __Reset_target_decision(self, tower : Base_tower) -> None:

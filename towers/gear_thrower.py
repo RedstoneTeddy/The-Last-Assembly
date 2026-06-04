@@ -6,7 +6,7 @@ class Gear_thrower(base.Base_tower):
     def __init__(self, data : data_class.Data_class) -> None:
         super().__init__(data)
 
-        self.internal_name : str = "gear_thrower"
+        self.internal_name : data_class.TowerNames = "gear_thrower"
         self.name : str = "Gear Thrower"
 
         self.number_of_frames : int = 43

@@ -4,6 +4,11 @@ import random
 import specialists.base.base as base
 
 import specialists.tesla_coil_researcher
+import specialists.cannon_researcher
+import specialists.gear_thrower_researcher
+import specialists.zapper_researcher
+import specialists.combat_robot_researcher
+import specialists.economist_researcher
 
 
 class Specialists:
@@ -19,6 +24,16 @@ class Specialists:
 
         # Load all original images
         temp_specialist : base.Base_specialist = specialists.tesla_coil_researcher.Tesla_coil_researcher(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.cannon_researcher.Cannon_researcher(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.gear_thrower_researcher.Gear_thrower_researcher(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.zapper_researcher.Zapper_researcher(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.combat_robot_researcher.Combat_robot_researcher(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.economist_researcher.Economist_researcher(self.data)
         self.__Load_original_images_of_specialist(temp_specialist)
 
         # Red and green alpha overlay for build-hologram
@@ -47,7 +62,7 @@ class Specialists:
         if self.current_zoom != self.data.tile_zoom or force:
             self.current_zoom = self.data.tile_zoom
             for key in self.original_images:
-                self.images[key] = pg.transform.scale(self.original_images[key], (self.data.tile_zoom, self.data.tile_zoom))
+                self.images[key] = pg.transform.scale(self.original_images[key], (self.original_images[key].get_size()[0]*self.data.tile_zoom, self.original_images[key].get_size()[1]*self.data.tile_zoom))
 
     def Draw(self) -> None:
         """
@@ -86,9 +101,9 @@ class Specialists:
             if not specialist._is_placed and specialist._pos != (-1, -1): # Specialist is being placed
                 image = self.images[f"{specialist.internal_name}_1"]
                 pos = self.data.Get_World_to_Screen(specialist._pos)
-                pos = (pos[0] - self.specialist_offset * self.current_zoom, pos[1] - self.specialist_offset * self.current_zoom)
+                pos2 = (pos[0] - self.specialist_offset * self.current_zoom, pos[1] - self.specialist_offset * self.current_zoom)
 
-                self.data.screen.blit(image, pos)
+                self.data.screen.blit(image, pos2)
                 if specialist._build_hologram_allowed:
                     self.data.screen.blit(self.images["green_overlay"], pos)
                 else:
