@@ -34,9 +34,9 @@ class Base_tower:
         self.rarity : RARITIES = "Common"               # The towers rarity, can be "Common", "Uncommon" or "Rare", used for shop chances
         self.build_cost : int = 0                       # The cost to build the tower
 
-        self.range : int = 0                            # The towers range in pixels * tile_zoom
-        self.damage : float = 0                           # Damage of the tower per hit
-        self.cooldown : float = 0                         # Cooldown between hits in ticks
+        self.range : int = 0                            # The towers base range in pixels * tile_zoom
+        self.damage : float = 0                         # Base Damage of the tower per hit
+        self.cooldown : float = 0                       # Base Cooldown between hits in ticks
         self.shot_speed : int = 0                       # Max distance a shot can travel in one tick in tiles
         self.damage_type : DAMAGE_TYPES = "Physical"    # The towers damage type
         self.blast_radius : int = 0                     # The radius of the towers blast damage in pixels * tile_zoom, 0 means no blast damage
@@ -76,6 +76,11 @@ class Base_tower:
         self._extra_dmg_for_slowed : float = 1.0
         self._roulette_multiplier : float = 1.0
 
+        # Actual values of damage, cooldown and range after specialist calculations
+        self._actual_damage : float = self.damage
+        self._actual_cooldown : float = self.cooldown
+        self._actual_range : int = self.range
+
 
 
     def Get_info_texts(self) -> list[data_class.TextLine]:
@@ -90,6 +95,7 @@ class Base_tower:
         output : list[data_class.TextLine] = []
 
         output.append(data_class.TextLine(text=self.name, color=(0,0,100), icon="", is_small=False))
+        output.append(data_class.TextLine(text="Tower", color=(0,0,0), icon="", is_small=False))
 
         if self.rarity == "Common":
             output.append(data_class.TextLine(text="Common", color=(0,0,0), icon="", is_small=False))
@@ -98,9 +104,9 @@ class Base_tower:
         elif self.rarity == "Rare":
             output.append(data_class.TextLine(text="Rare", color=(200,100,0), icon="", is_small=False))
 
-        output.append(data_class.TextLine(text=str(round(self.damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))
-        output.append(data_class.TextLine(text=str(round(self.cooldown/60, 2))+" s", color=(0,0,0), icon="time", is_small=False))
-        output.append(data_class.TextLine(text=str(round(self.range/ 12, 1))+" tiles", color=(0,0,0), icon="range", is_small=False))
+        output.append(data_class.TextLine(text=str(round(self._actual_damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))
+        output.append(data_class.TextLine(text=str(round(self._actual_cooldown/60, 2))+" s", color=(0,0,0), icon="time", is_small=False))
+        output.append(data_class.TextLine(text=str(round(self._actual_range/ 12, 1))+" tiles", color=(0,0,0), icon="range", is_small=False))
 
         if self.blast_radius > 0:
             output.append(data_class.TextLine(text="Blast: " + str(round(self.blast_radius/ 12, 1))+" t", color=(0,0,0), icon="", is_small=False))
@@ -138,6 +144,15 @@ class Base_tower:
         For example a tower that has a special effect
         """
         return []
+    
+    def Wave_start_calculations(self) -> None:
+        """
+        Calculations to be done at the start of each wave, if needed more should be implemented by the child class
+        Special effects granted by (f.e.) specialists
+        """
+        self._actual_damage = self.damage
+        self._actual_cooldown = self.cooldown
+        self._actual_range = self.range
 
 
 
@@ -154,6 +169,10 @@ class Base_tower:
         if self._is_placed:
             if self.data.in_shop and not self.data.shop_minimized:
                 return
+            
+            if self.data.start_next_wave:
+                self.Wave_start_calculations()
+
             # Update wave-independent            
             tower_rect : tuple[int, int, int, int] = (
                 self.data.Get_World_to_Screen(self._pos)[0],
@@ -166,21 +185,24 @@ class Base_tower:
             mouse_pos : tuple[int, int] = pg.mouse.get_pos()
             if pg.mouse.get_pressed()[0] and not self._selected_clicked:
                 if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
+                    for specialist in self.data.specialists:
+                        if specialist != self:
+                            specialist._is_selected = False
                     for tower in self.data.towers:
                         if tower != self:
                             tower._is_selected = False
                     self._is_selected = not self._is_selected
                     self._selected_clicked = True
 
-            if self._is_selected and self.range > 0:
+            if self._is_selected and self._actual_range > 0:
                 center_pos : tuple[int, int] = self.data.Get_World_to_Screen((self._pos[0]+1, self._pos[1]+1))
-                pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self.range*self.data.tile_zoom, self.data.tile_zoom)
+                pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self._actual_range*self.data.tile_zoom, self.data.tile_zoom)
 
                 
             if self.data.in_shop:
                 return
 
-            if self.data.wave_in_progress and self.range > 0:
+            if self.data.wave_in_progress and self._actual_range > 0:
                 if self.data.fast_forward:
                     towers.base_tower.shooting.Tick_shooting(self)
                 towers.base_tower.shooting.Tick_shooting(self)

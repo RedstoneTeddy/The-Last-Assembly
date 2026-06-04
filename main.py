@@ -35,7 +35,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.7.1"
+version : str = "0.7.2"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -50,10 +50,7 @@ file_name : str = "classic"
 map_editor_helper_functions.save_load.Load_World(data, file_name)
 
 
-
-
-
-# Import other needed functions and classes
+# Renderer
 import renderer.tiles
 tile_renderer : renderer.tiles.Tiles = renderer.tiles.Tiles(data)
 import renderer.hud
@@ -62,27 +59,34 @@ import renderer.enemy
 enemy_renderer : renderer.enemy.Enemy = renderer.enemy.Enemy(data)
 import renderer.towers
 tower_renderer : renderer.towers.Towers = renderer.towers.Towers(data)
+import renderer.specialists
+specialist_renderer : renderer.specialists.Specialists = renderer.specialists.Specialists(data)
 import renderer.tower_info
 tower_info_renderer : renderer.tower_info.Tower_info = renderer.tower_info.Tower_info(data)
 import renderer.zones
 zone_renderer : renderer.zones.Zones = renderer.zones.Zones(data)
 
+# Enemies
 import enemy.move
 enemy_move : enemy.move.EnemyMove = enemy.move.EnemyMove(data)
 import enemy.wave_handler
 enemy_wave : enemy.wave_handler.Wave_handler = enemy.wave_handler.Wave_handler(data)
 
+# Debug Handler
 import debug.top_handler
 debug_handler : debug.top_handler.Top_handler = debug.top_handler.Top_handler(data)
 
+# Zones
 import zones.building
 zone_building : zones.building.Zone_building = zones.building.Zone_building(data)
 import zones.handle
 zone_handler : zones.handle.Zone_handler = zones.handle.Zone_handler(data)
 
+# Mods
 import mods.building
 mod_building : mods.building.Mod_building = mods.building.Mod_building(data)
 
+# Shops
 import shop.main
 shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_building, mod_building)
 
@@ -102,10 +106,13 @@ try:
 
             if not data.in_shop or shop_obj.shop_animation < shop_obj._max_shop_animation: # Player is not in shop or shop animation is finished
                 tower_renderer.Draw()
+                specialist_renderer.Draw() 
 
                 if not data.is_paused:
                     for tower in data.towers:
                         tower.Tick()    
+                    for specialist in data.specialists:
+                        specialist.Tick()
 
                     if not data.in_shop: # Player is not in shop
 
@@ -133,6 +140,15 @@ try:
                         break
                 if tower_delete_id != -1:
                     del data.towers[tower_delete_id]
+                # Delete unwanted specialists
+                specialist_delete_id : int = -1
+                for i in range(len(data.specialists)):
+                    if data.specialists[i]._marked_for_removal:
+                        specialist_delete_id = i
+                        break
+                if specialist_delete_id != -1:
+                    del data.specialists[specialist_delete_id]
+
 
             if not data.is_paused:    
                 if data.in_shop:

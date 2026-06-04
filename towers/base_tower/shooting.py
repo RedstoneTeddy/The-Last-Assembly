@@ -13,10 +13,10 @@ def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
         Update_shot(tower)
 
     tower._cooldown_timer += 1
-    if tower._cooldown_timer >= int(round(tower.cooldown)) and tower._shot_pos == (-1, -1):
+    if tower._cooldown_timer >= int(round(tower._actual_cooldown)) and tower._shot_pos == (-1, -1):
         center_pos : tuple[int, int] = (tower._pos[0]+1, tower._pos[1]+1)
         center_pos_screen : tuple[int, int] = tower.data.Get_World_to_Screen(center_pos)
-        shoot_at_id : int | None = Get_nearby_enemy(tower, center_pos_screen, tower.range * tower.data.tile_zoom, decision=tower._shoot_decision)
+        shoot_at_id : int | None = Get_nearby_enemy(tower, center_pos_screen, tower._actual_range * tower.data.tile_zoom, decision=tower._shoot_decision)
         if shoot_at_id is not None:
             tower._shot_pos = center_pos
             tower._shoot_at_id = shoot_at_id
@@ -110,7 +110,7 @@ def Update_shot(tower : 'base_tower.Base_tower') -> None:
             tower_center_pos_screen : tuple[int, int] = tower.data.Get_World_to_Screen(tower_center_pos)
             enemy_screen_pos : tuple[int, int] = tower.data.Get_World_to_Screen((tower.data.enemies.exact_pos[shoot_at_id][0] + 0.5, tower.data.enemies.exact_pos[shoot_at_id][1] + 0.5))
             distance : int = (enemy_screen_pos[0] - tower_center_pos_screen[0]) ** 2 + (enemy_screen_pos[1] - tower_center_pos_screen[1]) ** 2
-            if distance <= (tower.range * tower.data.tile_zoom + SHOOT_NEARBY_ENEMY_RADIUS*2) ** 2:
+            if distance <= (tower._actual_range * tower.data.tile_zoom + SHOOT_NEARBY_ENEMY_RADIUS*2) ** 2:
                 _Kill_shot(tower) # Kill the current shot if it travels too far to the new enemy
 
             tower._shoot_at_id = shoot_at_id
@@ -188,7 +188,7 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
 
 
 def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
-    damage_to_deal : float = tower.damage
+    damage_to_deal : float = tower._actual_damage
 
     # Check for focus-zone
     enemy_pos : tuple[int, int] = tower.data.enemies.position[tower._shoot_at_id]

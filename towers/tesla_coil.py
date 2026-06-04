@@ -10,7 +10,7 @@ class Tesla_coil(base.Base_tower):
         self.name : str = "Tesla Coil"
 
         self.number_of_frames : int = 7
-        self.animation_speed : int = 7
+        self.animation_speed : int = 8
         self.chance_to_start_animation : float = 1.0
 
         self.rarity : base.RARITIES = "Common"

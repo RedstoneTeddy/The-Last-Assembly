@@ -8,6 +8,7 @@ import enemy.enemy_data_class as enemy_data_class
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import towers.base_tower.base as base_tower
+    import specialists.base.base as base_specialist
 
 import random
 from time import time
@@ -56,6 +57,8 @@ class Data_class():
 
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
         self.towers : list[base_tower.Base_tower] = []
+        self.specialists : list[base_specialist.Base_specialist] = []
+        self.bought_specialists : list[str] = []        # Just a list of all internal names of the currently placed specialists
         self.zones : list[list[ZoneTypes]] = []
 
 
