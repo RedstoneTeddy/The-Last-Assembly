@@ -47,7 +47,7 @@ class Packs:
 
 
     def _Clear_pack_shop_elements(self):
-        while len(self.shop_main.shop_elements) > 5:
+        while len(self.shop_main.shop_elements) > self.data.shop_elements:
             self.shop_main.shop_elements.pop()
             self.shop_main.shop_element_costs.pop()
             self.shop_main.shop_element_types.pop()
@@ -196,7 +196,11 @@ class Packs:
                 self.data.Draw_text("Choose one Element :", (shop_rect[0] + shop_rect[2]//2 - 55*self.data.tile_zoom, shop_rect[1] + shop_rect[3] - 120*self.data.tile_zoom), self.data.tile_zoom*8, (255, 255, 255))
                 info_text : list[data_class.TextLine] = []
                 for i in range(contained_elements):
-                    j : int = i + 5
+                    j : int = i + self.data.shop_elements
+
+                    if len(self.shop_main.shop_elements) <= j:
+                        break
+
                     element_rect : tuple[int, int, int, int] = (
                         shop_rect[0] + shop_rect[2]//2 - int(40*self.data.tile_zoom*(i-contained_elements/2+1.0)) + 4*self.data.tile_zoom,
                         shop_rect[1] + shop_rect[3] - 100*self.data.tile_zoom,

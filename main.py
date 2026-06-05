@@ -22,7 +22,7 @@ root_logger.setLevel(logging.DEBUG)
 
 file_handler = logging.FileHandler("Log.txt", mode="w")
 file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(PathFormatter("%(asctime)s - %(levelname)s£ - %(source_file)s - %(message)s"))
+file_handler.setFormatter(PathFormatter("%(asctime)s - %(levelname)s - %(source_file)s - %(message)s"))
 
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.ERROR)
@@ -35,7 +35,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.8.2"
+version : str = "0.8.3"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -91,6 +91,9 @@ mod_building : mods.building.Mod_building = mods.building.Mod_building(data)
 # Shops
 import shop.main
 shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_building, mod_building)
+
+# Specialists
+import specialists.base.sell_effect
 
 
 
@@ -152,6 +155,7 @@ try:
                         specialist_delete_id = i
                         break
                 if specialist_delete_id != -1:
+                    specialists.base.sell_effect.Specialist_sell_effect(data.specialists[specialist_delete_id])
                     del data.specialists[specialist_delete_id]
                     del data.bought_specialists[specialist_delete_id]
                     for tower in data.towers: # Update tower's values

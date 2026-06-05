@@ -32,6 +32,7 @@ import specialists.zone_deal_hunter
 import specialists.specialist_deal_hunter
 import specialists.tower_deal_hunter
 import specialists.mod_deal_hunter
+import specialists.more_stock
 
 
 import shop.packs
@@ -265,16 +266,21 @@ class Shop:
 
         # Display shop elements
         if not self.data.shop_minimized:
-            if len(self.shop_elements) == 0:
+            if len(self.shop_elements) < self.data.shop_elements:
                 self.Generate_shop()
 
             info_text : list[data_class.TextLine] = []
             
-            for i in range(5):
+            for i in range(self.data.shop_elements):
                 if self.shop_element_bought[i]:
                     continue
+                element_x : int = shop_rect[0] + shop_rect[2]//2 + i * 40 * self.data.tile_zoom
+                if self.data.shop_elements%2 == 1:
+                    element_x -= (self.data.shop_elements//2 * 40 + 16) * self.data.tile_zoom
+                else:
+                    element_x -= (self.data.shop_elements//2 * 40 - 4) * self.data.tile_zoom
                 element_rect : tuple[int, int, int, int] = (
-                    shop_rect[0] + shop_rect[2]//2 - (16+2*40)*self.data.tile_zoom + i * 40 * self.data.tile_zoom,
+                    element_x,
                     minimize_rect[1] + 60 * self.data.tile_zoom,
                     32 * self.data.tile_zoom,
                     32 * self.data.tile_zoom
@@ -330,7 +336,7 @@ class Shop:
         element_image : pg.Surface = self.images[self.shop_elements[i]]
         self.data.screen.blit(element_image, (element_rect[0], element_rect[1]))
 
-        if self.pack_obj.pack_type != "" and i < 5:
+        if self.pack_obj.pack_type != "" and i < self.data.shop_elements:
             self.data.screen.blit(self.images["gray_out"], (element_rect[0], element_rect[1]))
                  
                 # If hovered, show info box and buy option
@@ -514,8 +520,8 @@ class Shop:
                 if tile == "gold":
                     gold_zone_count += 1
         if gold_zone_count > 0:
-            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 30}$")
-            total_cash += gold_zone_count * 30
+            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 25}$")
+            total_cash += gold_zone_count * 25
 
         # Specialist wages
         total_wages : int = 0
@@ -534,19 +540,19 @@ class Shop:
 
     def Generate_shop(self) -> None:
         """
-        Generates 5 shop elements where the first two are always towers and the other three are randomized
-        Shop of Wave 0 always shows 5 common towers.
+        Generates the specified number of shop elements where the first two are always towers and the other elements are randomized
+        Shop of Wave 0 always shows the specified number of common towers.
         """
         logging.info("Generating new shop-elements")
         self.__Clear_shop()
 
         if self.data.wave == 0: # First wave
-            for _ in range(5):
+            for _ in range(self.data.shop_elements):
                 self._Generate_tower("Common")
         else:
             self._Generate_tower("Common")
             # self._Generate_tower("")
-            for _ in range(4):
+            for _ in range(self.data.shop_elements - 1):
                 self.__Generate_random_element()
 
 
@@ -827,7 +833,8 @@ class Shop:
             specialists.zone_deal_hunter.Zone_deal_hunter,
             specialists.mod_deal_hunter.Mod_deal_hunter,
             specialists.specialist_deal_hunter.Specialist_deal_hunter,
-            specialists.tower_deal_hunter.Tower_deal_hunter
+            specialists.tower_deal_hunter.Tower_deal_hunter,
+            specialists.more_stock.More_stock
         ]
 
         for specialist_class in self.__specialist_classes:

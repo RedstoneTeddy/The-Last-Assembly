@@ -70,6 +70,7 @@ class Data_class():
         self.zone_cost : int = 130
         self.mod_cost : int = 80
         self.specialist_cost : int = 150
+        self.shop_elements : int = 5
         
 
         # Menu variables
@@ -224,5 +225,5 @@ SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
 
 TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper"]
 SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
-                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter"]
+                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock"]
             

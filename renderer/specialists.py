@@ -14,6 +14,7 @@ import specialists.zone_deal_hunter
 import specialists.specialist_deal_hunter
 import specialists.tower_deal_hunter
 import specialists.mod_deal_hunter
+import specialists.more_stock
 
 
 class Specialists:
@@ -49,6 +50,8 @@ class Specialists:
         temp_specialist = specialists.tower_deal_hunter.Tower_deal_hunter(self.data)
         self.__Load_original_images_of_specialist(temp_specialist)
         temp_specialist = specialists.mod_deal_hunter.Mod_deal_hunter(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.more_stock.More_stock(self.data)
         self.__Load_original_images_of_specialist(temp_specialist)
         
 

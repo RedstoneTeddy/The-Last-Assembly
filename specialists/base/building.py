@@ -3,6 +3,7 @@ if TYPE_CHECKING:
     import data_class
     import specialists.base.base as base
 import pygame as pg
+import specialists.base.buy_effect
 
 def Tick_building(specialist : "base.Base_specialist") -> None:
     """
@@ -57,6 +58,7 @@ def Tick_building(specialist : "base.Base_specialist") -> None:
                 specialist.data.bought_specialists.append(specialist.internal_name)
                 for tower in specialist.data.towers: # Update their values
                     tower.Wave_start_calculations()
+                specialists.base.buy_effect.Specialist_buy_effect(specialist)
 
         else:
             specialist._build_hologram_allowed = False
