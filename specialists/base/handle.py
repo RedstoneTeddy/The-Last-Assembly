@@ -31,4 +31,8 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             if "economist_researcher" in tower.data.bought_specialists:
                 tower._actual_range = int(tower._actual_range * 1.25)
                 tower._actual_cooldown *= 0.7
+        case "sniper":
+            if "sniper_researcher" in tower.data.bought_specialists:
+                tower._actual_damage *= 1.25
+                tower._actual_cooldown *= 0.85
 

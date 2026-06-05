@@ -9,6 +9,7 @@ import towers.cannon
 import towers.tesla_coil
 import towers.zapper
 import towers.economist
+import towers.sniper
 
 
 
@@ -35,6 +36,8 @@ class Towers:
         temp_tower = towers.zapper.Zapper(self.data)
         self.__Load_original_images_of_tower(temp_tower)
         temp_tower = towers.economist.Economist(self.data)
+        self.__Load_original_images_of_tower(temp_tower)
+        temp_tower = towers.sniper.Sniper(self.data)
         self.__Load_original_images_of_tower(temp_tower)
 
         # Red and green alpha overlay for build-hologram
@@ -127,6 +130,10 @@ class Towers:
                     self.data.screen.blit(self.images["green_overlay"], pos)
                 else:
                     self.data.screen.blit(self.images["red_overlay"], pos)
+
+                if tower.range > 0:
+                    center_pos : tuple[int, int] = self.data.Get_World_to_Screen((tower._pos[0]+1, tower._pos[1]+1))
+                    pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, tower.range*self.data.tile_zoom, self.data.tile_zoom)
 
 
 

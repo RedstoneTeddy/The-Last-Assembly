@@ -67,6 +67,7 @@ class Base_tower:
         self._shoot_at_id : int = -1
         self._shoot_at_pos : tuple[float, float] = (-1, -1)
         self._shot_direction : Literal["Up", "Down", "Left", "Right"] = "Up" # Only used for rendering
+        self._rotate_timer : int = 0
         self._marked_for_removal : bool = False
 
         # Modification variables
@@ -170,6 +171,7 @@ class Base_tower:
 
         if self._is_placed:
             if self.data.in_shop and not self.data.shop_minimized:
+                self._is_selected = False
                 return
             
             if self.data.start_next_wave:

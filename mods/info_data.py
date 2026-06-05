@@ -94,7 +94,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["bounty_hunter"] = [
         data_class.TextLine(text="Bounty Hunter", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="25% chance to", color=chance_color, icon="", is_small=False),
+        data_class.TextLine(text="20% chance to", color=chance_color, icon="", is_small=False),
         data_class.TextLine(text="gain 1$ when", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="enemy dies", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
@@ -144,12 +144,12 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
     return output
 
 
-def Get_useless_towers(mod: data_class.ModTypes) -> list[str]:
+def Get_useless_towers(mod: data_class.ModTypes) -> list[data_class.TowerNames]:
     """Returns a list of tower names that are useless with the given mod."""
-    output: list[str] = []
+    output: list[data_class.TowerNames] = []
 
     if mod == "explosive":
-        output = ["combat_robot", "gear_thrower", "zapper", "economist"]
+        output = ["combat_robot", "gear_thrower", "zapper", "economist", "sniper"]
 
     if mod == "critical_core":
         output = ["economist"]
@@ -175,9 +175,6 @@ def Get_useless_towers(mod: data_class.ModTypes) -> list[str]:
     if mod == "roulette_round":
         output = ["economist"]
 
-        
-    
-    
 
 
     return output

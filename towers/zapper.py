@@ -14,10 +14,10 @@ class Zapper(base.Base_tower):
         self.chance_to_start_animation : float = 0.02
 
         self.rarity : base.RARITIES = "Common"
-        self.build_cost : int = 140
+        self.build_cost : int = 130
 
-        self.range : int = 6*12
-        self.damage : float = 5
+        self.range : int = 5*12
+        self.damage : float = 6
         self.cooldown : float = 60.0
         self.shot_speed : int = 2
         self.damage_type : base.DAMAGE_TYPES = "Electrical"

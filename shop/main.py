@@ -18,6 +18,7 @@ import towers.cannon
 import towers.tesla_coil
 import towers.zapper
 import towers.economist
+import towers.sniper
 
 import specialists.base.base
 import specialists.tesla_coil_researcher
@@ -26,6 +27,7 @@ import specialists.gear_thrower_researcher
 import specialists.zapper_researcher
 import specialists.combat_robot_researcher
 import specialists.economist_researcher
+import specialists.sniper_researcher
 
 import shop.packs
 
@@ -565,6 +567,8 @@ class Shop:
             0.5, # pack
             0.0 # specialist (can only be get from packs)
         ]
+        if self.data.wave < 2:
+            element_weights[3] = 0 # Disable packs for the first 2 waves
 
         element_type : int = self.data.shop_random.choices(
             population=[0, 1, 2, 3, 4],
@@ -595,8 +599,8 @@ class Shop:
             0.15, # zone_pack2
             0.5,  # mod_pack
             0.25, # mod_pack2
-            0.14, # specialist_pack
-            0.07  # specialist_pack2
+            0.16, # specialist_pack
+            0.08  # specialist_pack2
         ]
         if self.data.wave < 5:
             # Disable specialist packs for the first 5 waves
@@ -757,7 +761,8 @@ class Shop:
             towers.cannon.Cannon,
             towers.tesla_coil.Tesla_coil,
             towers.zapper.Zapper,
-            towers.economist.Economist
+            towers.economist.Economist,
+            towers.sniper.Sniper
         ]
 
         for tower_class in self.__tower_classes:
@@ -780,7 +785,8 @@ class Shop:
             specialists.gear_thrower_researcher.Gear_thrower_researcher,
             specialists.combat_robot_researcher.Combat_robot_researcher,
             specialists.economist_researcher.Economist_researcher,
-            specialists.zapper_researcher.Zapper_researcher
+            specialists.zapper_researcher.Zapper_researcher,
+            specialists.sniper_researcher.Sniper_researcher
         ]
 
         for specialist_class in self.__specialist_classes:

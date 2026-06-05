@@ -40,6 +40,8 @@ import towers.combat_robot
 all_towers.append(towers.combat_robot.Combat_robot(data))
 import towers.economist
 all_towers.append(towers.economist.Economist(data))
+import towers.sniper
+all_towers.append(towers.sniper.Sniper(data))
 
 
 print("DpS := Damage per second (= damage / cooldown)")

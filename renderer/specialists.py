@@ -9,6 +9,7 @@ import specialists.gear_thrower_researcher
 import specialists.zapper_researcher
 import specialists.combat_robot_researcher
 import specialists.economist_researcher
+import specialists.sniper_researcher
 
 
 class Specialists:
@@ -34,6 +35,8 @@ class Specialists:
         temp_specialist = specialists.combat_robot_researcher.Combat_robot_researcher(self.data)
         self.__Load_original_images_of_specialist(temp_specialist)
         temp_specialist = specialists.economist_researcher.Economist_researcher(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.sniper_researcher.Sniper_researcher(self.data)
         self.__Load_original_images_of_specialist(temp_specialist)
 
         # Red and green alpha overlay for build-hologram

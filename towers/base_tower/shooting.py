@@ -13,6 +13,7 @@ def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
         Update_shot(tower)
 
     tower._cooldown_timer += 1
+    tower._rotate_timer += 1
     if tower._cooldown_timer >= int(round(tower._actual_cooldown)) and tower._shot_pos == (-1, -1):
         center_pos : tuple[int, int] = (tower._pos[0]+1, tower._pos[1]+1)
         center_pos_screen : tuple[int, int] = tower.data.Get_World_to_Screen(center_pos)
@@ -26,17 +27,19 @@ def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
 
             # Set the shot_direction
             if not tower.dont_rotate:
-                difference : tuple[float, float] = (tower._shoot_at_pos[0] - tower._shot_pos[0], tower._shoot_at_pos[1] - tower._shot_pos[1])
-                if abs(difference[0]) > abs(difference[1]):
-                    if difference[0] > 0:
-                        tower._shot_direction = "Right"
-                    else:
-                        tower._shot_direction = "Left"
-                else:
-                    if difference[1] > 0:
-                        tower._shot_direction = "Down"
-                    else:
-                        tower._shot_direction = "Up"
+                if tower._rotate_timer >= 40: # Only update the shot direction every 10 ticks to prevent it from changing too rapidly
+                    tower._rotate_timer = 0
+                    difference : tuple[float, float] = (tower._shoot_at_pos[0] - tower._shot_pos[0], tower._shoot_at_pos[1] - tower._shot_pos[1])
+                    if abs(difference[0]) > abs(difference[1])*1.2:
+                        if difference[0] > 0:
+                            tower._shot_direction = "Right"
+                        elif difference[0] < 0:
+                            tower._shot_direction = "Left"
+                    elif abs(difference[0])*1.2 < abs(difference[1]):
+                        if difference[1] > 0:
+                            tower._shot_direction = "Down"
+                        elif difference[1] < 0:
+                            tower._shot_direction = "Up"
 
             Update_shot(tower)
 

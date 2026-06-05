@@ -43,6 +43,8 @@ class Zone_handler:
 
                         case "hack":
                             if self.data.path_random.random() < 0.25:
+                                if enemies.special_type.get(enemy_id, "") == "ironclad":
+                                    continue
                                 enemies.health[enemy_id] -= 3
                                 if enemies.health[enemy_id] <= 0:
                                     enemies.Remove_enemy(enemy_id)

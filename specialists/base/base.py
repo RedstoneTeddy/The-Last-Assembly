@@ -84,6 +84,7 @@ class Base_specialist:
 
         if self._is_placed:
             if self.data.in_shop and not self.data.shop_minimized:
+                self._is_selected = False
                 return
             
             specialist_rect : tuple[int, int, int, int] = (
