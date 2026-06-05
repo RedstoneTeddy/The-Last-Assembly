@@ -65,8 +65,8 @@ class Data_class():
         # Game parameters
         self.max_mods_per_tower : int = 8
         self.money_per_round : int = 100
-        self.interest_per_100 : int = 10
-        self.interest_cap : int = 50
+        self.interest_per_100 : int = 20
+        self.interest_cap : int = 100
         self.zone_cost : int = 130
         self.mod_cost : int = 80
         self.specialist_cost : int = 150
@@ -223,5 +223,6 @@ ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "w
 SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
 
 TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper"]
-SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher"]
+SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
+                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter"]
             

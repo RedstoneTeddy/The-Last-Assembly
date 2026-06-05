@@ -28,6 +28,11 @@ import specialists.zapper_researcher
 import specialists.combat_robot_researcher
 import specialists.economist_researcher
 import specialists.sniper_researcher
+import specialists.zone_deal_hunter
+import specialists.specialist_deal_hunter
+import specialists.tower_deal_hunter
+import specialists.mod_deal_hunter
+
 
 import shop.packs
 
@@ -612,7 +617,11 @@ class Shop:
         )[0]
         if pack_type == 0:
             self.shop_elements.append("tower_pack")
-            self.shop_element_costs.append(int(120))
+            if "tower_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(120*0.75)
+            else:
+                pack_cost : int = int(120)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Tower Box", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -620,7 +629,11 @@ class Shop:
             ])
         elif pack_type == 1:
             self.shop_elements.append("tower_pack2")
-            self.shop_element_costs.append(int(120*1.5))
+            if "tower_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(120*1.5*0.75)
+            else:
+                pack_cost : int = int(120*1.5)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Tower Box 2", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -628,7 +641,11 @@ class Shop:
             ])
         elif pack_type == 2:
             self.shop_elements.append("zone_pack")
-            self.shop_element_costs.append(int(self.data.zone_cost))
+            if "zone_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(self.data.zone_cost*0.75)
+            else:
+                pack_cost : int = int(self.data.zone_cost)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Zone Box", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -636,7 +653,11 @@ class Shop:
             ])
         elif pack_type == 3:
             self.shop_elements.append("zone_pack2")
-            self.shop_element_costs.append(int(self.data.zone_cost * 1.5))
+            if "zone_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(self.data.zone_cost * 1.5 * 0.75)
+            else:
+                pack_cost : int = int(self.data.zone_cost * 1.5)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Zone Box 2", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -644,7 +665,11 @@ class Shop:
             ])
         elif pack_type == 4:
             self.shop_elements.append("mod_pack")
-            self.shop_element_costs.append(int(self.data.mod_cost))
+            if "mod_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(self.data.mod_cost * 0.75)
+            else:
+                pack_cost : int = int(self.data.mod_cost)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Mod Box", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -652,7 +677,11 @@ class Shop:
             ])
         elif pack_type == 5:
             self.shop_elements.append("mod_pack2")
-            self.shop_element_costs.append(int(self.data.mod_cost * 1.5))
+            if "mod_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(self.data.mod_cost * 1.5 * 0.75)
+            else:
+                pack_cost : int = int(self.data.mod_cost * 1.5)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Mod Box 2", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -660,7 +689,11 @@ class Shop:
             ])
         elif pack_type == 6:
             self.shop_elements.append("specialist_pack")
-            self.shop_element_costs.append(int(self.data.specialist_cost))
+            if "specialist_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(self.data.specialist_cost * 0.75)
+            else:
+                pack_cost : int = int(self.data.specialist_cost)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Specialist Box", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -668,7 +701,11 @@ class Shop:
             ])
         elif pack_type == 7:
             self.shop_elements.append("specialist_pack2")
-            self.shop_element_costs.append(int(self.data.specialist_cost * 1.5))
+            if "specialist_deal_hunter" in self.data.bought_specialists:
+                pack_cost : int = int(self.data.specialist_cost * 1.5 * 0.75)
+            else:
+                pack_cost : int = int(self.data.specialist_cost * 1.5)
+            self.shop_element_costs.append(pack_cost)
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Specialist Box 2", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
@@ -786,7 +823,11 @@ class Shop:
             specialists.combat_robot_researcher.Combat_robot_researcher,
             specialists.economist_researcher.Economist_researcher,
             specialists.zapper_researcher.Zapper_researcher,
-            specialists.sniper_researcher.Sniper_researcher
+            specialists.sniper_researcher.Sniper_researcher,
+            specialists.zone_deal_hunter.Zone_deal_hunter,
+            specialists.mod_deal_hunter.Mod_deal_hunter,
+            specialists.specialist_deal_hunter.Specialist_deal_hunter,
+            specialists.tower_deal_hunter.Tower_deal_hunter
         ]
 
         for specialist_class in self.__specialist_classes:

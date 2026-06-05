@@ -10,6 +10,10 @@ import specialists.zapper_researcher
 import specialists.combat_robot_researcher
 import specialists.economist_researcher
 import specialists.sniper_researcher
+import specialists.zone_deal_hunter
+import specialists.specialist_deal_hunter
+import specialists.tower_deal_hunter
+import specialists.mod_deal_hunter
 
 
 class Specialists:
@@ -38,6 +42,15 @@ class Specialists:
         self.__Load_original_images_of_specialist(temp_specialist)
         temp_specialist = specialists.sniper_researcher.Sniper_researcher(self.data)
         self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.zone_deal_hunter.Zone_deal_hunter(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.specialist_deal_hunter.Specialist_deal_hunter(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.tower_deal_hunter.Tower_deal_hunter(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        temp_specialist = specialists.mod_deal_hunter.Mod_deal_hunter(self.data)
+        self.__Load_original_images_of_specialist(temp_specialist)
+        
 
         # Red and green alpha overlay for build-hologram
         red_overlay : pg.Surface = pg.Surface((24, 24), pg.SRCALPHA)
