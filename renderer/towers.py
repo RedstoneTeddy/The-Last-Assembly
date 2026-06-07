@@ -3,13 +3,7 @@ import pygame as pg
 import random
 import towers.base_tower.base as base
 
-import towers.combat_robot
-import towers.gear_thrower
-import towers.cannon
-import towers.tesla_coil
-import towers.zapper
-import towers.economist
-import towers.sniper
+import towers.base_tower.collection
 
 
 
@@ -25,20 +19,10 @@ class Towers:
         self.tower_offset : int = (self.tower_size - 2*12) // 2
 
         # Load all original images
-        temp_tower : base.Base_tower = towers.combat_robot.Combat_robot(self.data)
-        self.__Load_original_images_of_tower(temp_tower)
-        temp_tower = towers.gear_thrower.Gear_thrower(self.data)
-        self.__Load_original_images_of_tower(temp_tower)
-        temp_tower = towers.cannon.Cannon(self.data)
-        self.__Load_original_images_of_tower(temp_tower)
-        temp_tower = towers.tesla_coil.Tesla_coil(self.data)
-        self.__Load_original_images_of_tower(temp_tower)
-        temp_tower = towers.zapper.Zapper(self.data)
-        self.__Load_original_images_of_tower(temp_tower)
-        temp_tower = towers.economist.Economist(self.data)
-        self.__Load_original_images_of_tower(temp_tower)
-        temp_tower = towers.sniper.Sniper(self.data)
-        self.__Load_original_images_of_tower(temp_tower)
+        for tower_type in towers.base_tower.collection.all_towers:
+            temp_tower : base.Base_tower = tower_type(self.data)
+            self.__Load_original_images_of_tower(temp_tower)
+
 
         # Red and green alpha overlay for build-hologram
         red_overlay : pg.Surface = pg.Surface((24, 24), pg.SRCALPHA)

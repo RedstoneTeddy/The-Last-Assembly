@@ -18,6 +18,7 @@ class Data_class():
     def __init__(self, version : str) -> None:
         self.version = version
 
+        # Window Settings
         self.screen_size : tuple[int, int] = (32*30, 18*30)
         self.screen_size_before_fullscreen : tuple[int, int] = self.screen_size
         self.is_fullscreen : bool = False
@@ -31,7 +32,7 @@ class Data_class():
         pg.display.set_caption(self.screen_title)
         self.Check_resize(force=True)
         
-
+        # Basic window variables
         self.run : bool = True
         self.mouse_wheel_up : bool = False
         self.mouse_wheel_down : bool = False
@@ -81,6 +82,9 @@ class Data_class():
         self.shop_minimized : bool = False
         self.start_next_wave : bool = False 
         self.is_building : Literal["", "tower", "zone", "mod", "specialist"] = ""
+
+        # Settings
+        self.double_speed : bool = False
 
 
         # Random generators
@@ -223,7 +227,8 @@ ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "sl
 ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "explosive", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
 SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
 
-TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper"]
+TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper",
+                     "catalyst", "repeater", "observer", "lieutenant"]
 SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
-                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock"]
+                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher"]
             

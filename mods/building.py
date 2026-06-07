@@ -75,7 +75,7 @@ class Mod_building:
                 mod_count : int = 0
                 for mod_name, count in found_tower._mods.items():
                     mod_count += count
-                if mod_count >= self.data.max_mods_per_tower and self.build_mod not in ["first_one", "last_one", "close_sighted", "weak_spotter", "hunter_ai"]:
+                if mod_count >= self.data.max_mods_per_tower + found_tower.delta_mod_limit and self.build_mod not in ["first_one", "last_one", "close_sighted", "weak_spotter", "hunter_ai"]:
                     can_build = "False"
 
             # Render build hologram
@@ -178,10 +178,16 @@ class Mod_building:
             tower.cooldown *= 1.25
         elif self.build_mod == "bloodthirst":
             if tower._bloodthirst_chance <= 0.01:
-                tower._bloodthirst_chance = 0.025
+                if "vampire" in self.data.bought_specialists:
+                    tower._bloodthirst_chance = 0.028
+                else:
+                    tower._bloodthirst_chance = 0.023
             else:
                 before = 1 - tower._bloodthirst_chance
-                tower._bloodthirst_chance = 1 - (before * 0.975)
+                if "vampire" in self.data.bought_specialists:
+                    tower._bloodthirst_chance = 1 - (before * 0.972)
+                else:
+                    tower._bloodthirst_chance = 1 - (before * 0.977)
         elif self.build_mod == "finisher":
             tower._extra_dmg_for_low_health *= 1.5
         elif self.build_mod == "slow_shot":

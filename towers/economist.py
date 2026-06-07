@@ -24,6 +24,8 @@ class Economist(base.Base_tower):
         self.blast_radius : int = 0
 
         self.dont_rotate : bool = True
+
+        self.delta_mod_limit : int = -4
         
     def Get_specific_info_texts(self) -> list[data_class.TextLine]:
         return [

@@ -50,7 +50,8 @@ def Tick_building(tower : "base.Base_tower") -> None:
                 tower._sell_value = tower.build_cost // 2
                 tower.data.is_building = ""
                 tower.data.shop_minimized = False
-                tower.Wave_start_calculations()
+                for other_tower in tower.data.towers:
+                    other_tower.Wave_start_calculations()
 
         else:
             tower._build_hologram_allowed = False

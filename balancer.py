@@ -28,20 +28,9 @@ print("\n---- Balacing Helper Script ----")
 # Load all tower-data
 import towers.base_tower.base
 all_towers : list[towers.base_tower.base.Base_tower] = []
-import towers.gear_thrower
-all_towers.append(towers.gear_thrower.Gear_thrower(data))
-import towers.cannon
-all_towers.append(towers.cannon.Cannon(data))
-import towers.tesla_coil
-all_towers.append(towers.tesla_coil.Tesla_coil(data))
-import towers.zapper
-all_towers.append(towers.zapper.Zapper(data))
-import towers.combat_robot
-all_towers.append(towers.combat_robot.Combat_robot(data))
-import towers.economist
-all_towers.append(towers.economist.Economist(data))
-import towers.sniper
-all_towers.append(towers.sniper.Sniper(data))
+import towers.base_tower.collection
+for tower_type in towers.base_tower.collection.all_towers:
+    all_towers.append(tower_type(data))
 
 
 print("DpS := Damage per second (= damage / cooldown)")

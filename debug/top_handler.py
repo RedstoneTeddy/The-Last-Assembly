@@ -39,6 +39,10 @@ class Top_handler:
                     self.selected_debug_menu = "None"
                 else:
                     self.selected_debug_menu = "SortedWorld"
+        elif keys[pg.K_F5]:
+            if not self.debug_pressed:
+                self.debug_pressed = True
+                self.data.double_speed = not self.data.double_speed
         else:
             self.debug_pressed = False
 
@@ -69,10 +73,13 @@ class Top_handler:
             f"Frame Time: {round(sum(self.mspf_list) / len(self.mspf_list) if len(self.mspf_list) > 0 else 0, 2)} ms",
             f"Wave Gen Time: {round(self.data._last_wave_gen_time, 2)} ms",
             f"Zoom: {self.data.tile_zoom}x",
+            f"Double Speed: {'On' if self.data.double_speed else 'Off'}",
             "F1 - FPS & Info",
             "F2 - Sorted World", 
             "F3 - No Clock",
-            "F4 - Slow Clock"
+            "F4 - Slow Clock",
+            "F5 - Double Speed",
+            "F11 - Fullscreen"
         ]
         pg.draw.rect(self.data.screen, (255, 255, 255), (0, 0, 70*self.data.tile_zoom, len(lines)*6*self.data.tile_zoom+10))
         for i, line in enumerate(lines):

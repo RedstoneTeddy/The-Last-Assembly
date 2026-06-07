@@ -15,3 +15,12 @@ def Specialist_buy_effect(specialist : "base.Base_specialist") -> None:
         case "more_stock":
             data.shop_elements += 1
 
+        case "vampire":
+            for tower in data.towers:
+                bloodthirst_level : int = tower._mods.get("bloodthirst", 0)
+                if bloodthirst_level > 0:
+                    tower._bloodthirst_chance = 0.00
+                    for _ in range(bloodthirst_level):
+                        before = 1 - tower._bloodthirst_chance
+                        tower._bloodthirst_chance = 1 - (before * 0.972)
+

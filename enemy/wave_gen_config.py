@@ -29,11 +29,21 @@ class WaveGenConfig:
     """
     #### - General parameters - ####
     base_budget : int = 60 # Base budget (for the 1. wave)
-    budget_increase : float = 1.22 # Multiplier for the budget increase per wave
+    budget_increase : list[float] = [   # Multiplier for the budget increase per wave (e.g. 1.1 means +10% per wave)
+        1.220, # Wave 1-10
+        1.200, # Wave 11-20
+        1.175, # Wave 21-30
+        1.250  # Wave 31+
+    ]
     budget_random_factor : float = 0.1 # Random factor for the budget (e.g. 0.1 means +/- 10% randomization)
 
     base_time : int = 60*50 # Base time (for the 1. wave)
-    time_increase_fix : float = int(60*2)
+    time_increase_fix : list[float] = [
+        120, # Wave 1-10
+        110, # Wave 11-20
+        100, # Wave 21-30
+         60  # Wave 31+
+    ]
     time_random_factor : float = 0.1
 
     base_num_groups : float = 6.0

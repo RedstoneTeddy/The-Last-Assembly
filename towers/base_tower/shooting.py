@@ -174,7 +174,7 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
             # Bloodthirst
             if tower._bloodthirst_chance > 0:
                 if tower.data.path_random.random() < tower._bloodthirst_chance:
-                    tower.damage *= 1.025
+                    tower.damage *= 1.023
 
         else:
             # Cryo_rounds
@@ -212,6 +212,20 @@ def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
     # Roulette Round
     if tower._roulette_multiplier > 1:
         damage_to_deal *= tower.data.path_random.uniform(1/tower._roulette_multiplier, tower._roulette_multiplier)
+
+    # Catalyst special effect
+    if tower.internal_name == "catalyst":
+        # For each effect on the enemy, increase the damage by 100%
+        effects_on_enemy : int = 0
+        if tower.data.enemies.slowness.get(tower._shoot_at_id, 0) > 0:
+            effects_on_enemy += 1
+        if tower.data.enemies.golden.get(tower._shoot_at_id, 0) > 0:
+            effects_on_enemy += 1
+        if tower.data.enemies.speed.get(tower._shoot_at_id, 0) > 0:
+            effects_on_enemy += 1
+        if tower.data.enemies.frozen.get(tower._shoot_at_id, 0) > 0:
+            effects_on_enemy += 1
+        damage_to_deal *= (1 + effects_on_enemy)
     
     return damage_to_deal
 

@@ -15,13 +15,13 @@ import logging
 #     format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s"
 # )
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.ERROR)
+console_handler.setLevel(logging.WARNING)
 console_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(filename)s - %(message)s")
 console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.5.1"
+version : str = "0.9.0"
 data : Data_class = Data_class(version)
 
 
@@ -67,8 +67,11 @@ for i in range(1, 31):
             total_health += health
             if tick > max_time:
                 max_time = tick
+
         temp_health.append(total_health)
         temp_time.append(max_time)
+
+
 
     end_time = time()
     generation_time.append(end_time - start_time) # This is directly in ms per 1 generation
@@ -86,6 +89,8 @@ for i in range(1, 31):
         ht_ratio_derivative.append(derivative)
     else:
         ht_ratio_derivative.append(0.0)
+    
+    
 
 # Generate group-weights
 group_names : list[str] = []

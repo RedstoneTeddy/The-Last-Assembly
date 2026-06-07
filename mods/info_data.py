@@ -110,10 +110,10 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["bloodthirst"] = [
         data_class.TextLine(text="Bloodthirst", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="2.5% chance per", color=chance_color, icon="", is_small=False),
+        data_class.TextLine(text="2.3% chance per", color=chance_color, icon="", is_small=False),
         data_class.TextLine(text="killed enemy", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="for permanent", color=default_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 2.5%", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="+ 2.3%", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 
@@ -148,33 +148,55 @@ def Get_useless_towers(mod: data_class.ModTypes) -> list[data_class.TowerNames]:
     """Returns a list of tower names that are useless with the given mod."""
     output: list[data_class.TowerNames] = []
 
-    if mod == "explosive":
-        output = ["combat_robot", "gear_thrower", "zapper", "economist", "sniper"]
+    if mod == "hunter_ai":
+        output = ["lieutenant", "observer"]
+
+    if mod == "first_one":
+        output = ["lieutenant", "observer"]
+
+    if mod == "last_one":
+        output = ["lieutenant", "observer"]
+
+    if mod == "close_sighted":  
+        output = ["lieutenant", "observer"]
+
+    if mod == "weak_spotter":
+        output = ["lieutenant", "observer"]
+
+    if mod == "rapid_loader":
+        output = ["repeater", "lieutenant", "observer"]
 
     if mod == "critical_core":
-        output = ["economist"]
+        output = ["economist", "repeater", "lieutenant", "observer"]
+    
+    if mod == "cryo_rounds":
+        output = ["lieutenant", "observer"]
+
+    if mod == "spyglass":
+        output = ["repeater"]
 
     if mod == "sharpshooter":
-        output = ["economist"]
+        output = ["economist", "repeater", "lieutenant", "observer"]
+
+    if mod == "explosive":
+        output = ["combat_robot", "gear_thrower", "zapper", "economist", "sniper", "catalyst", "repeater", "lieutenant", "observer"]
 
     if mod == "bounty_hunter":
-        output = ["economist"]
+        output = ["economist", "lieutenant", "observer"]
         
     if mod == "heavy_rounds":
-        output = ["economist"]
+        output = ["economist", "repeater", "lieutenant", "observer"]
         
     if mod == "bloodthirst":
-        output = ["economist"]
+        output = ["economist", "repeater", "lieutenant", "observer"]
 
     if mod == "finisher":
-        output = ["economist"]
+        output = ["economist", "lieutenant", "observer"]
         
     if mod == "slow_shot":
-        output = ["economist"]
+        output = ["economist", "lieutenant", "observer"]
         
     if mod == "roulette_round":
-        output = ["economist"]
-
-
+        output = ["economist", "lieutenant", "observer"]
 
     return output

@@ -12,27 +12,10 @@ import mods.building
 import mods.info_data
 
 import towers.base_tower.base
-import towers.combat_robot
-import towers.gear_thrower
-import towers.cannon
-import towers.tesla_coil
-import towers.zapper
-import towers.economist
-import towers.sniper
+import towers.base_tower.collection
 
 import specialists.base.base
-import specialists.tesla_coil_researcher
-import specialists.cannon_researcher
-import specialists.gear_thrower_researcher
-import specialists.zapper_researcher
-import specialists.combat_robot_researcher
-import specialists.economist_researcher
-import specialists.sniper_researcher
-import specialists.zone_deal_hunter
-import specialists.specialist_deal_hunter
-import specialists.tower_deal_hunter
-import specialists.mod_deal_hunter
-import specialists.more_stock
+import specialists.base.collection
 
 
 import shop.packs
@@ -548,7 +531,7 @@ class Shop:
 
         if self.data.wave == 0: # First wave
             for _ in range(self.data.shop_elements):
-                self._Generate_tower("Common")
+                self._Generate_tower("Common", no_double=False)
         else:
             self._Generate_tower("Common")
             # self._Generate_tower("")
@@ -722,12 +705,20 @@ class Shop:
 
 
 
-    def _Generate_tower(self, rarity : towers.base_tower.base.RARITIES = "") -> None:
+    def _Generate_tower(self, rarity : towers.base_tower.base.RARITIES = "", no_double : bool = True) -> None:
         """
         Generates a random tower of the given rarity. If rarity is empty, it will be randomized.
         """
+        double_tries : int = 0
         while True:
             random_index : int = self.data.shop_random.randint(0, len(self.__tower_classes)-1)
+            if no_double and self.__tower_names[random_index] in self.shop_elements:
+                double_tries += 1
+                if double_tries > 10:
+                    logging.warning("Failed to generate tower after 10 tries.")
+                    self._Generate_tower(rarity = rarity, no_double = False)
+                    break
+                continue
             if rarity == "" or self.__tower_rarities[random_index] == rarity:
                 self.shop_elements.append(self.__tower_names[random_index])
                 self.shop_element_types.append("tower")
@@ -753,7 +744,7 @@ class Shop:
             if not allowed:
                 fails += 1
                 if fails > 10:
-                    logging.warning("Failed to generate specialist after 10 tries. This can happen if there are only a few specialists and most of them are already bought or in the shop.")
+                    logging.warning("Failed to generate specialist after 10 tries.")
                     self._Generate_tower()
                     break
                 continue
@@ -767,46 +758,64 @@ class Shop:
 
 
 
-    def _Generate_zone(self) -> None:
+    def _Generate_zone(self, no_double : bool = True) -> None:
         """
         Generates a random zone.
         """
-        random_index : int = self.data.shop_random.randint(0, len(self.__zone_names)-1)
-        if (self.__zone_names[random_index] == "tax") and (self.data.shop_random.random() > 0.3):
-            # Tax zone is very strong, so only show it with ~50% chance
-            self._Generate_zone()
-        else:
-            self.shop_elements.append(self.__zone_names[random_index])
-            self.shop_element_types.append("zone")
-            self.shop_element_costs.append(self.data.zone_cost)
-            self.shop_element_descriptions.append(self.__info_box[random_index])
-            self.shop_element_bought.append(False)
+        double_tries : int = 0
+        while True:
+            random_index : int = self.data.shop_random.randint(0, len(self.__zone_names)-1)
+            if no_double and self.__zone_names[random_index] in self.shop_elements:
+                double_tries += 1
+                if double_tries > 10:
+                    logging.warning("Failed to generate zone after 10 tries.")
+                    self._Generate_zone(no_double = False)
+                    break
+                continue
+            if (self.__zone_names[random_index] == "tax") and (self.data.shop_random.random() > 0.3):
+                # Tax zone is very strong, so only show it with ~50% chance
+                self._Generate_zone()
+                break
+            else:
+                self.shop_elements.append(self.__zone_names[random_index])
+                self.shop_element_types.append("zone")
+                self.shop_element_costs.append(self.data.zone_cost)
+                self.shop_element_descriptions.append(self.__info_box[random_index])
+                self.shop_element_bought.append(False)
+                break
 
-    def _Generate_mod(self) -> None:
+    def _Generate_mod(self, no_double : bool = True) -> None:
         """
         Generates a random mod.
         """
-        random_index : int = self.data.shop_random.randint(0, len(self.__mod_names)-1)
-        self.shop_elements.append(self.__mod_names[random_index])
-        self.shop_element_types.append("mod")
-        self.shop_element_costs.append(self.data.mod_cost)
-        self.shop_element_descriptions.append(self.__mod_info_box[random_index])
-        self.shop_element_bought.append(False)
+        double_tries : int = 0
+        while True:
+            random_index : int = self.data.shop_random.randint(0, len(self.__mod_names)-1)
+            if no_double and self.__mod_names[random_index] in self.shop_elements:
+                double_tries += 1
+                if double_tries > 10:
+                    logging.warning("Failed to generate mod after 10 tries.")
+                    self._Generate_mod(no_double = False)
+                    break
+                continue
+            if (self.__mod_names[random_index] == "bloodthirst" and self.data.shop_random.random() > 0.3):
+                # Bloodthirst mod is very strong, so only show it with ~50% chance
+                self._Generate_mod()
+                break
+            else:
+                self.shop_elements.append(self.__mod_names[random_index])
+                self.shop_element_types.append("mod")
+                self.shop_element_costs.append(self.data.mod_cost)
+                self.shop_element_descriptions.append(self.__mod_info_box[random_index])
+                self.shop_element_bought.append(False)
+                break
 
 
     def __Load_tower_data(self) -> None:
         """
         Loads the data for the tower elements into the shop_element_data dictionary
         """
-        self.__tower_classes = [
-            towers.combat_robot.Combat_robot,
-            towers.gear_thrower.Gear_thrower,
-            towers.cannon.Cannon,
-            towers.tesla_coil.Tesla_coil,
-            towers.zapper.Zapper,
-            towers.economist.Economist,
-            towers.sniper.Sniper
-        ]
+        self.__tower_classes = towers.base_tower.collection.all_towers
 
         for tower_class in self.__tower_classes:
             tower_instance : towers.base_tower.base.Base_tower = tower_class(self.data)
@@ -822,20 +831,7 @@ class Shop:
         """
         Loads the data for the specialists into the shop_element_data dictionary
         """
-        self.__specialist_classes = [
-            specialists.tesla_coil_researcher.Tesla_coil_researcher,
-            specialists.cannon_researcher.Cannon_researcher,
-            specialists.gear_thrower_researcher.Gear_thrower_researcher,
-            specialists.combat_robot_researcher.Combat_robot_researcher,
-            specialists.economist_researcher.Economist_researcher,
-            specialists.zapper_researcher.Zapper_researcher,
-            specialists.sniper_researcher.Sniper_researcher,
-            specialists.zone_deal_hunter.Zone_deal_hunter,
-            specialists.mod_deal_hunter.Mod_deal_hunter,
-            specialists.specialist_deal_hunter.Specialist_deal_hunter,
-            specialists.tower_deal_hunter.Tower_deal_hunter,
-            specialists.more_stock.More_stock
-        ]
+        self.__specialist_classes = specialists.base.collection.all_specialists
 
         for specialist_class in self.__specialist_classes:
             specialist_instance : specialists.base.base.Base_specialist = specialist_class(self.data)

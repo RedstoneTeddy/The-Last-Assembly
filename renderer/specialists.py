@@ -3,18 +3,7 @@ import pygame as pg
 import random
 import specialists.base.base as base
 
-import specialists.tesla_coil_researcher
-import specialists.cannon_researcher
-import specialists.gear_thrower_researcher
-import specialists.zapper_researcher
-import specialists.combat_robot_researcher
-import specialists.economist_researcher
-import specialists.sniper_researcher
-import specialists.zone_deal_hunter
-import specialists.specialist_deal_hunter
-import specialists.tower_deal_hunter
-import specialists.mod_deal_hunter
-import specialists.more_stock
+import specialists.base.collection as specialist_collection
 
 
 class Specialists:
@@ -29,36 +18,18 @@ class Specialists:
         self.specialist_offset : int = (self.specialist_size - 2*12) // 2
 
         # Load all original images
-        temp_specialist : base.Base_specialist = specialists.tesla_coil_researcher.Tesla_coil_researcher(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.cannon_researcher.Cannon_researcher(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.gear_thrower_researcher.Gear_thrower_researcher(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.zapper_researcher.Zapper_researcher(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.combat_robot_researcher.Combat_robot_researcher(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.economist_researcher.Economist_researcher(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.sniper_researcher.Sniper_researcher(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.zone_deal_hunter.Zone_deal_hunter(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.specialist_deal_hunter.Specialist_deal_hunter(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.tower_deal_hunter.Tower_deal_hunter(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.mod_deal_hunter.Mod_deal_hunter(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
-        temp_specialist = specialists.more_stock.More_stock(self.data)
-        self.__Load_original_images_of_specialist(temp_specialist)
+        for specialist_type in specialist_collection.all_specialists:
+            specialist : base.Base_specialist = specialist_type(self.data)
+            self.__Load_original_images_of_specialist(specialist)
         
 
         # Red and green alpha overlay for build-hologram
         red_overlay : pg.Surface = pg.Surface((24, 24), pg.SRCALPHA)
         red_overlay.fill((255, 0, 0, 150))
         self.original_images["red_overlay"] = red_overlay
+        orange_overlay : pg.Surface = pg.Surface((24, 24), pg.SRCALPHA)
+        orange_overlay.fill((200, 255, 0, 150))
+        self.original_images["orange_overlay"] = orange_overlay
         green_overlay : pg.Surface = pg.Surface((24, 24), pg.SRCALPHA)
         green_overlay.fill((0, 255, 0, 150))
         self.original_images["green_overlay"] = green_overlay
@@ -122,9 +93,19 @@ class Specialists:
                 pos = self.data.Get_World_to_Screen(specialist._pos)
                 pos2 = (pos[0] - self.specialist_offset * self.current_zoom, pos[1] - self.specialist_offset * self.current_zoom)
 
+                # Check for other specialists at the same position
+                space_occupied : bool = False
+                for other_specialist in self.data.specialists:
+                    if other_specialist != specialist and other_specialist._pos == specialist._pos and other_specialist._is_placed:
+                        space_occupied = True
+                        break
+
                 self.data.screen.blit(image, pos2)
                 if specialist._build_hologram_allowed:
-                    self.data.screen.blit(self.images["green_overlay"], pos)
+                    if space_occupied:
+                        self.data.screen.blit(self.images["orange_overlay"], pos)
+                    else:
+                        self.data.screen.blit(self.images["green_overlay"], pos)
                 else:
                     self.data.screen.blit(self.images["red_overlay"], pos)
 

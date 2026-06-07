@@ -35,7 +35,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.8.3"
+version : str = "0.9.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -122,9 +122,10 @@ try:
                     if not data.in_shop: # Player is not in shop
 
                         if data.wave_in_progress:
-                            enemy_wave.Tick()
-                            enemy_move.Move_enemies()
-                            zone_handler.Main()
+                            for _ in range(2 if data.double_speed else 1):
+                                enemy_wave.Tick()
+                                enemy_move.Move_enemies()
+                                zone_handler.Main()
 
                 enemy_renderer.Draw()
 

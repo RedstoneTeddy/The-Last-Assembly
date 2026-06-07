@@ -37,19 +37,19 @@ def Tick_building(specialist : "base.Base_specialist") -> None:
                 can_place = False
         
         # Check if no other specialist is in the way
+        blocking_specialist : "None | base.Base_specialist" = None
         for other_specialist in specialist.data.specialists:
             if other_specialist != specialist and other_specialist._is_placed:
                 other_needed_positions : list[tuple[int, int]] = [(other_specialist._pos[0]+x, other_specialist._pos[1]+y) for x in range(2) for y in range(2)]
                 for pos in needed_positions:
                     if pos in other_needed_positions:
-                        can_place = False
-                        break
-                if not can_place:
-                    break
+                        blocking_specialist = other_specialist
 
         if can_place:
             specialist._build_hologram_allowed = True
             if pg.mouse.get_pressed()[0] and not specialist._selected_clicked:
+                if blocking_specialist is not None:
+                    blocking_specialist._marked_for_removal = True
                 specialist._selected_clicked = True
                 specialist._is_placed = True
                 specialist._sell_value = specialist.cost // 2

@@ -5,9 +5,11 @@ from typing import Literal
 
 import towers.base_tower.shooting
 import towers.base_tower.building
+import towers.base_tower.buffed_by_visual
 import mods.info_data
 
 import specialists.base.handle
+
 
 
 RARITIES = Literal["Common", "Uncommon", "Rare", ""]
@@ -32,6 +34,7 @@ class Base_tower:
         self.number_of_frames : int = -1                # Total number of frames in the animation, including the idle frame
         self.animation_speed : int = 0                  # Should be a multiple of 2
         self.chance_to_start_animation : float = 0.0    # Chance to start the animation, between 0 and 1
+        self.dont_rotate : bool = False                 # Whether the tower should not rotate towards the enemy, used for towers that shoot in a fixed direction
 
         self.rarity : RARITIES = "Common"               # The towers rarity, can be "Common", "Uncommon" or "Rare", used for shop chances
         self.build_cost : int = 0                       # The cost to build the tower
@@ -43,7 +46,8 @@ class Base_tower:
         self.damage_type : DAMAGE_TYPES = "Physical"    # The towers damage type
         self.blast_radius : int = 0                     # The radius of the towers blast damage in pixels * tile_zoom, 0 means no blast damage
 
-        self.dont_rotate : bool = False                 # Whether the tower should not rotate towards the enemy, used for towers that shoot in a fixed direction
+        self.delta_mod_limit : int = 0                  # Local adjustment to the mod-limit of a tower
+
 
 
         # Animation
@@ -83,6 +87,7 @@ class Base_tower:
         self._actual_damage : float = self.damage
         self._actual_cooldown : float = self.cooldown
         self._actual_range : int = self.range
+        self._buffed_by_pos : list[tuple[int, int]] = [] # Positions of towers / specialists that buff this tower
 
 
 
@@ -106,8 +111,9 @@ class Base_tower:
         elif self.rarity == "Rare":
             output.append(data_class.TextLine(text="Rare Tower; ", color=(200,100,0), icon="", is_small=True))
 
-        output.append(data_class.TextLine(text=str(round(self._actual_damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))
-        output.append(data_class.TextLine(text=str(round(self._actual_cooldown/60, 2))+" s", color=(0,0,0), icon="time", is_small=False))
+        if self._actual_cooldown > 0.0:
+            output.append(data_class.TextLine(text=str(round(self._actual_damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))
+            output.append(data_class.TextLine(text=str(round(self._actual_cooldown/60, 2))+" s", color=(0,0,0), icon="time", is_small=False))
         output.append(data_class.TextLine(text=str(round(self._actual_range/ 12, 1))+" tiles", color=(0,0,0), icon="range", is_small=False))
 
         if self.blast_radius > 0:
@@ -131,7 +137,7 @@ class Base_tower:
                     mod_lines.append(f"{level}x {mod_names[mod]}")
                     mod_amount += level
         if mod_amount > 0:
-            mod_lines.insert(0, f"Mods ({mod_amount} / {self.data.max_mods_per_tower}):")
+            mod_lines.insert(0, f"Mods ({mod_amount} / {self.data.max_mods_per_tower + self.delta_mod_limit}):")
             if (len(mod_lines)) % 2 == 1:
                 mod_lines.append("")
             for i in range(0, len(mod_lines), 2):
@@ -201,17 +207,20 @@ class Base_tower:
             if self._is_selected and self._actual_range > 0:
                 center_pos : tuple[int, int] = self.data.Get_World_to_Screen((self._pos[0]+1, self._pos[1]+1))
                 pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self._actual_range*self.data.tile_zoom, self.data.tile_zoom)
+            if self._is_selected and len(self._buffed_by_pos) > 0:
+                towers.base_tower.buffed_by_visual.Tower_show_buffed_by(self)
 
                 
             if self.data.in_shop:
                 return
 
-            if self.data.wave_in_progress and self._actual_range > 0:
-                if self.data.fast_forward:
+            for _ in range(2 if self.data.double_speed else 1):
+                if self.data.wave_in_progress and self._actual_range > 0 and self.cooldown > 0.0:
+                    if self.data.fast_forward:
+                        towers.base_tower.shooting.Tick_shooting(self)
                     towers.base_tower.shooting.Tick_shooting(self)
-                towers.base_tower.shooting.Tick_shooting(self)
-            else:
-                self._shot_pos = (-1, -1)
+                else:
+                    self._shot_pos = (-1, -1)
 
         else: # Is currently building
             towers.base_tower.building.Tick_building(self)
