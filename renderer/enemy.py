@@ -7,6 +7,7 @@ class Enemy:
 
         self.original_images : dict[str, pg.Surface] = {}
         self.images : dict[str, pg.Surface] = {}
+        self.collection_images : dict[str, pg.Surface] = {}
 
         self.current_zoom : int = -1
 
@@ -42,6 +43,7 @@ class Enemy:
             self.current_zoom = self.data.tile_zoom
             for key, image in self.original_images.items():
                 self.images[key] = pg.transform.scale(image, (enemy_size, enemy_size))
+                self.collection_images[key] = pg.transform.scale(image, (enemy_size*2, enemy_size*2))
 
     def Draw(self) -> None:
         """
@@ -114,7 +116,12 @@ class Enemy:
 
 
     def Draw_single(self, pos : tuple[int, int], enemy_img : str) -> None:
-        pass
+        """
+        Draws a single enemy at the given position with the given image.
+        """
+        self.Resize()
+        self.data.screen.blit(self.collection_images[enemy_img], pos)
+        
 
     def __Get_image(self, enemy_id : int) -> str:
         health : int = self.data.enemies.health[enemy_id]

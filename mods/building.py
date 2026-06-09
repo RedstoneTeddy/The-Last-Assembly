@@ -114,6 +114,14 @@ class Mod_building:
         
         if not pg.mouse.get_pressed()[0]:
             self._clicked = False
+
+    
+    def Draw_single(self, pos : tuple[int, int], mod_type : str) -> None:
+        """
+        Draw a single mod at the given position. Used for the hologram when placing mods.
+        """
+        self.Resize()
+        self.data.screen.blit(self.images[mod_type], pos)
             
 
 

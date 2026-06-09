@@ -10,7 +10,7 @@ class Zone_deal_hunter(base.Base_specialist):
 
         self.description : list[data_class.TextLine] = [
             data_class.TextLine(text="Zone boxes", color=(0,0,0), icon="", is_small=False),
-            data_class.TextLine(text="- 25%", color=(0,0,150), icon="money", is_small=False)
+            data_class.TextLine(text="- 30%", color=(0,0,150), icon="money", is_small=False)
         ]
 
         self.number_of_frames : int = 1

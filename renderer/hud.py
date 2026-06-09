@@ -9,6 +9,7 @@ class Hud:
         self.data : data_class.Data_class = data
 
         self._speed_btn_pressed : bool = False
+        self._button_pressed : bool = False
 
         self.original_images : dict[str, pg.Surface] = {}
         self.images : dict[str, pg.Surface] = {}
@@ -172,6 +173,31 @@ class Hud:
                     self._speed_btn_pressed = True
             else:
                 self._speed_btn_pressed = False
+
+            # Show Pause button
+            pause_btn_rected : tuple[int, int, int, int] = (
+                self.data.Get_World_to_Screen((0, 14))[0]+2*self.data.tile_zoom,
+                self.data.Get_World_to_Screen((0, 14))[1],
+                56*self.data.tile_zoom,
+                18*self.data.tile_zoom
+            )
+            is_hovered = (mouse_pos[0] >= pause_btn_rected[0] and mouse_pos[0] <= pause_btn_rected[0] + pause_btn_rected[2] and 
+                                mouse_pos[1] >= pause_btn_rected[1] and mouse_pos[1] <= pause_btn_rected[1] + pause_btn_rected[3])
+            pg.draw.rect(self.data.screen, (160, 147, 142), pause_btn_rected, border_radius=1*self.data.tile_zoom)
+            if is_hovered:
+                pg.draw.rect(self.data.screen, (223, 246, 245), pause_btn_rected, width=1*self.data.tile_zoom, border_radius=1*self.data.tile_zoom)
+            else:
+                pg.draw.rect(self.data.screen, (48, 44, 46), pause_btn_rected, width=1*self.data.tile_zoom, border_radius=1*self.data.tile_zoom)
+            self.data.Draw_text("Pause", (pause_btn_rected[0]+12*self.data.tile_zoom, pause_btn_rected[1]+4*self.data.tile_zoom), 8*self.data.tile_zoom, (255, 255, 255))
+            if pg.mouse.get_pressed()[0]:
+                if is_hovered and not self.data.in_shop and not self._button_pressed:
+                    self._button_pressed = True
+                    self.data.is_paused = True
+
+
+
+        if not pg.mouse.get_pressed()[0]:
+            self._button_pressed = False
 
 
 

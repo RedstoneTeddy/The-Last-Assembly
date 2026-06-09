@@ -29,7 +29,7 @@ class Shop:
 
         # Shop variables
         self.shop_animation : int = 0
-        self._max_shop_animation : int = 30
+        self._max_shop_animation : int = 25
         self._show_reward_screen : bool = False
         self._rerolled_shop : int = 0  
         self._rewards_total_cash : int = -1
@@ -53,28 +53,29 @@ class Shop:
         # Load shop-element-data
         self.original_images : dict[str, pg.Surface] = {}
 
-        self.__tower_classes : list[type] = []
-        self.__tower_names : list[str] = []
-        self.__tower_rarities : list[towers.base_tower.base.RARITIES] = []
-        self.__tower_costs : list[int] = []
-        self.__tower_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each tower.
+        self._tower_classes : list[type] = []
+        self._tower_names : list[str] = []
+        self._tower_rarities : list[towers.base_tower.base.RARITIES] = []
+        self._tower_costs : list[int] = []
+        self._tower_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each tower.
+        self._tower_weights : list[int] = []
         self.__Load_tower_data()
 
-        self.__zone_names : list[str] = []
-        self.__info_box : list[list[data_class.TextLine]] = []
+        self._zone_names : list[str] = []
+        self._info_box : list[list[data_class.TextLine]] = []
         self.__Load_zone_data()
 
-        self.__mod_names : list[str] = []
-        self.__mod_info_box : list[list[data_class.TextLine]] = []
+        self._mod_names : list[str] = []
+        self._mod_info_box : list[list[data_class.TextLine]] = []
         self.__Load_mod_data()
 
         self.__Load_pack_data()
 
-        self.__specialist_classes : list[type] = []
-        self.__specialist_names : list[str] = []
-        self.__specialist_rarities : list[specialists.base.base.RARITIES] = []
-        self.__specialist_costs : list[int] = []
-        self.__specialist_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each specialist.
+        self._specialist_classes : list[type] = []
+        self._specialist_names : list[str] = []
+        self._specialist_rarities : list[specialists.base.base.RARITIES] = []
+        self._specialist_costs : list[int] = []
+        self._specialist_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each specialist.
         self.__Load_specialist_data()
 
 
@@ -137,6 +138,9 @@ class Shop:
         Main function (rendering and backend) for the shop.
         Calls all other functions internally.
         """
+        if self.data.wave == 0:
+            self._show_reward_screen = False
+
         self.Resize()
         if self.data.shop_minimized:
             if self.shop_animation > 0:
@@ -341,9 +345,9 @@ class Shop:
                 # Build tower if element is a tower
                 if self.shop_element_types[i] == "tower":
                     tower_class : type | None = None
-                    for j in range(len(self.__tower_names)):
-                        if self.__tower_names[j] == self.shop_elements[i]:
-                            tower_class = self.__tower_classes[j]
+                    for j in range(len(self._tower_names)):
+                        if self._tower_names[j] == self.shop_elements[i]:
+                            tower_class = self._tower_classes[j]
                             break
                     if tower_class is None:
                         logging.error(f"Could not find tower class for shop element {self.shop_elements[i]}")
@@ -358,9 +362,9 @@ class Shop:
                 # Build specialist if element is a specialist
                 elif self.shop_element_types[i] == "specialist":
                     specialist_class : type | None = None
-                    for j in range(len(self.__specialist_names)):
-                        if self.__specialist_names[j] == self.shop_elements[i]:
-                            specialist_class = self.__specialist_classes[j]
+                    for j in range(len(self._specialist_names)):
+                        if self._specialist_names[j] == self.shop_elements[i]:
+                            specialist_class = self._specialist_classes[j]
                             break
                     if specialist_class is None:
                         logging.error(f"Could not find specialist class for shop element {self.shop_elements[i]}")
@@ -607,7 +611,7 @@ class Shop:
         if pack_type == 0:
             self.shop_elements.append("tower_pack")
             if "tower_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(120*0.75)
+                pack_cost : int = int(120*0.7)
             else:
                 pack_cost : int = int(120)
             self.shop_element_costs.append(pack_cost)
@@ -619,7 +623,7 @@ class Shop:
         elif pack_type == 1:
             self.shop_elements.append("tower_pack2")
             if "tower_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(120*1.5*0.75)
+                pack_cost : int = int(120*1.5*0.7)
             else:
                 pack_cost : int = int(120*1.5)
             self.shop_element_costs.append(pack_cost)
@@ -631,7 +635,7 @@ class Shop:
         elif pack_type == 2:
             self.shop_elements.append("zone_pack")
             if "zone_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(self.data.zone_cost*0.75)
+                pack_cost : int = int(self.data.zone_cost*0.7)
             else:
                 pack_cost : int = int(self.data.zone_cost)
             self.shop_element_costs.append(pack_cost)
@@ -643,7 +647,7 @@ class Shop:
         elif pack_type == 3:
             self.shop_elements.append("zone_pack2")
             if "zone_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(self.data.zone_cost * 1.5 * 0.75)
+                pack_cost : int = int(self.data.zone_cost * 1.5 * 0.7)
             else:
                 pack_cost : int = int(self.data.zone_cost * 1.5)
             self.shop_element_costs.append(pack_cost)
@@ -655,7 +659,7 @@ class Shop:
         elif pack_type == 4:
             self.shop_elements.append("mod_pack")
             if "mod_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(self.data.mod_cost * 0.75)
+                pack_cost : int = int(self.data.mod_cost * 0.7)
             else:
                 pack_cost : int = int(self.data.mod_cost)
             self.shop_element_costs.append(pack_cost)
@@ -667,7 +671,7 @@ class Shop:
         elif pack_type == 5:
             self.shop_elements.append("mod_pack2")
             if "mod_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(self.data.mod_cost * 1.5 * 0.75)
+                pack_cost : int = int(self.data.mod_cost * 1.5 * 0.7)
             else:
                 pack_cost : int = int(self.data.mod_cost * 1.5)
             self.shop_element_costs.append(pack_cost)
@@ -679,7 +683,7 @@ class Shop:
         elif pack_type == 6:
             self.shop_elements.append("specialist_pack")
             if "specialist_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(self.data.specialist_cost * 0.75)
+                pack_cost : int = int(self.data.specialist_cost * 0.7)
             else:
                 pack_cost : int = int(self.data.specialist_cost)
             self.shop_element_costs.append(pack_cost)
@@ -691,7 +695,7 @@ class Shop:
         elif pack_type == 7:
             self.shop_elements.append("specialist_pack2")
             if "specialist_deal_hunter" in self.data.bought_specialists:
-                pack_cost : int = int(self.data.specialist_cost * 1.5 * 0.75)
+                pack_cost : int = int(self.data.specialist_cost * 1.5 * 0.7)
             else:
                 pack_cost : int = int(self.data.specialist_cost * 1.5)
             self.shop_element_costs.append(pack_cost)
@@ -711,19 +715,19 @@ class Shop:
         """
         double_tries : int = 0
         while True:
-            random_index : int = self.data.shop_random.randint(0, len(self.__tower_classes)-1)
-            if no_double and self.__tower_names[random_index] in self.shop_elements:
+            random_index : int = self.data.shop_random.choices(list(range(len(self._tower_names))), weights=self._tower_weights)[0]
+            if no_double and self._tower_names[random_index] in self.shop_elements:
                 double_tries += 1
                 if double_tries > 10:
                     logging.warning("Failed to generate tower after 10 tries.")
                     self._Generate_tower(rarity = rarity, no_double = False)
                     break
                 continue
-            if rarity == "" or self.__tower_rarities[random_index] == rarity:
-                self.shop_elements.append(self.__tower_names[random_index])
+            if rarity == "" or self._tower_rarities[random_index] == rarity:
+                self.shop_elements.append(self._tower_names[random_index])
                 self.shop_element_types.append("tower")
-                self.shop_element_costs.append(self.__tower_costs[random_index])
-                self.shop_element_descriptions.append(self.__tower_info_box[random_index])
+                self.shop_element_costs.append(self._tower_costs[random_index])
+                self.shop_element_descriptions.append(self._tower_info_box[random_index])
                 self.shop_element_bought.append(False)
                 break
 
@@ -733,8 +737,8 @@ class Shop:
         """
         fails : int = 0
         while True:
-            random_index : int = self.data.shop_random.randint(0, len(self.__specialist_classes)-1)
-            specialist_name : str = self.__specialist_names[random_index]
+            random_index : int = self.data.shop_random.randint(0, len(self._specialist_classes)-1)
+            specialist_name : str = self._specialist_names[random_index]
             allowed : bool = True
             # Check if specialist is allowed
             if specialist_name in self.data.bought_specialists:
@@ -751,8 +755,8 @@ class Shop:
             # Generate tower (if allowence-check passed)
             self.shop_elements.append(specialist_name)
             self.shop_element_types.append("specialist")
-            self.shop_element_costs.append(self.__specialist_costs[random_index])
-            self.shop_element_descriptions.append(self.__specialist_info_box[random_index])
+            self.shop_element_costs.append(self._specialist_costs[random_index])
+            self.shop_element_descriptions.append(self._specialist_info_box[random_index])
             self.shop_element_bought.append(False)
             break
 
@@ -764,23 +768,23 @@ class Shop:
         """
         double_tries : int = 0
         while True:
-            random_index : int = self.data.shop_random.randint(0, len(self.__zone_names)-1)
-            if no_double and self.__zone_names[random_index] in self.shop_elements:
+            random_index : int = self.data.shop_random.randint(0, len(self._zone_names)-1)
+            if no_double and self._zone_names[random_index] in self.shop_elements:
                 double_tries += 1
                 if double_tries > 10:
                     logging.warning("Failed to generate zone after 10 tries.")
                     self._Generate_zone(no_double = False)
                     break
                 continue
-            if (self.__zone_names[random_index] == "tax") and (self.data.shop_random.random() > 0.3):
+            if (self._zone_names[random_index] == "tax") and (self.data.shop_random.random() > 0.3):
                 # Tax zone is very strong, so only show it with ~50% chance
                 self._Generate_zone()
                 break
             else:
-                self.shop_elements.append(self.__zone_names[random_index])
+                self.shop_elements.append(self._zone_names[random_index])
                 self.shop_element_types.append("zone")
                 self.shop_element_costs.append(self.data.zone_cost)
-                self.shop_element_descriptions.append(self.__info_box[random_index])
+                self.shop_element_descriptions.append(self._info_box[random_index])
                 self.shop_element_bought.append(False)
                 break
 
@@ -790,23 +794,23 @@ class Shop:
         """
         double_tries : int = 0
         while True:
-            random_index : int = self.data.shop_random.randint(0, len(self.__mod_names)-1)
-            if no_double and self.__mod_names[random_index] in self.shop_elements:
+            random_index : int = self.data.shop_random.randint(0, len(self._mod_names)-1)
+            if no_double and self._mod_names[random_index] in self.shop_elements:
                 double_tries += 1
                 if double_tries > 10:
                     logging.warning("Failed to generate mod after 10 tries.")
                     self._Generate_mod(no_double = False)
                     break
                 continue
-            if (self.__mod_names[random_index] == "bloodthirst" and self.data.shop_random.random() > 0.3):
+            if (self._mod_names[random_index] == "bloodthirst" and self.data.shop_random.random() > 0.3):
                 # Bloodthirst mod is very strong, so only show it with ~50% chance
                 self._Generate_mod()
                 break
             else:
-                self.shop_elements.append(self.__mod_names[random_index])
+                self.shop_elements.append(self._mod_names[random_index])
                 self.shop_element_types.append("mod")
                 self.shop_element_costs.append(self.data.mod_cost)
-                self.shop_element_descriptions.append(self.__mod_info_box[random_index])
+                self.shop_element_descriptions.append(self._mod_info_box[random_index])
                 self.shop_element_bought.append(False)
                 break
 
@@ -815,31 +819,37 @@ class Shop:
         """
         Loads the data for the tower elements into the shop_element_data dictionary
         """
-        self.__tower_classes = towers.base_tower.collection.all_towers
+        self._tower_classes = towers.base_tower.collection.all_towers
 
-        for tower_class in self.__tower_classes:
+        for tower_class in self._tower_classes:
             tower_instance : towers.base_tower.base.Base_tower = tower_class(self.data)
             tower_instance.Wave_start_calculations()
 
-            self.__tower_names.append(tower_instance.internal_name)
-            self.__tower_rarities.append(tower_instance.rarity)
-            self.__tower_costs.append(tower_instance.build_cost)
-            self.__tower_info_box.append(tower_instance.Get_info_texts())
+            self._tower_names.append(tower_instance.internal_name)
+            self._tower_rarities.append(tower_instance.rarity)
+            self._tower_costs.append(tower_instance.build_cost)
+            self._tower_info_box.append(tower_instance.Get_info_texts())
             self.original_images[tower_instance.internal_name] = pg.image.load(f"assets/tower/{tower_instance.internal_name}/{tower_instance.internal_name}1.png").convert_alpha()
+            if tower_instance.rarity == "Common":
+                self._tower_weights.append(self.data.tower_weights[0])
+            elif tower_instance.rarity == "Uncommon":
+                self._tower_weights.append(self.data.tower_weights[1])
+            elif tower_instance.rarity == "Rare":
+                self._tower_weights.append(self.data.tower_weights[2])
 
     def __Load_specialist_data(self) -> None:
         """
         Loads the data for the specialists into the shop_element_data dictionary
         """
-        self.__specialist_classes = specialists.base.collection.all_specialists
+        self._specialist_classes = specialists.base.collection.all_specialists
 
-        for specialist_class in self.__specialist_classes:
+        for specialist_class in self._specialist_classes:
             specialist_instance : specialists.base.base.Base_specialist = specialist_class(self.data)
 
-            self.__specialist_names.append(specialist_instance.internal_name)
-            self.__specialist_rarities.append(specialist_instance.rarity)
-            self.__specialist_costs.append(specialist_instance.cost)
-            self.__specialist_info_box.append(specialist_instance.Get_info_texts())
+            self._specialist_names.append(specialist_instance.internal_name)
+            self._specialist_rarities.append(specialist_instance.rarity)
+            self._specialist_costs.append(specialist_instance.cost)
+            self._specialist_info_box.append(specialist_instance.Get_info_texts())
             self.original_images[specialist_instance.internal_name] = pg.image.load(f"assets/specialist/{specialist_instance.internal_name}/{specialist_instance.internal_name}1.png").convert_alpha()
 
     
@@ -849,8 +859,8 @@ class Shop:
         """
         zone_info_data : dict[str, list[data_class.TextLine]] = zones.info_data.Get_zone_info_data()
         for zone_id, info_lines in zone_info_data.items():
-            self.__zone_names.append(zone_id)
-            self.__info_box.append(info_lines)
+            self._zone_names.append(zone_id)
+            self._info_box.append(info_lines)
             self.original_images[zone_id] = pg.transform.scale(pg.image.load(f"assets/zones/{zone_id}.png").convert_alpha(), (32, 32))
 
     def __Load_mod_data(self) -> None:
@@ -859,8 +869,8 @@ class Shop:
         """
         mod_info_data : dict[str, list[data_class.TextLine]] = mods.info_data.Get_mod_info_data()
         for mod_id, info_lines in mod_info_data.items():
-            self.__mod_names.append(mod_id)
-            self.__mod_info_box.append(info_lines)
+            self._mod_names.append(mod_id)
+            self._mod_info_box.append(info_lines)
             self.original_images[mod_id] = pg.transform.scale(pg.image.load(f"assets/mods/{mod_id}.png").convert_alpha(), (32, 32))
 
 

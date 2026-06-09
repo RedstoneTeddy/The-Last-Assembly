@@ -35,7 +35,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.9.0"
+version : str = "0.9.1"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -45,10 +45,7 @@ sleep(1)
 
 
 # Load map
-import map_editor_helper_functions.save_load
-file_name : str = "classic"
-map_editor_helper_functions.save_load.Load_World(data, file_name)
-
+data.New_game("classic")
 
 # Renderer
 import renderer.tiles
@@ -94,6 +91,12 @@ shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_build
 
 # Specialists
 import specialists.base.sell_effect
+
+# Menus
+import menu.collection
+collection_menu : menu.collection.Collection_menu = menu.collection.Collection_menu(data, tower_info_renderer, enemy_renderer, zone_renderer, specialist_renderer, mod_building, tower_renderer, shop_obj)
+import menu.pause
+pause_menu : menu.pause.Pause_menu = menu.pause.Pause_menu(data, collection_menu)
 
 
 
@@ -166,9 +169,14 @@ try:
             if not data.is_paused:    
                 if data.in_shop:
                     shop_obj.Shop_main()
+                else:
+                    if pg.key.get_pressed()[pg.K_ESCAPE]:
+                        data.is_paused = True
 
             if data.is_paused:
-                pass
+                pause_menu.Pause_main()
+            if data.in_collection:
+                collection_menu.Collection_main()
 
             debug_handler.Main()
 
@@ -193,6 +201,7 @@ try:
                 data.clock.tick(20)
             else:
                 data.clock.tick(60)
+        
         
 except Exception as e:
     logging.exception("An exception occurred")  # logs the exception with traceback

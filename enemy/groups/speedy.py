@@ -39,8 +39,8 @@ def Doubles(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
     weights : list[int] = []
     for i in range(len(top_n_enemies)):
         weights.append((len(top_n_enemies)-i-1)*50)
-        weights[-1] += max(0, penalty_time_budget - ((budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
-        weights[-1] += max(0, penalty_time_budget - ((time - enemy_amounts[i]//2 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
+        weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
+        weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i]//2 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
         if weights[-1] <= 0:
             weights[-1] = 1
 
@@ -100,11 +100,11 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     for i in range(len(top_n_enemies)):
         weights.append((len(top_n_enemies)-i-1)*50)
         if enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]] > budget:
-            weights[-1] -= penalty_time_budget
-        weights[-1] += max(0, penalty_time_budget - ((budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]])))
+            weights[-1] -= int(penalty_time_budget*0.5)
+        weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]])))
         if enemy_amounts[i]//5 * (time_between_enemies[i] + quick_time_between_enemies[i]) > time:
-            weights[-1] -= penalty_time_budget
-        weights[-1] += max(0, penalty_time_budget - ((time - enemy_amounts[i]//5 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
+            weights[-1] -= int(penalty_time_budget*0.5)
+        weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i]//5 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
         if enemy_amounts[i] == 5:
             weights[-1] -= 100
         if weights[-1] <= 0:

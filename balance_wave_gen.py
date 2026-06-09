@@ -4,8 +4,9 @@ import data_class
 import renderer.tiles
 import random
 
-
 pg.init()
+
+# V 0.9.1 -> 0.004678x^2 - 0.078611x + 0.284493
 
 import logging
 # logging.basicConfig(

@@ -44,11 +44,16 @@ def Tick_building(specialist : "base.Base_specialist") -> None:
                 for pos in needed_positions:
                     if pos in other_needed_positions:
                         blocking_specialist = other_specialist
+                    if blocking_specialist is not None and blocking_specialist.internal_name == "back_in_time": # Back in time not replaceable
+                        can_place = False
+                        blocking_specialist = None
+                        break
 
         if can_place:
             specialist._build_hologram_allowed = True
             if pg.mouse.get_pressed()[0] and not specialist._selected_clicked:
                 if blocking_specialist is not None:
+                    specialist.data.money += blocking_specialist._sell_value
                     blocking_specialist._marked_for_removal = True
                 specialist._selected_clicked = True
                 specialist._is_placed = True

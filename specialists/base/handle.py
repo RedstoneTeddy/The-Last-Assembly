@@ -65,9 +65,9 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
         observer_count : int = 0
         lieutenant_count : int = 0
         for other_tower in tower.data.towers:
-            min_distance : int = 999
+            min_distance : int = 9999
             for my_pos in [(tower._pos[0], tower._pos[1]), (tower._pos[0]+2, tower._pos[1]), (tower._pos[0], tower._pos[1]+2), (tower._pos[0]+2, tower._pos[1]+2)]:
-                distance : int = ((other_tower._pos[0] - my_pos[0])*12)**2 + ((other_tower._pos[1] - my_pos[1])*12)**2
+                distance : int = ((other_tower._pos[0]+1 - my_pos[0])*12)**2 + ((other_tower._pos[1]+1 - my_pos[1])*12)**2
                 if distance < min_distance:
                     min_distance = distance
             other_range : int = other_tower._actual_range**2

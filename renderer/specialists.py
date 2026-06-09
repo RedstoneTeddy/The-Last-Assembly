@@ -110,3 +110,10 @@ class Specialists:
                     self.data.screen.blit(self.images["red_overlay"], pos)
 
 
+    def Draw_single(self, pos : tuple[int, int], specialist_name : str) -> None:
+        """
+        Draws a single specialist at the given position with the given name.
+        """
+        self.Resize()
+        image_name : str = f"{specialist_name}_1"
+        self.data.screen.blit(self.images[image_name], pos)

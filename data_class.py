@@ -3,7 +3,7 @@ from typing import TypedDict, Literal
 import pygame as pg
 import logging
 import enemy.enemy_data_class as enemy_data_class
-
+import map_editor_helper_functions.save_load as save_load
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -50,6 +50,7 @@ class Data_class():
         self.path : list[list[PathPos]] = []
         self._weighted_world : list[list[int]] = []
         self.sorted_path : list[tuple[int, int]] = [] 
+        self.world_name : str = ""
 
         self.wave : int = 0
         self.money : int = 400
@@ -72,15 +73,17 @@ class Data_class():
         self.mod_cost : int = 80
         self.specialist_cost : int = 150
         self.shop_elements : int = 5
+        self.tower_weights : tuple[int, int, int] = (10, 7, 5) # Common-Weight, Uncommon-Weight, Rare-Weight for the shop
         
 
         # Menu variables
-        self.in_game : bool = True
+        self.in_game : bool = False
         self.is_paused : bool = False
         self.wave_in_progress : bool = False
-        self.in_shop : bool = True
+        self.in_shop : bool = False
         self.shop_minimized : bool = False
         self.start_next_wave : bool = False 
+        self.in_collection : bool = False
         self.is_building : Literal["", "tower", "zone", "mod", "specialist"] = ""
 
         # Settings
@@ -99,6 +102,45 @@ class Data_class():
         self.wave_gen_random = random.Random(seed)
         self.shop_random = random.Random(seed)
         self.other_random = random.Random(seed)
+
+    
+    def New_game(self, world_name : str, seed : int = 0) -> None:
+        if seed == 0:
+            seed = int(time())
+        logging.info(f"Starting new game with world '{world_name}' and seed {seed}")
+
+        # Reset world variables
+        self.world = []
+        self.path = []
+        self._weighted_world = []
+        self.sorted_path = []
+
+        # Current menu / window / game state
+        self.in_game = True
+        self.is_paused = False
+        self.wave_in_progress = False
+        self.in_shop = True
+        self.shop_minimized = False
+        self.start_next_wave = False
+        self.is_building = ""
+        self.in_collection = False
+
+        # Game variables
+        self.wave = 0
+        self.money = 400
+        self.health = 100
+        self.fast_forward = False
+
+        self.enemies = enemy_data_class.Enemy_data_class()
+        self.towers = []
+        self.specialists = []
+        self.bought_specialists = []
+        self.zones = []
+
+        # Load world and set random seed
+        self.Set_random_seed(seed)
+        self.world_name = world_name
+        save_load.Load_World(self, world_name)
 
     
     def Check_resize(self, force : bool = False) -> bool:
@@ -230,5 +272,7 @@ SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
 TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper",
                      "catalyst", "repeater", "observer", "lieutenant"]
 SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
-                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher"]
-            
+                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time"]
+
+
+

@@ -15,6 +15,9 @@ def Specialist_sell_effect(specialist : "base.Base_specialist") -> None:
         case "more_stock":
             data.shop_elements -= 1
 
+        case "modder":
+            data.max_mods_per_tower -= 2
+
         case "vampire":
             for tower in data.towers:
                 bloodthirst_level : int = tower._mods.get("bloodthirst", 0)

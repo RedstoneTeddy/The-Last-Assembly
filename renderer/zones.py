@@ -8,6 +8,7 @@ class Zones:
         self.data : data_class.Data_class = data
 
         self.original_images : dict[str, pg.Surface] = {}
+        self.display_images : dict[str, pg.Surface] = {}
         self.images : dict[str, pg.Surface] = {}
         self.current_zoom : int = -1
         self.original_zone_size : int = 16
@@ -16,7 +17,6 @@ class Zones:
         for zone_key in get_args(data_class.ZoneTypes):
             if zone_key != "":
                 image = pg.image.load(f"assets/zones/{zone_key}.png").convert_alpha()
-                image.set_alpha(150)
                 self.original_images[zone_key] = image
         self.Resize(force=True)
 
@@ -28,6 +28,8 @@ class Zones:
             self.current_zoom = self.data.tile_zoom
             for key, image in self.original_images.items():
                 self.images[key] = pg.transform.scale(image, (image.get_width() * self.current_zoom, image.get_height() * self.current_zoom))
+                self.images[key].set_alpha(150)
+                self.display_images[key] = pg.transform.scale(image, (image.get_width() * self.current_zoom * 2, image.get_height() * self.current_zoom * 2))
 
     def Draw(self) -> None:
         """
@@ -43,6 +45,14 @@ class Zones:
                         x * self.data.tile_zoom * 12 - current_offset + self.data.world_margin[0], 
                         y * self.data.tile_zoom * 12 - current_offset + self.data.world_margin[1]
                     ))
+
+    def Draw_single(self, pos : tuple[int, int], zone_type : str) -> None:
+        """
+        Draw a single zone at the given position. Used for the hologram when placing zones.
+        """
+        self.Resize()
+        self.data.screen.blit(self.display_images[zone_type], pos)
+        
 
 
 

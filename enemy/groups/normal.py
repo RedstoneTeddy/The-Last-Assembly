@@ -32,8 +32,8 @@ def Normal(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     penalty_time_budget : int = 200
     for i in range(len(top_three_enemies)):
         weights.append((len(top_three_enemies)-i-1)*30)
-        weights[-1] += max(0, penalty_time_budget - ((budget - enemy_amounts[i] * config.config.enemy_cost[top_three_enemies[i]])))
-        weights[-1] += max(0, penalty_time_budget - ((time - enemy_amounts[i] * time_between_enemies[i])))
+        weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_three_enemies[i]])))
+        weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i] * time_between_enemies[i])))
         if weights[-1] <= 0:
             weights[-1] = 1
 

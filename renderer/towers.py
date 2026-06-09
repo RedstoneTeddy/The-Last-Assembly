@@ -120,10 +120,13 @@ class Towers:
                     pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, tower.range*self.data.tile_zoom, self.data.tile_zoom)
 
 
-
-
-
-
+    def Draw_single(self, pos : tuple[int, int], tower_name : str) -> None:
+        """
+        Draws a single tower at the given position with the given name.
+        """
+        self.Resize()
+        image_name : str = f"{tower_name}_1_Up"
+        self.data.screen.blit(self.images[image_name], pos)
 
 
 

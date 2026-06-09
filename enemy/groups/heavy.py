@@ -33,8 +33,8 @@ def Guarded(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
             weights.append(0)
         else:
             weights.append((len(top_n_enemies)-i-1)*50)
-            weights[-1] += max(0, penalty_time_budget - ((budget - strongest_cost - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
-            weights[-1] += max(0, penalty_time_budget - ((time - (enemy_amounts[i]+3) * time_between_enemies[i]) ))
+            weights[-1] += max(0, penalty_time_budget - (abs(budget - strongest_cost - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
+            weights[-1] += max(0, penalty_time_budget - (abs(time - (enemy_amounts[i]+3) * time_between_enemies[i]) ))
             if weights[-1] <= 0:
                 weights[-1] = 1
 

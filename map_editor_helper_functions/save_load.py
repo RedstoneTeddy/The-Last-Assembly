@@ -1,9 +1,11 @@
-import data_class
+
 import pickle
 import logging
-from typing import Any
+from typing import Any, TYPE_CHECKING
+if TYPE_CHECKING:
+    import data_class
 
-def Save_World(data: data_class.Data_class, filename: str) -> None:
+def Save_World(data: 'data_class.Data_class', filename: str) -> None:
     """
     Save the world and path data to a file with the given filename.
     """
@@ -15,7 +17,7 @@ def Save_World(data: data_class.Data_class, filename: str) -> None:
         pickle.dump(save_data, f)
         logging.info(f"World saved to {filename}")
 
-def Load_World(data: data_class.Data_class, filename: str) -> None:
+def Load_World(data: 'data_class.Data_class', filename: str) -> None:
     """
     Load the world and path data from a file with the given filename.
     After loading, calculates the weighted world and sorts the path for easier access during gameplay. (Precaching)
