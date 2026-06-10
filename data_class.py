@@ -3,7 +3,7 @@ from typing import TypedDict, Literal
 import pygame as pg
 import logging
 import enemy.enemy_data_class as enemy_data_class
-import map_editor_helper_functions.save_load as save_load
+import map.save_load as save_load
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -272,7 +272,8 @@ SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
 TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper",
                      "catalyst", "repeater", "observer", "lieutenant"]
 SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
-                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time"]
+                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time", "investor",
+                          "conductor", "gunsmith"]
 
 
 

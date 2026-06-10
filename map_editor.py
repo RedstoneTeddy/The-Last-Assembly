@@ -51,22 +51,22 @@ data.path = []
 # Importing all helper functions and classes
 tile_renderer : renderer.tiles.Tiles = renderer.tiles.Tiles(data)
 
-import map_editor_helper_functions.create_patches
+import map.create_patches
 create_patches_pressed : bool = False
 
-import map_editor_helper_functions.selector
-selector_obj : map_editor_helper_functions.selector.Selector = map_editor_helper_functions.selector.Selector(data, tile_renderer)
-import map_editor_helper_functions.save_load
+import map.selector
+selector_obj : map.selector.Selector = map.selector.Selector(data, tile_renderer)
+import map.save_load
 
-import map_editor_helper_functions.path_creation
-path_obj : map_editor_helper_functions.path_creation.Path_creation = map_editor_helper_functions.path_creation.Path_creation(data)
+import map.path_creation
+path_obj : map.path_creation.Path_creation = map.path_creation.Path_creation(data)
 
 
 import easygui # type: ignore
 file_name = easygui.enterbox("Enter the name of the map to load (without .pkl extension):", "Load Map")
 if file_name is not None and file_name != "":
     try:
-        map_editor_helper_functions.save_load.Load_World(data, file_name)
+        map.save_load.Load_World(data, file_name)
     except FileNotFoundError:
         logging.info(f"File {file_name} not found. Starting with a new world instead.")
     except Exception as e:
@@ -108,7 +108,7 @@ try:
             # Create floor patches when C is pressed
             if pg.key.get_pressed()[pg.K_c] and not create_patches_pressed:
                 create_patches_pressed = True
-                map_editor_helper_functions.create_patches.Create_floor_patches(data)
+                map.create_patches.Create_floor_patches(data)
             if not pg.key.get_pressed()[pg.K_c]:
                 create_patches_pressed = False
                 
@@ -147,7 +147,7 @@ except Exception as e:
 
 try:
     if file_name != "":
-        map_editor_helper_functions.save_load.Save_World(data, file_name)
+        map.save_load.Save_World(data, file_name)
 except Exception as e:
     logging.exception("Failed to save world")  # logs the exception with traceback
     logging.fatal("Failed to save world. Please check the traceback for more details.")

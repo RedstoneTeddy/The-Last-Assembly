@@ -88,6 +88,7 @@ class Base_tower:
         self._actual_cooldown : float = self.cooldown
         self._actual_range : int = self.range
         self._buffed_by_pos : list[tuple[int, int]] = [] # Positions of towers / specialists that buff this tower
+        self._buffed_type : list[Literal["specialist", "nearby", "tower", "repeater"]] = []
 
 
 

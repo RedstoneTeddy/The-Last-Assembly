@@ -94,7 +94,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["bounty_hunter"] = [
         data_class.TextLine(text="Bounty Hunter", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="20% chance to", color=chance_color, icon="", is_small=False),
+        data_class.TextLine(text="15% chance to", color=chance_color, icon="", is_small=False),
         data_class.TextLine(text="gain 1$ when", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="enemy dies", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),

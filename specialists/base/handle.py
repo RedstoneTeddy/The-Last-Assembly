@@ -9,6 +9,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
     """
     # Apply specialist buffs and do the buffed_by_pos list
     tower._buffed_by_pos = []
+    tower._buffed_type = []
 
     for specialist in tower.data.specialists:
         match tower.internal_name:
@@ -17,47 +18,58 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
                     tower._actual_damage *= 1.3
                     tower._actual_cooldown *= 0.8
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
                     
             case "gear_thrower":
                 if specialist.internal_name == "gear_thrower_researcher":
                     tower._actual_damage *= 1.4
                     tower._actual_cooldown *= 0.8
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
 
             case "tesla_coil":
                 if specialist.internal_name == "tesla_coil_researcher":
                     tower._actual_damage *= 1.4
                     tower._actual_range = int(tower._actual_range * 1.25)
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
 
             case "zapper":
                 if specialist.internal_name == "zapper_researcher":
                     tower._actual_damage *= 1.2
                     tower._actual_cooldown *= 0.7
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
 
             case "combat_robot":
                 if specialist.internal_name == "combat_robot_researcher":
                     tower._actual_damage *= 1.5
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
 
             case "economist":
                 if specialist.internal_name == "economist_researcher":
                     tower._actual_range = int(tower._actual_range * 1.25)
                     tower._actual_cooldown *= 0.7
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
+                if specialist.internal_name == "investor":
+                    tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
 
             case "sniper":
                 if specialist.internal_name == "sniper_researcher":
                     tower._actual_damage *= 1.25
                     tower._actual_cooldown *= 0.85
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
 
             case "catalyst":
                 if specialist.internal_name == "catalyst_researcher":
                     tower._actual_damage *= 1.2
                     tower._actual_cooldown *= 0.8
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")            
 
 
     # Apply the buffs of the lieutenant and observer
@@ -75,15 +87,45 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
                 if other_tower.internal_name == "observer":
                     observer_count += 1
                     tower._buffed_by_pos.append((other_tower._pos[0]+1, other_tower._pos[1]+1))
+                    tower._buffed_type.append("tower")
                 elif other_tower.internal_name == "lieutenant":
                     lieutenant_count += 1
                     tower._buffed_by_pos.append((other_tower._pos[0]+1, other_tower._pos[1]+1))
+                    tower._buffed_type.append("tower")
 
         for _ in range(observer_count):
             tower._actual_range = int(tower._actual_range * 1.3)
             tower._actual_cooldown *= 0.9
         for _ in range(lieutenant_count):
-            tower._actual_damage *= 1.3  
+            tower._actual_damage *= 1.3 
+
+
+    # Nearby-Buff enabled by the specialist "Conductor" and "Gunsmith"
+    same_damage_buff : int = 0
+    if "conductor" in tower.data.bought_specialists and tower.damage_type == "Electrical":
+        for other_tower in tower.data.towers:
+            if other_tower.internal_name == "repeater":
+                continue
+            if other_tower._pos in [(tower._pos[0]+2, tower._pos[1]), (tower._pos[0]-2, tower._pos[1]), (tower._pos[0], tower._pos[1]+2), (tower._pos[0], tower._pos[1]-2)]:
+                if other_tower.damage_type == "Electrical":
+                    same_damage_buff += 1
+                    tower._buffed_by_pos.append((other_tower._pos[0]+1, other_tower._pos[1]+1))
+                    tower._buffed_type.append("nearby")
+
+    if "gunsmith" in tower.data.bought_specialists and tower.damage_type in ["Physical"]:
+        for other_tower in tower.data.towers:
+            if other_tower.internal_name == "repeater":
+                continue
+            if other_tower._pos in [(tower._pos[0]+2, tower._pos[1]), (tower._pos[0]-2, tower._pos[1]), (tower._pos[0], tower._pos[1]+2), (tower._pos[0], tower._pos[1]-2)]:
+                if other_tower.damage_type in ["Physical"]:
+                    same_damage_buff += 1
+                    tower._buffed_by_pos.append((other_tower._pos[0]+1, other_tower._pos[1]+1))
+                    tower._buffed_type.append("nearby")
+
+    if same_damage_buff > 0:
+        tower._actual_damage *= (1 + same_damage_buff*0.2)
+                
+            
 
 
     # Repeater-Specific: Copy the stats of the tower to the right
@@ -119,6 +161,8 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             # tower._buffed_by_pos.extend(right_tower._buffed_by_pos)
             tower._buffed_by_pos = []
             tower._buffed_by_pos.insert(0, (right_tower._pos[0]+1, right_tower._pos[1]+1))
+            tower._buffed_type = []
+            tower._buffed_type.insert(0, "repeater")
 
 
 

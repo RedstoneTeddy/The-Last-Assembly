@@ -19,4 +19,4 @@ class Back_in_time(base.Base_specialist):
 
         self.rarity : base.RARITIES = "Master"
         self.cost : int = -100 # Not sellable
-        self.wage : int = 10
+        self.wage : int = 20

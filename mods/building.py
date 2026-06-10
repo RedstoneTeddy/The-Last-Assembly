@@ -175,10 +175,10 @@ class Mod_building:
             tower.blast_radius = int(tower.blast_radius * 1.35)
         elif self.build_mod == "bounty_hunter":
             if tower._bounty_chance <= 0.1:
-                tower._bounty_chance = 0.20
+                tower._bounty_chance = 0.15
             else:
                 before = 1 - tower._bounty_chance
-                tower._bounty_chance = 1 - (before * 0.80)
+                tower._bounty_chance = 1 - (before * 0.85)
 
         # Special / funny mods
         elif self.build_mod == "heavy_rounds":

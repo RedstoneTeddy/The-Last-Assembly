@@ -15,9 +15,15 @@ def Tower_show_buffed_by(tower : "base.Base_tower") -> None:
     i : int = -1
     for pos in tower._buffed_by_pos:
         i += 1
-        line_color : tuple[int, int, int] = (0, 150, 0)
-        if i == 0 and tower.internal_name == "repeater":
-            line_color = (0, 0, 150)
+        line_color : tuple[int, int, int] = (0,0,0)
+        if tower._buffed_type[i] == "specialist":
+            line_color = (0, 160, 0)
+        elif tower._buffed_type[i] == "tower":
+            line_color = (0, 0, 160)
+        elif tower._buffed_type[i] == "repeater":
+            line_color = (220, 120, 0)
+        elif tower._buffed_type[i] == "nearby":
+            line_color = (160, 0, 0)
 
         end_pos : tuple[int, int] = tower.data.Get_World_to_Screen((tower._pos[0]+1, tower._pos[1]+1))
         start_pos : tuple[int, int] = tower.data.Get_World_to_Screen(pos)

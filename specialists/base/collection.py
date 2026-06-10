@@ -20,7 +20,9 @@ import specialists.mod_deal_hunter
 import specialists.more_stock
 import specialists.vampire
 import specialists.back_in_time
-
+import specialists.investor
+import specialists.conductor
+import specialists.gunsmith
 
 # PhD-Specialists
 import specialists.modder
@@ -43,6 +45,9 @@ all_specialists : list[type] = [
     specialists.more_stock.More_stock,
     specialists.vampire.Vampire,
     specialists.back_in_time.Back_in_time,
+    specialists.investor.Investor,
+    specialists.conductor.Conductor,
+    specialists.gunsmith.Gunsmith,
     
     specialists.modder.Modder
 ]

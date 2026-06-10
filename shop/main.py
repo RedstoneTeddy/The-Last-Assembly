@@ -802,7 +802,7 @@ class Shop:
                     self._Generate_mod(no_double = False)
                     break
                 continue
-            if (self._mod_names[random_index] == "bloodthirst" and self.data.shop_random.random() > 0.3):
+            if (self._mod_names[random_index] in ["bloodthirst", "bounty_hunter"] and self.data.shop_random.random() > 0.3):
                 # Bloodthirst mod is very strong, so only show it with ~50% chance
                 self._Generate_mod()
                 break

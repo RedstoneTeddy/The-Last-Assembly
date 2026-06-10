@@ -163,7 +163,9 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
         if tower.data.enemies.health[tower._shoot_at_id] <= 0:
             # Golden effect
             if tower.data.enemies.golden.get(tower._shoot_at_id, 0) > 0:
-                if tower.data.path_random.random() < 0.5:
+                if tower.data.path_random.random() < 0.4:
+                    tower.data.money += 1
+                if "investor" in tower.data.bought_specialists and tower.data.path_random.random() < 0.3:
                     tower.data.money += 1
             # Kill enemy
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
