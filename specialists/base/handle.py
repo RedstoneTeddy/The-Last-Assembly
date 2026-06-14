@@ -106,6 +106,10 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
         for other_tower in tower.data.towers:
             if other_tower.internal_name == "repeater":
                 continue
+            if other_tower.damage <= 0:
+                continue
+            if tower.damage <= 0:
+                continue
             if other_tower._pos in [(tower._pos[0]+2, tower._pos[1]), (tower._pos[0]-2, tower._pos[1]), (tower._pos[0], tower._pos[1]+2), (tower._pos[0], tower._pos[1]-2)]:
                 if other_tower.damage_type == "Electrical":
                     same_damage_buff += 1
@@ -115,6 +119,10 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
     if "gunsmith" in tower.data.bought_specialists and tower.damage_type in ["Physical"]:
         for other_tower in tower.data.towers:
             if other_tower.internal_name == "repeater":
+                continue
+            if other_tower.damage <= 0:
+                continue
+            if tower.damage <= 0:
                 continue
             if other_tower._pos in [(tower._pos[0]+2, tower._pos[1]), (tower._pos[0]-2, tower._pos[1]), (tower._pos[0], tower._pos[1]+2), (tower._pos[0], tower._pos[1]-2)]:
                 if other_tower.damage_type in ["Physical"]:

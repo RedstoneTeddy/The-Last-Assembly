@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from enemy.wave_gen_config import WaveGenData
 import enemy.groups.helpers as helpers
+import logging
 
 
 
@@ -70,7 +71,7 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     Wave-Group: A wave with a lot of bursts (five enemies spawning with one or two or three ticks apart).
     Returns: Needed budget and time.
     """
-    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 8)
+    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 10)
 
     enemy_amounts : list[int] = []
     time_between_enemies : list[int] = []
@@ -98,7 +99,7 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     weights : list[int] = []
     penalty_time_budget : int = 200
     for i in range(len(top_n_enemies)):
-        weights.append((len(top_n_enemies)-i-1)*50)
+        weights.append((len(top_n_enemies)-i-1)*40)
         if enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]] > budget:
             weights[-1] -= int(penalty_time_budget*0.5)
         weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]])))
@@ -109,6 +110,17 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
             weights[-1] -= 100
         if weights[-1] <= 0:
             weights[-1] = 1
+
+    if len(top_n_enemies) == 10:
+        for i in range(0, len(weights)):
+            weights[i] += i
+            health : int = enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]
+            if health > budget*2:
+                weights[i] = 0
+
+    if sum(weights) == 0:
+        logging.warning(f"All weights for the burst group are zero for wave {config.wave_number}. This should not happen, but to prevent a crash, we will assign equal weights to all enemies.")
+        weights = [1 for _ in weights]
 
     chosen_enemy : tuple[int, data_class.SpecialEnemyTypes] = config.rng.choices(top_n_enemies, weights=weights)[0]
     enemy_i : int = top_n_enemies.index(chosen_enemy)

@@ -54,7 +54,8 @@ class Data_class():
         self.tile_zoom : int = 2
         self.world_margin : tuple[int, int] = (0, 0)
 
-        self.screen : pg.Surface = pg.display.set_mode(self.screen_size, pg.RESIZABLE)
+        self.__default_screen_flags : int = pg.SHOWN # pg.DOUBLEBUF made performance worse...
+        self.screen : pg.Surface = pg.display.set_mode(self.screen_size, self.__default_screen_flags | pg.RESIZABLE)
         pg.display.set_caption(self.screen_title)
         self.Check_resize(force=True)
         
@@ -204,10 +205,10 @@ class Data_class():
             self.is_fullscreen = not self.is_fullscreen
             if self.is_fullscreen:
                 self.screen_size_before_fullscreen = self.screen_size   
-                self.screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+                self.screen = pg.display.set_mode((0, 0), self.__default_screen_flags | pg.FULLSCREEN)
             else:
                 self.screen_size = self.screen_size_before_fullscreen
-                self.screen = pg.display.set_mode(self.screen_size, pg.RESIZABLE)
+                self.screen = pg.display.set_mode(self.screen_size, self.__default_screen_flags | pg.RESIZABLE)
             force = True
         elif not keys[pg.K_F11]:
             self.__fullscreen_clicked = False

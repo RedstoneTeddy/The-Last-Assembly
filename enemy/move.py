@@ -13,6 +13,7 @@ class EnemyMove:
         self.data : data_class.Data_class = data
 
         self.__cache_locations : dict[tuple[int, int], tuple[int, int]] = {}
+        self.__cached_world : str = ""
         # From : X and Y
         # To : path_index and tile_index
 
@@ -28,6 +29,7 @@ class EnemyMove:
             return
         
         self.__cache_locations.clear()
+        self.__cached_world = self.data.world_name
         
         for path_index, path in enumerate(self.data.path):
             for tile_index, tile in enumerate(path):
@@ -42,7 +44,7 @@ class EnemyMove:
         """
         enemies : enemy.enemy_data_class.Enemy_data_class = self.data.enemies
 
-        if not self.__cache_locations:
+        if not self.__cache_locations or self.__cached_world != self.data.world_name:
             self.Precache_enemy_locations()
 
 

@@ -53,8 +53,8 @@ class Map_selection:
                 self.images[key] = pg.transform.scale(self.original_images[key], (self.original_images[key].get_width()*self.data.tile_zoom, self.original_images[key].get_height()*self.data.tile_zoom))
 
     def Main(self) -> None:
-        self.Resize()
         if self._animation >= self._max_animation and self._animation < 3*self._max_animation:
+            self.Resize()
             self.Show_map_selection()
         if self._difficulty_animation > 0:
             self.Show_difficulty_selection()
@@ -264,8 +264,12 @@ class Map_selection:
             self.data.screen_size[1]
         ))       
 
-        if self._animation == 3*self._max_animation:
+        if self._animation == 1*self._max_animation:
+            self.data.is_paused = False
+            self.data.in_game = False
+            self.data.wave_in_progress = False
 
+        if self._animation == 3*self._max_animation:
             self.data.New_game(self.selected_map, self.selected_difficulty)
         if self._animation >= 4*self._max_animation:
             self.data.in_map_selection = False

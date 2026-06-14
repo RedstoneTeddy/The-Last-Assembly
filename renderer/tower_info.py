@@ -32,10 +32,10 @@ class Tower_info():
         self.original_images["bottom_36"] = pg.image.load("assets/icons/boxes/bottom_36.png").convert_alpha()
         self.original_images["bottom_48"] = pg.image.load("assets/icons/boxes/bottom_48.png").convert_alpha()
         self.original_images["bottom_60"] = pg.image.load("assets/icons/boxes/bottom_60.png").convert_alpha()
-        self.original_images["line_24"] = pg.image.load("assets/icons/boxes/line_24.png").convert_alpha()
-        self.original_images["line_36"] = pg.image.load("assets/icons/boxes/line_36.png").convert_alpha()
-        self.original_images["line_48"] = pg.image.load("assets/icons/boxes/line_48.png").convert_alpha()
-        self.original_images["line_60"] = pg.image.load("assets/icons/boxes/line_60.png").convert_alpha()
+        self.original_images["line_24"] = pg.image.load("assets/icons/boxes/line_24.png").convert()
+        self.original_images["line_36"] = pg.image.load("assets/icons/boxes/line_36.png").convert()
+        self.original_images["line_48"] = pg.image.load("assets/icons/boxes/line_48.png").convert()
+        self.original_images["line_60"] = pg.image.load("assets/icons/boxes/line_60.png").convert()
         self.original_images["top_24"] = pg.image.load("assets/icons/boxes/top_24.png").convert_alpha()
         self.original_images["top_36"] = pg.image.load("assets/icons/boxes/top_36.png").convert_alpha()
         self.original_images["top_48"] = pg.image.load("assets/icons/boxes/top_48.png").convert_alpha()
@@ -103,6 +103,10 @@ class Tower_info():
                     pg.draw.rect(self.data.screen, (255, 90, 55), sell_button_rect, border_radius=2*self.data.tile_zoom)
                     if sell_button_hover:
                         pg.draw.rect(self.data.screen, (255, 255, 255), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
+                        for other_tower in self.data.towers:
+                            other_tower._selected_clicked = True
+                        for other_specialist in self.data.specialists:
+                            other_specialist._selected_clicked = True
                     else:
                         pg.draw.rect(self.data.screen, (0, 0, 0), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
                     self.data.screen.blit(self.images["icon_money"], (sell_button_rect[0] + 3*self.data.tile_zoom, sell_button_rect[1] + 5*self.data.tile_zoom))

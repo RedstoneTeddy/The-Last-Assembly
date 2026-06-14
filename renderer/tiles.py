@@ -15,20 +15,22 @@ class Tiles:
         self.original_tile_size : int = 12
 
         self.original_images.update({
-            f"floor_{i}" : pg.image.load(f"assets/tile/floor/normal{i}.png").convert_alpha() for i in range(1, 41)
+            f"floor_{i}" : pg.image.load(f"assets/tile/floor/normal{i}.png").convert() for i in range(1, 41)
         })
         self.original_images.update({
-            f"path_{i}" : pg.image.load(f"assets/tile/path/normal{i}.png").convert_alpha() for i in range(1, 12)
+            f"path_{i}" : pg.image.load(f"assets/tile/path/normal{i}.png").convert() for i in range(1, 12)
         })
         self.original_images.update({
-            f"sidebar_{i}" : pg.image.load(f"assets/tile/sidebar/sidebar{i}.png").convert_alpha() for i in range(1, 16)
+            f"sidebar_{i}" : pg.image.load(f"assets/tile/sidebar/sidebar{i}.png").convert() for i in range(1, 16)
         })
         self.original_images.update({
-            f"hq_{i}" : pg.image.load(f"assets/tile/hq/hq{i}.png").convert_alpha() for i in range(1, 13)
+            f"hq_{i}" : pg.image.load(f"assets/tile/hq/hq{i}.png").convert() for i in range(1, 13)
         })
         self.original_images.update({
-            f"acid_{i}" : pg.image.load(f"assets/tile/acid/acid{i}.png").convert_alpha() for i in range(1, 23)
+            f"acid_{i}" : pg.image.load(f"assets/tile/acid/acid{i}.png").convert() for i in range(1, 23)
         })
+
+        self.__cached_world_name : str = ""
 
         self.Resize(force=True)
 
@@ -43,21 +45,31 @@ class Tiles:
             for key, image in self.original_images.items():
                 self.images[key] = pg.transform.scale(image, (image.get_width() * self.current_zoom, image.get_height() * self.current_zoom))
 
+    def __Cache_world(self) -> None:
+        """
+        Cache the world name to avoid unnecessary resizing of the tile images when switching between worlds.
+        """
+        if self.__cached_world_name != self.data.world_name:
+            self.__cached_world_name = self.data.world_name
+            # Predraw the entire world onto a surface to cache it and reuse it
+            world : pg.Surface = pg.Surface((32*self.original_tile_size, 18*self.original_tile_size))
+            for y, row in enumerate(self.data.world):
+                for x, tile in enumerate(row):
+                    if tile not in ["", " ", None]:
+                        world.blit(self.original_images[tile], (x * self.original_tile_size, y * self.original_tile_size))
+            self.original_images["world"] = world
+            # Resize all tiles
+            self.Resize(force=True)
 
 
     def Draw(self):
         """
         Draw the tile-map onto the screen
         """
+        self.__Cache_world()
         self.Resize()
 
-        for y, row in enumerate(self.data.world):
-            for x, tile in enumerate(row):
-                if tile not in ["", " ", None]:
-                    self.data.screen.blit(self.images[tile], (
-                        x * self.current_zoom * self.original_tile_size + self.data.world_margin[0], 
-                        y * self.current_zoom * self.original_tile_size + self.data.world_margin[1]
-                    ))
+        self.data.screen.blit(self.images["world"], self.data.Get_World_to_Screen((0, 0)))
 
     def Draw_single(self, pos: tuple[int, int], tile: str):
         """

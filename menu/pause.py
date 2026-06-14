@@ -122,9 +122,9 @@ class Pause_menu:
         self.data.Draw_text("NEW RUN", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*16, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
         if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
             self._button_pressed = True
-            self.animation_direction = 0
-            self.animation = 0
-            self.data.New_game(self.data.world_name, self.data.difficulty)
+            self.animation_direction = -1
+            self.data.in_map_selection = True
+
             
         # Collection : Towers
         button_rect = (

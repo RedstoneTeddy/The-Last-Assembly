@@ -6,9 +6,14 @@ import random
 
 pg.init()
 
-# V 0.10.0 (idle) ->        0.003362x^2 - 0.052082x + 0.193288, top-health : 12'000
+# V 0.10.0 (idle) ->        0.003260x^2 - 0.048503x + 0.187083, top-health : 12'000
+# V 0.10.1 (idle) ->        0.001904x^2 - 0.019225x + 0.083520, top-health :  9'100, ratio : 1.3273
+
 # V 0.10.0 (operational) -> 0.003889x^2 - 0.059135x + 0.219334, top-health : 14'000
+# V 0.10.1 (operational) -> 0.002110x^2 - 0.021187x + 0.092332, top-health :  9'100, ratio : 1.4755
+
 # V 0.10.0 (critical) ->    0.004489x^2 - 0.067201x + 0.248362, top-health : 16'000
+# V 0.10.1 (critical) ->    0.002356x^2 - 0.023428x + 0.102315, top-health :  9'100, ratio : 1.6482
 
 
 import logging
@@ -25,7 +30,7 @@ console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.10.0"
+version : str = "0.10.1"
 data : Data_class = Data_class(version)
 
 data.difficulty = "critical" # Set difficulty here for testing purposes

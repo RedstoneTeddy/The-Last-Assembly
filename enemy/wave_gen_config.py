@@ -29,20 +29,18 @@ class WaveGenConfig:
     """
     def __init__(self) -> None:
         #### - General parameters - ####
-        self.base_budget : int = 60 # Base budget (for the 1. wave)
-        self.budget_increase : list[float] = [   # Multiplier for the budget increase per wave (e.g. 1.1 means +10% per wave)
-            1.220, # Wave 1-10
-            1.190, # Wave 11-20
-            1.150, # Wave 21-30
-            1.200  # Wave 31+
+        self.budget_formula : list[float] = [
+            0.0033, # x^4
+            4,  # x^2
+            50, # Constant
         ]
         self.budget_random_factor : float = 0.1 # Random factor for the budget (e.g. 0.1 means +/- 10% randomization)
 
         self.base_time : int = 60*50 # Base time (for the 1. wave)
         self.time_increase_fix : list[float] = [
-            120, # Wave 1-10
-            110, # Wave 11-20
-            100, # Wave 21-30
+            140, # Wave 1-10
+            125, # Wave 11-20
+            110, # Wave 21-30
             60  # Wave 31+
         ]
         self.time_random_factor : float = 0.1

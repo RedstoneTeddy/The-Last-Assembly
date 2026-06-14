@@ -4,6 +4,8 @@ from pathlib import Path
 
 pg.init()
 
+pg.event.set_allowed([pg.QUIT, pg.MOUSEWHEEL])
+
 import logging
 PROJECT_ROOT = Path(__file__).resolve().parent
 
@@ -35,7 +37,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.10.0"
+version : str = "0.10.1"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -44,8 +46,6 @@ from time import sleep
 sleep(1)
 
 
-# Load map
-# data.New_game("classic")
 
 # Renderer
 import renderer.tiles

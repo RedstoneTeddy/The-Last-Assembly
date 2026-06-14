@@ -49,6 +49,10 @@ class Specialist_info:
                     pg.draw.rect(self.data.screen, (255, 90, 55), sell_button_rect, border_radius=2*self.data.tile_zoom)
                     if sell_button_hover:
                         pg.draw.rect(self.data.screen, (255, 255, 255), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
+                        for other_tower in self.data.towers:
+                            other_tower._selected_clicked = True
+                        for other_specialist in self.data.specialists:
+                            other_specialist._selected_clicked = True
                     else:
                         pg.draw.rect(self.data.screen, (0, 0, 0), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
                     self.data.screen.blit(self.tower_info.images["icon_money"], (sell_button_rect[0] + 3*self.data.tile_zoom, sell_button_rect[1] + 5*self.data.tile_zoom))
