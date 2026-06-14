@@ -77,7 +77,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
         observer_count : int = 0
         lieutenant_count : int = 0
         for other_tower in tower.data.towers:
-            min_distance : int = 9999
+            min_distance : int = 999999
             for my_pos in [(tower._pos[0], tower._pos[1]), (tower._pos[0]+2, tower._pos[1]), (tower._pos[0], tower._pos[1]+2), (tower._pos[0]+2, tower._pos[1]+2)]:
                 distance : int = ((other_tower._pos[0]+1 - my_pos[0])*12)**2 + ((other_tower._pos[1]+1 - my_pos[1])*12)**2
                 if distance < min_distance:
@@ -95,9 +95,9 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
 
         for _ in range(observer_count):
             tower._actual_range = int(tower._actual_range * 1.3)
-            tower._actual_cooldown *= 0.9
+            tower._actual_cooldown *= 0.85
         for _ in range(lieutenant_count):
-            tower._actual_damage *= 1.3 
+            tower._actual_damage *= 1.35
 
 
     # Nearby-Buff enabled by the specialist "Conductor" and "Gunsmith"
@@ -123,7 +123,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
                     tower._buffed_type.append("nearby")
 
     if same_damage_buff > 0:
-        tower._actual_damage *= (1 + same_damage_buff*0.2)
+        tower._actual_damage *= 1.2 ** same_damage_buff
                 
             
 

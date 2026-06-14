@@ -6,7 +6,10 @@ import random
 
 pg.init()
 
-# V 0.9.1 -> 0.004678x^2 - 0.078611x + 0.284493
+# V 0.10.0 (idle) ->        0.003362x^2 - 0.052082x + 0.193288, top-health : 12'000
+# V 0.10.0 (operational) -> 0.003889x^2 - 0.059135x + 0.219334, top-health : 14'000
+# V 0.10.0 (critical) ->    0.004489x^2 - 0.067201x + 0.248362, top-health : 16'000
+
 
 import logging
 # logging.basicConfig(
@@ -22,8 +25,10 @@ console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.9.0"
+version : str = "0.10.0"
 data : Data_class = Data_class(version)
+
+data.difficulty = "critical" # Set difficulty here for testing purposes
 
 
 def fit_quadratic(points : list[float]) -> tuple[float, float, float]:

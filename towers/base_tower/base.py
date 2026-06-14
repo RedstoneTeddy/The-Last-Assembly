@@ -64,6 +64,7 @@ class Base_tower:
         self._selected_clicked : bool = False
         self._sell_value : int = 0
         self._mods : dict[data_class.ModTypes, int] = {}
+        self._permanent : bool = False # Whether the tower is permanent => not sellable / removable
 
         # Shot / Shooting variables
         self._cooldown_timer : int = 0
@@ -111,6 +112,9 @@ class Base_tower:
             output.append(data_class.TextLine(text="Uncommon Tower; ", color=(0,0,255), icon="", is_small=True))
         elif self.rarity == "Rare":
             output.append(data_class.TextLine(text="Rare Tower; ", color=(200,100,0), icon="", is_small=True))
+
+        if self._permanent:
+            output.append(data_class.TextLine(text="Permanent!", color=(100, 0, 0), icon="", is_small=False))
 
         if self._actual_cooldown > 0.0:
             output.append(data_class.TextLine(text=str(round(self._actual_damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))

@@ -22,6 +22,12 @@ class Tower_info():
         self.original_images["icon_speed"] = pg.image.load("assets/icons/speed.png").convert_alpha()
         self.original_images["icon_time"] = pg.image.load("assets/icons/time.png").convert_alpha()
 
+        self.original_images["icon_idle"] = pg.image.load("assets/icons/difficulties/difficulties1.png").convert_alpha()
+        self.original_images["icon_startup"] = pg.image.load("assets/icons/difficulties/difficulties2.png").convert_alpha()
+        self.original_images["icon_operational"] = pg.image.load("assets/icons/difficulties/difficulties3.png").convert_alpha()
+        self.original_images["icon_overclocked"] = pg.image.load("assets/icons/difficulties/difficulties4.png").convert_alpha()
+        self.original_images["icon_critical"] = pg.image.load("assets/icons/difficulties/difficulties5.png").convert_alpha()
+
         self.original_images["bottom_24"] = pg.image.load("assets/icons/boxes/bottom_24.png").convert_alpha()
         self.original_images["bottom_36"] = pg.image.load("assets/icons/boxes/bottom_36.png").convert_alpha()
         self.original_images["bottom_48"] = pg.image.load("assets/icons/boxes/bottom_48.png").convert_alpha()
@@ -88,19 +94,20 @@ class Tower_info():
                 )
 
                 # Draw sell button
-                sell_button_hover : bool = False
-                if sell_button_rect[0] <= mouse_pos[0] <= sell_button_rect[0] + sell_button_rect[2] and sell_button_rect[1] <= mouse_pos[1] <= sell_button_rect[1] + sell_button_rect[3]:
-                    sell_button_hover = True
-                    if pg.mouse.get_pressed()[0]:
-                        self.delete_tower_i = i
-                pg.draw.rect(self.data.screen, (255, 90, 55), sell_button_rect, border_radius=2*self.data.tile_zoom)
-                if sell_button_hover:
-                    pg.draw.rect(self.data.screen, (255, 255, 255), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
-                else:
-                    pg.draw.rect(self.data.screen, (0, 0, 0), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
-                self.data.screen.blit(self.images["icon_money"], (sell_button_rect[0] + 3*self.data.tile_zoom, sell_button_rect[1] + 5*self.data.tile_zoom))
-                self.data.Draw_text("Sell", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 3*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
-                self.data.Draw_text(str(tower._sell_value)+" $", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 11*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
+                if not tower._permanent:
+                    sell_button_hover : bool = False
+                    if sell_button_rect[0] <= mouse_pos[0] <= sell_button_rect[0] + sell_button_rect[2] and sell_button_rect[1] <= mouse_pos[1] <= sell_button_rect[1] + sell_button_rect[3]:
+                        sell_button_hover = True
+                        if pg.mouse.get_pressed()[0]:
+                            self.delete_tower_i = i
+                    pg.draw.rect(self.data.screen, (255, 90, 55), sell_button_rect, border_radius=2*self.data.tile_zoom)
+                    if sell_button_hover:
+                        pg.draw.rect(self.data.screen, (255, 255, 255), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
+                    else:
+                        pg.draw.rect(self.data.screen, (0, 0, 0), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
+                    self.data.screen.blit(self.images["icon_money"], (sell_button_rect[0] + 3*self.data.tile_zoom, sell_button_rect[1] + 5*self.data.tile_zoom))
+                    self.data.Draw_text("Sell", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 3*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
+                    self.data.Draw_text(str(tower._sell_value)+" $", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 11*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
 
 
                 # Show info-box

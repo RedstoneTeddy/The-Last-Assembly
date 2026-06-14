@@ -157,7 +157,7 @@ class Mod_building:
 
         # Base stat mods
         elif self.build_mod == "rapid_loader":
-            tower.cooldown *= 0.8
+            tower.cooldown *= 0.75
         elif self.build_mod == "critical_core":
             if tower._crit_chance <= 0.1:
                 tower._crit_chance = 0.25
@@ -170,7 +170,7 @@ class Mod_building:
             tower.range = int(tower.range * 1.25)
             tower.cooldown *= 1.05
         elif self.build_mod == "sharpshooter":
-            tower.damage *= 1.25
+            tower.damage *= 1.33
         elif self.build_mod == "explosive":
             tower.blast_radius = int(tower.blast_radius * 1.35)
         elif self.build_mod == "bounty_hunter":

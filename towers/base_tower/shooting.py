@@ -204,7 +204,7 @@ def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
     # Combat-robot special effect
     if tower.internal_name == "combat_robot":
         if tower.data.enemies.health[tower._shoot_at_id] > 10:
-            damage_to_deal *= 1.3
+            damage_to_deal *= 1.4
 
     # Critical hit
     if tower._crit_chance > 0:
@@ -280,7 +280,7 @@ def Get_nearby_enemy(tower : 'base_tower.Base_tower', center_pos : tuple[int, in
     # so first has the lowest weight and last has the highest weight
     elif decision == "first": # Get first enemy
         if len(possible_enemy_ids) > 0:
-            max_distance_value : int = 999
+            max_distance_value : int = 999999
             max_distance_index : int = 0
             for id in possible_enemy_ids:
                 pos : tuple[int, int] = tower.data.enemies.position[id]
@@ -302,7 +302,7 @@ def Get_nearby_enemy(tower : 'base_tower.Base_tower', center_pos : tuple[int, in
             for id in possible_enemy_ids:
                 pos : tuple[int, int] = tower.data.enemies.position[id]
                 if pos[0] < 0 or pos[1] < 0 or pos[1] >= len(tower.data._weighted_world) or pos[0] >= len(tower.data._weighted_world[0]):
-                    distance_value = 9999
+                    distance_value = 999999
                 else:
                     distance_value : int = tower.data._weighted_world[pos[1]][pos[0]]
                 if distance_value > max_distance_value:

@@ -40,7 +40,7 @@ class Specialist_info:
                 )
 
                 # Draw the sell button/
-                if self.data.specialists[i]._sell_value >= 0:
+                if not specialist._permanent:
                     sell_button_hover : bool = False
                     if sell_button_rect[0] <= mouse_pos[0] <= sell_button_rect[0] + sell_button_rect[2] and sell_button_rect[1] <= mouse_pos[1] <= sell_button_rect[1] + sell_button_rect[3]:
                         sell_button_hover = True

@@ -54,7 +54,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
     # Base stat mods
     output["rapid_loader"] = [
         data_class.TextLine(text="Rapid Loader", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="- 20%", color=default_color, icon="time", is_small=False),
+        data_class.TextLine(text="- 25%", color=default_color, icon="time", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 
@@ -81,7 +81,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["sharpshooter"] = [
         data_class.TextLine(text="Sharpshooter", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 25%", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="+ 33%", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 

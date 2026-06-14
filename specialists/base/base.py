@@ -44,6 +44,7 @@ class Base_specialist:
         self._is_selected : bool = False
         self._selected_clicked : bool = False
         self._sell_value : int = 0
+        self._permanent : bool = False # Whether the specialist is permanent, which means it cannot be sold
 
 
 
@@ -66,6 +67,9 @@ class Base_specialist:
             out_text.append(data_class.TextLine(text="Specialist - Master; ", color=(0,0,255), icon="", is_small=True))
         elif self.rarity == "PhD":
             out_text.append(data_class.TextLine(text="Specialist - PhD; ", color=(200,100,0), icon="", is_small=True))
+
+        if self._permanent:
+            out_text.append(data_class.TextLine(text="Permanent!", color=(100,0,0), icon="", is_small=False))
         
         out_text.append(data_class.TextLine(text=f"Wage: {self.wage}", color=(238, 168, 25), icon="money", is_small=False))
 

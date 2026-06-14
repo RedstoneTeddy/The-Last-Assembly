@@ -17,13 +17,13 @@ class Combat_robot(base.Base_tower):
         self.build_cost : int = 150
 
         self.range : int = 5*12
-        self.damage : float = 3
-        self.cooldown : float = 35.0
+        self.damage : float = 5
+        self.cooldown : float = 37.0
         self.shot_speed : int = 2
         self.damage_type : base.DAMAGE_TYPES = "Physical"
 
 
     def Get_specific_info_texts(self) -> list[data_class.TextLine]:
         return [
-            data_class.TextLine(text="+30% damage for;> 10 health", color=(255, 255, 255), icon="", is_small=True)
+            data_class.TextLine(text="+40% damage for;> 10 health", color=(255, 255, 255), icon="", is_small=True)
         ]

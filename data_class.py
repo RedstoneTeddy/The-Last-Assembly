@@ -4,6 +4,7 @@ import pygame as pg
 import logging
 import enemy.enemy_data_class as enemy_data_class
 import map.save_load as save_load
+import pickle
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -12,6 +13,31 @@ if TYPE_CHECKING:
 
 import random
 from time import time
+
+
+
+ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
+ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "explosive", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
+SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
+DifficultyLevels = Literal["", "idle", "startup", "operational", "overclocked", "critical"]
+DifficultyRated : dict[DifficultyLevels, int] = {
+    "": 0,
+    "idle": 1,
+    "startup": 2,
+    "operational": 3,
+    "overclocked": 4,
+    "critical": 5
+}
+
+TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper",
+                     "catalyst", "repeater", "observer", "lieutenant"]
+SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
+                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time", "investor",
+                          "conductor", "gunsmith"]
+
+
+
+
 
 
 class Data_class():
@@ -37,6 +63,7 @@ class Data_class():
         self.mouse_wheel_up : bool = False
         self.mouse_wheel_down : bool = False
         self.clock : pg.time.Clock = pg.time.Clock()
+        self.keys : pg.key.ScancodeWrapper = pg.key.get_pressed()
 
         self.__font_objects : dict[str, pg.font.Font] = {}
 
@@ -51,6 +78,7 @@ class Data_class():
         self._weighted_world : list[list[int]] = []
         self.sorted_path : list[tuple[int, int]] = [] 
         self.world_name : str = ""
+        self.difficulty : DifficultyLevels = ""
 
         self.wave : int = 0
         self.money : int = 400
@@ -74,10 +102,15 @@ class Data_class():
         self.specialist_cost : int = 150
         self.shop_elements : int = 5
         self.tower_weights : tuple[int, int, int] = (10, 7, 5) # Common-Weight, Uncommon-Weight, Rare-Weight for the shop
+        self.permanent_chance : float = 0.3
         
+        # Permanent game variables
+        self.completed_maps : dict[str, DifficultyLevels] = {} # Map name : highest completed difficulty
+        self.Reset_permanent_data()
 
         # Menu variables
         self.in_game : bool = False
+        self.in_map_selection : bool = True
         self.is_paused : bool = False
         self.wave_in_progress : bool = False
         self.in_shop : bool = False
@@ -104,7 +137,7 @@ class Data_class():
         self.other_random = random.Random(seed)
 
     
-    def New_game(self, world_name : str, seed : int = 0) -> None:
+    def New_game(self, world_name : str, difficulty : DifficultyLevels, seed : int = 0) -> None:
         if seed == 0:
             seed = int(time())
         logging.info(f"Starting new game with world '{world_name}' and seed {seed}")
@@ -114,8 +147,10 @@ class Data_class():
         self.path = []
         self._weighted_world = []
         self.sorted_path = []
+        self.difficulty = difficulty
 
         # Current menu / window / game state
+        # self.in_map_selection = False, needed for animation
         self.in_game = True
         self.is_paused = False
         self.wave_in_progress = False
@@ -128,7 +163,7 @@ class Data_class():
         # Game variables
         self.wave = 0
         self.money = 400
-        self.health = 100
+        self.health = 200
         self.fast_forward = False
 
         self.enemies = enemy_data_class.Enemy_data_class()
@@ -142,10 +177,28 @@ class Data_class():
         self.world_name = world_name
         save_load.Load_World(self, world_name)
 
+        # Difficulty modifiers
+        if self.difficulty in ["startup", "operational", "overclocked", "critical"]:
+            self.money = 150
+        if self.difficulty in ["overclocked", "critical"]:
+            self.interest_per_100 = 10
+            self.interest_cap = 50
+        else:
+            self.interest_per_100 = 20
+            self.interest_cap = 100
+        if self.difficulty == "startup":
+            self.health = 100
+        elif self.difficulty in ["operational", "overclocked"]:
+            self.health = 50
+        elif self.difficulty == "critical":
+            self.health = 1
+        
+
     
     def Check_resize(self, force : bool = False) -> bool:
         # Toggle fullscreen if F11 is pressed
-        keys = pg.key.get_pressed()
+        self.keys = pg.key.get_pressed()
+        keys = self.keys
         if keys[pg.K_F11] and not self.__fullscreen_clicked:
             self.__fullscreen_clicked = True
             self.is_fullscreen = not self.is_fullscreen
@@ -232,7 +285,36 @@ class Data_class():
             logging.warning(f"ID counter reset, the highest currently alive ID is {max_alive_id}")
         return self.__id_counter*1000 + self.wave   
 
+    def Load_permanent_data(self) -> None:
+        self.Reset_permanent_data()
+        # Check if data.pkl file exists
+        try:
+            with open("data.pkl", "rb") as f:
+                loaded_data = pickle.load(f)
+                if "completed_maps" in loaded_data:
+                    self.completed_maps = loaded_data["completed_maps"]
+                    logging.info("Permanent data loaded")
+                else:
+                    logging.warning("Permanent data file does not contain completed_maps, resetting to empty")
+        except FileNotFoundError:
+            logging.warning("Permanent data file not found, resetting to empty")
+        except Exception as e:
+            logging.error(f"Error loading permanent data: {e}, resetting to empty")
+        
+    def Save_permanent_data(self) -> None:
+        data_to_save : dict[str, dict[str, DifficultyLevels]] = {
+            "completed_maps": self.completed_maps
+        }
+        try:
+            with open("data.pkl", "wb") as f:
+                pickle.dump(data_to_save, f)
+                logging.info("Permanent data saved")
+        except Exception as e:
+            logging.error(f"Error saving permanent data: {e}")
+        
 
+    def Reset_permanent_data(self) -> None:
+        self.completed_maps = {}
 
 
 
@@ -263,17 +345,4 @@ class TextLine(TypedDict):
     color : tuple[int, int, int]
     icon : str
     is_small : bool
-
-
-ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
-ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "explosive", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
-SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
-
-TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper",
-                     "catalyst", "repeater", "observer", "lieutenant"]
-SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
-                          "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time", "investor",
-                          "conductor", "gunsmith"]
-
-
 

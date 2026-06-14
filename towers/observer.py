@@ -31,5 +31,5 @@ class Observer(base.Base_tower):
         return [
             data_class.TextLine(text="Does not shoot!;Support-Tower", color=(255, 0, 0), icon="", is_small=True),
             data_class.TextLine(text="Towers in;range gain", color=(255, 255, 255), icon="", is_small=True),
-            data_class.TextLine(text="+30% range;-10% cooldown", color=(255, 255, 255), icon="", is_small=True)
+            data_class.TextLine(text="+30% range;-15% cooldown", color=(255, 255, 255), icon="", is_small=True)
         ]

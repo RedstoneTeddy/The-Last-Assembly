@@ -48,6 +48,15 @@ class Wave_handler:
             self.data.wave_in_progress = False
             self.data.shop_minimized = False
             self.data.in_shop = True
+            if self.data.wave == 30:
+                # Player has won the game
+                print("Congratulations! You have completed all the waves!")
+                logging.info("Player has won the game.")
+                previous_difficulty : data_class.DifficultyLevels = self.data.completed_maps.get(self.data.world_name, "")
+                current_difficulty : data_class.DifficultyLevels = self.data.difficulty
+                if data_class.DifficultyRated[current_difficulty] > data_class.DifficultyRated.get(previous_difficulty, 0):
+                    self.data.completed_maps[self.data.world_name] = current_difficulty
+                    logging.info(f"Player has completed {self.data.world_name} for the first time on {current_difficulty} difficulty.")
 
         # Check if player has lost
         if self.data.health <= 0:

@@ -18,7 +18,7 @@ class Economist(base.Base_tower):
 
         self.range : int = 3*12
         self.damage : float = 0
-        self.cooldown : float = 80.0
+        self.cooldown : float = 75.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Physical"
         self.blast_radius : int = 0

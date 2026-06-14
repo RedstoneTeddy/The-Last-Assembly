@@ -44,6 +44,7 @@ class Shop:
         self.shop_element_costs : list[int] = []
         self.shop_element_descriptions : list[list[data_class.TextLine]] = []
         self.shop_element_bought : list[bool] = []
+        self.shop_element_permanent : list[bool] = [] # If true, (only for towers) the tower will be not sellable
         self._selected_shop_element : int = -1  
 
         self.pack_obj : shop.packs.Packs = shop.packs.Packs(data, tower_info_renderer, self)
@@ -87,6 +88,7 @@ class Shop:
         self.original_images["reroll_btn"] = pg.image.load("assets/shop/buttons/reroll.png").convert_alpha()
         self.original_images["reroll_btn_selected"] = pg.image.load("assets/shop/buttons/reroll_selected.png").convert_alpha()
         self.original_images["outline"] = pg.image.load("assets/shop/buttons/outline.png").convert_alpha()
+        self.original_images["outline_permanent"] = pg.image.load("assets/shop/buttons/outline_permanent.png").convert_alpha()
         self.original_images["outline_selected"] = pg.image.load("assets/shop/buttons/outline_selected.png").convert_alpha()
         self.original_images["gray_out"] = pg.image.load("assets/shop/buttons/gray_out.png").convert_alpha()
 
@@ -314,7 +316,10 @@ class Shop:
         if element_is_hovered:
             self.data.screen.blit(self.images["outline_selected"], (element_rect[0], element_rect[1]))
         else:
-            self.data.screen.blit(self.images["outline"], (element_rect[0], element_rect[1]))
+            if self.shop_element_permanent[i]:
+                self.data.screen.blit(self.images["outline_permanent"], (element_rect[0], element_rect[1]))
+            else:
+                self.data.screen.blit(self.images["outline"], (element_rect[0], element_rect[1]))
 
         if (i >= len(self.shop_elements)):
             logging.warning(f"Trying to display shop element with index {i} but only {len(self.shop_elements)} elements exist.")
@@ -331,6 +336,8 @@ class Shop:
             element_bought : bool = False
             cost : int = self.shop_element_costs[i]
             info_text = cast(list[data_class.TextLine], deepcopy(self.shop_element_descriptions[i]))
+            if self.shop_element_permanent[i]:
+                info_text.insert(2, data_class.TextLine(text="Permanent!", color=(100, 0, 0), icon="", is_small=False))
             if cost > self.data.money:
                 info_text.insert(0, data_class.TextLine(text=f"{cost}", color=(255, 100, 100), icon="money", is_small=False))
             else:
@@ -356,6 +363,7 @@ class Shop:
                         new_tower : towers.base_tower.base.Base_tower = tower_class(self.data)
                         new_tower._is_placed = False
                         new_tower._selected_clicked = True
+                        new_tower._permanent = self.shop_element_permanent[i]
                         self.data.towers.append(new_tower)
                         element_bought = True
 
@@ -371,6 +379,7 @@ class Shop:
                     else:
                         self.data.is_building = "specialist"
                         new_specialist : specialists.base.base.Base_specialist = specialist_class(self.data)
+                        new_specialist._permanent = self.shop_element_permanent[i]
                         new_specialist._is_placed = False
                         new_specialist._selected_clicked = True
                         self.data.specialists.append(new_specialist)
@@ -553,6 +562,7 @@ class Shop:
         self.shop_element_types = []
         self.shop_element_descriptions = []
         self.shop_element_bought = []
+        self.shop_element_permanent = []
 
     def __Generate_random_element(self) -> None:
         """
@@ -597,8 +607,8 @@ class Shop:
             0.15, # zone_pack2
             0.5,  # mod_pack
             0.25, # mod_pack2
-            0.16, # specialist_pack
-            0.08  # specialist_pack2
+            0.18, # specialist_pack
+            0.09  # specialist_pack2
         ]
         if self.data.wave < 5:
             # Disable specialist packs for the first 5 waves
@@ -706,6 +716,7 @@ class Shop:
             ])
         self.shop_element_types.append("pack")
         self.shop_element_bought.append(False)
+        self.shop_element_permanent.append(False)
 
 
 
@@ -729,6 +740,11 @@ class Shop:
                 self.shop_element_costs.append(self._tower_costs[random_index])
                 self.shop_element_descriptions.append(self._tower_info_box[random_index])
                 self.shop_element_bought.append(False)
+                if self.data.difficulty in ["overclocked", "critical"] and self.data.shop_random.random() < self.data.permanent_chance:
+                    self.shop_element_permanent.append(True)
+                else:
+                    self.shop_element_permanent.append(False)
+
                 break
 
     def _Generate_specialist(self) -> None:
@@ -758,6 +774,10 @@ class Shop:
             self.shop_element_costs.append(self._specialist_costs[random_index])
             self.shop_element_descriptions.append(self._specialist_info_box[random_index])
             self.shop_element_bought.append(False)
+            if (self.data.difficulty in ["overclocked", "critical"] and self.data.shop_random.random() < self.data.permanent_chance) or specialist_name == "back_in_time":
+                self.shop_element_permanent.append(True)
+            else:
+                self.shop_element_permanent.append(False)
             break
 
 
@@ -786,6 +806,7 @@ class Shop:
                 self.shop_element_costs.append(self.data.zone_cost)
                 self.shop_element_descriptions.append(self._info_box[random_index])
                 self.shop_element_bought.append(False)
+                self.shop_element_permanent.append(False)
                 break
 
     def _Generate_mod(self, no_double : bool = True) -> None:
@@ -812,6 +833,7 @@ class Shop:
                 self.shop_element_costs.append(self.data.mod_cost)
                 self.shop_element_descriptions.append(self._mod_info_box[random_index])
                 self.shop_element_bought.append(False)
+                self.shop_element_permanent.append(False)
                 break
 
 

@@ -17,7 +17,7 @@ class Cannon(base.Base_tower):
         self.build_cost : int = 130
 
         self.range : int = 4*12
-        self.damage : float = 4
+        self.damage : float = 5
         self.cooldown : float = 50.0
         self.shot_speed : int = 1
         self.blast_radius : int = 12

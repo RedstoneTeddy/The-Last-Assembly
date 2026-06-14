@@ -24,7 +24,7 @@ class Top_handler:
         Ticks the top-handler of the debuging-overlays.
         """
 
-        keys : pg.key.ScancodeWrapper = pg.key.get_pressed()
+        keys : pg.key.ScancodeWrapper = self.data.keys
         if keys[pg.K_F1]:
             if not self.debug_pressed:
                 self.debug_pressed = True

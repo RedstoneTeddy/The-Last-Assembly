@@ -15,7 +15,8 @@ class Selector:
         self.variant_max : dict[str, int] = {
             "floor" : 40,
             "path" : 11,
-            "hq" : 12
+            "hq" : 12,
+            "acid" : 22
         }
 
         self.__variant_change_pressed : bool = False
@@ -41,8 +42,8 @@ class Selector:
         self.renderer.Draw_single((36*self.data.tile_zoom, 17*self.data.tile_zoom), "path_1")
         self.data.Draw_text("3", (2*self.data.tile_zoom, 35*self.data.tile_zoom), self.data.tile_zoom*5, (0,0,0))
         self.renderer.Draw_single((8*self.data.tile_zoom, 32*self.data.tile_zoom), "hq_1")
-        # self.data.Draw_text("2", (30*self.data.tile_zoom, 35*self.data.tile_zoom), self.data.tile_zoom*5, (0,0,0))
-        # self.renderer.Draw_single((36*self.data.tile_zoom, 32*self.data.tile_zoom), "path_1")
+        self.data.Draw_text("4", (30*self.data.tile_zoom, 35*self.data.tile_zoom), self.data.tile_zoom*5, (0,0,0))
+        self.renderer.Draw_single((36*self.data.tile_zoom, 32*self.data.tile_zoom), "acid_1")
 
         # Change selection with number keys
         keys = pg.key.get_pressed()
@@ -55,7 +56,9 @@ class Selector:
         elif keys[pg.K_3]:
             self.selected_type = "hq"
             self.selected_variant = 1
-
+        elif keys[pg.K_4]:
+            self.selected_type = "acid"
+            self.selected_variant = 1
 
         # Change variant with mouse wheel   
         if self.data.mouse_wheel_up or keys[pg.K_UP]:

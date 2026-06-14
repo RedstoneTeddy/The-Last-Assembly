@@ -70,5 +70,14 @@ def Create_floor_patches(data : data_class.Data_class) -> None:
             if tile.startswith("floor_"):
                 if random.random() < broken_chance:
                     current_floor_id : int = int(tile.split("_")[1])
-                    new_floor_id : int = current_floor_id + random.randrange(1, 20)
+                    new_floor_id : int = current_floor_id + random.randint(1, 19)
                     data.world[y][x] = f"floor_{new_floor_id}"
+
+    # Randomize the chosen acid tiles a bit
+    for y, row in enumerate(data.world):
+        for x, tile in enumerate(row):
+            if tile.startswith("acid_"):
+                old_acid_id : int = int(tile.split("_")[1])
+                if old_acid_id <= 10:
+                    new_acid_id : int = random.randint(1, 10)
+                    data.world[y][x] = f"acid_{new_acid_id}"

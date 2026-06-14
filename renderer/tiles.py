@@ -26,6 +26,9 @@ class Tiles:
         self.original_images.update({
             f"hq_{i}" : pg.image.load(f"assets/tile/hq/hq{i}.png").convert_alpha() for i in range(1, 13)
         })
+        self.original_images.update({
+            f"acid_{i}" : pg.image.load(f"assets/tile/acid/acid{i}.png").convert_alpha() for i in range(1, 23)
+        })
 
         self.Resize(force=True)
 

@@ -27,13 +27,13 @@ class Zone_handler:
                             pass  # focus-zone is implemented in towers.base_tower.shooting
                         
                         case "freeze":
-                            if enemies.frozen.get(enemy_id, 0) < 20:
-                                enemies.frozen[enemy_id] = 24
+                            if enemies.frozen.get(enemy_id, 0) < 30:
+                                enemies.frozen[enemy_id] = 30
                         
                         case "gamble":
                             if self.data.path_random.random() >= 0.25:
-                                if enemies.slowness.get(enemy_id, 0) < 60:
-                                    enemies.slowness[enemy_id] = 72
+                                if enemies.slowness.get(enemy_id, 0) < 80:
+                                    enemies.slowness[enemy_id] = 80
                             else:
                                 if enemies.speed.get(enemy_id, 0) < 20:
                                     enemies.speed[enemy_id] = 24
@@ -45,7 +45,7 @@ class Zone_handler:
                             if self.data.path_random.random() < 0.25:
                                 if enemies.special_type.get(enemy_id, "") == "ironclad":
                                     continue
-                                enemies.health[enemy_id] -= 3
+                                enemies.health[enemy_id] -= 4
                                 if enemies.health[enemy_id] <= 0:
                                     enemies.Remove_enemy(enemy_id)
                             if self.data.path_random.random() < 0.01:
@@ -59,8 +59,8 @@ class Zone_handler:
                                 enemies.Remove_enemy(enemy_id)
 
                         case "slow":
-                            if enemies.slowness.get(enemy_id, 0) < 30:
-                                enemies.slowness[enemy_id] = 36
+                            if enemies.slowness.get(enemy_id, 0) < 50:
+                                enemies.slowness[enemy_id] = 50
                         
                         case "tax":
                             if self.data.path_random.random() < 0.1:

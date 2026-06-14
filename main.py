@@ -35,7 +35,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.9.2"
+version : str = "0.10.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -45,7 +45,7 @@ sleep(1)
 
 
 # Load map
-data.New_game("classic")
+# data.New_game("classic")
 
 # Renderer
 import renderer.tiles
@@ -97,6 +97,8 @@ import menu.collection
 collection_menu : menu.collection.Collection_menu = menu.collection.Collection_menu(data, tower_info_renderer, enemy_renderer, zone_renderer, specialist_renderer, mod_building, tower_renderer, shop_obj)
 import menu.pause
 pause_menu : menu.pause.Pause_menu = menu.pause.Pause_menu(data, collection_menu)
+import menu.map_selection
+map_selection_menu : menu.map_selection.Map_selection = menu.map_selection.Map_selection(data, tower_info_renderer)
 
 
 
@@ -104,7 +106,15 @@ pause_menu : menu.pause.Pause_menu = menu.pause.Pause_menu(data, collection_menu
 try:
     while data.run:
 
-        data.screen.fill((0, 0, 0))
+        if data.in_map_selection:
+            data.screen.fill((0, 0, 0))
+        elif data.in_game:
+            pg.draw.rect(data.screen, (0,0,0), (0, 0, data.world_margin[0], data.screen_size[1]))
+            pg.draw.rect(data.screen, (0,0,0), (data.screen_size[0]-data.world_margin[0], 0, data.world_margin[0], data.screen_size[1]))
+            pg.draw.rect(data.screen, (0,0,0), (data.world_margin[0], 0, data.screen_size[0]-2*data.world_margin[0], data.world_margin[1]))
+            pg.draw.rect(data.screen, (0,0,0), (data.world_margin[0], data.screen_size[1]-data.world_margin[1], data.screen_size[0]-2*data.world_margin[0], data.world_margin[1]))
+        
+        
         data.Check_resize()
 
         if data.in_game:
@@ -170,7 +180,7 @@ try:
                 if data.in_shop:
                     shop_obj.Shop_main()
                 else:
-                    if pg.key.get_pressed()[pg.K_ESCAPE]:
+                    if data.keys[pg.K_ESCAPE]:
                         data.is_paused = True
 
             if data.is_paused:
@@ -179,6 +189,9 @@ try:
                 collection_menu.Collection_main()
 
             debug_handler.Main()
+
+        if data.in_map_selection:
+            map_selection_menu.Main()
 
 
 
@@ -196,16 +209,24 @@ try:
                 elif event.y < 0:
                     data.mouse_wheel_down = True
 
-        if not pg.key.get_pressed()[pg.K_F3]:
-            if pg.key.get_pressed()[pg.K_F4]:
+        if not data.keys[pg.K_F3]:
+            if data.keys[pg.K_F4]:
                 data.clock.tick(20)
             else:
                 data.clock.tick(60)
+
+            
+    data.Save_permanent_data()
         
         
 except Exception as e:
     logging.exception("An exception occurred")  # logs the exception with traceback
     logging.fatal("An error occurred. Please check the traceback for more details.")
+    try:
+        data.Save_permanent_data()
+    except Exception as save_exception:
+        logging.exception("Failed to save permanent data after an exception occurred.")
+        logging.fatal("Could not save permanent data. Please check the traceback for more details.")
     logging.info("Exiting the program.")
 
 

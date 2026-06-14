@@ -23,7 +23,7 @@ class Path_creation:
                       10*12*self.data.tile_zoom), 0, 3)
         
         self.data.Draw_text("Selected: ", (2*self.data.tile_zoom, 5*self.data.tile_zoom), self.data.tile_zoom*5, (0,0,0))
-        colors : list[tuple[int, int, int]] = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
+        colors : list[tuple[int, int, int]] = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255), (255, 128, 0)]
         if (self.selected_group >= 0):
             pg.draw.rect(self.data.screen, colors[self.selected_group], (35*self.data.tile_zoom, 2*self.data.tile_zoom, self.data.tile_zoom*12, self.data.tile_zoom*12))
 
@@ -45,6 +45,8 @@ class Path_creation:
             self.selected_group = 4
         elif keys[pg.K_6]:
             self.selected_group = 5
+        elif keys[pg.K_7]:
+            self.selected_group = 6
 
         # Check if we can remove unused path groups
         if len(self.data.path) > 0:
@@ -128,7 +130,8 @@ class Path_creation:
             [(0, 0, 255), (150, 150, 255)],
             [(255, 255, 0), (255, 255, 150)],
             [(255, 0, 255), (255, 150, 255)],
-            [(0, 255, 255), (150, 255, 255)]
+            [(0, 255, 255), (150, 255, 255)],
+            [(255, 128, 0), (255, 200, 150)],
         ]
         my_color_range : list[tuple[int, int, int]] = possible_colors[path_list_i]
         percentage : float = path_j / max(1, len(self.data.path[path_list_i]) - 1)

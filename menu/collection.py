@@ -36,11 +36,12 @@ class Collection_menu:
         self.tower_renderer : renderer.towers.Towers = tower_renderer
         self.shop : shop.main.Shop = shop_obj
 
-        self.current_menu : Literal["towers", "specialists", "mods", "zones", "enemies"] = "towers"
+        self.current_menu : Literal["menu", "towers", "specialists", "mods", "zones", "enemies"] = "towers"
         
         self.animation : int = 0
         self.animation_direction : int = 0
-        self._max_animation : int = 25
+        self._max_animation : int = 30
+        self._max_animation_menu : int = 15
         self._button_pressed : bool = False
         
         self.original_images : dict[str, pg.Surface] = {}
@@ -73,11 +74,17 @@ class Collection_menu:
         if self.animation == 0:
             self.animation_direction = 1
         
-        if self.animation != self._max_animation and self.animation_direction == 1:
-            self.animation += self.animation_direction
+        if self.current_menu == "menu":
+            if self.animation != self._max_animation_menu and self.animation_direction == 1:
+                self.animation += self.animation_direction
+            elif self.animation != 0 and self.animation_direction == -1:
+                self.animation += self.animation_direction
+        else:
+            if self.animation != self._max_animation and self.animation_direction == 1:
+                self.animation += self.animation_direction
+            elif self.animation != 0 and self.animation_direction == -1:
+                self.animation += self.animation_direction
 
-        elif self.animation != 0 and self.animation_direction == -1:
-            self.animation += self.animation_direction
 
         if self.animation > 0:
             self.Show_collection()
@@ -98,6 +105,7 @@ class Collection_menu:
         mod_elements : tuple[int, int] = (7, 3) # Total of up to 21 mods
         zone_elements : tuple[int, int] = (5, 2) # Total of up to 10 zones
         enemy_elements : tuple[int, int] = (5, 3) # Total of up to 15 enemies
+        menu_elements : tuple[int, int] = (3, 2) # Total of 6 menu options
 
         current_elements : tuple[int, int] = (0, 0)
         if self.current_menu == "towers":
@@ -110,6 +118,8 @@ class Collection_menu:
             current_elements = zone_elements
         elif self.current_menu == "enemies":
             current_elements = enemy_elements
+        elif self.current_menu == "menu":
+            current_elements = menu_elements
 
         collection_rect : tuple[int, int, int, int] = (
             self.data.screen_size[0] // 2 - (40*current_elements[0]*self.data.tile_zoom) // 2,
@@ -117,12 +127,20 @@ class Collection_menu:
             40*current_elements[0]*self.data.tile_zoom,
             40*(current_elements[1]+2)*self.data.tile_zoom
         )
-        animated_rect : tuple[int, int, int, int] = (
-            int(self.data.screen_size[0] // 2 - ((40*current_elements[0]*self.data.tile_zoom) // 2)*(self.animation/self._max_animation)),
-            collection_rect[1],
-            int((40*current_elements[0]*self.data.tile_zoom)*(self.animation/self._max_animation)),
-            collection_rect[3]
-        )
+        if self.current_menu == "menu":
+            animated_rect : tuple[int, int, int, int] = (
+                int(self.data.screen_size[0] // 2 - ((40*menu_elements[0]*self.data.tile_zoom) // 2)*(self.animation/self._max_animation_menu)),
+                collection_rect[1],
+                int((40*menu_elements[0]*self.data.tile_zoom)*(self.animation/self._max_animation_menu)),
+                collection_rect[3]
+            )
+        else:
+            animated_rect = (
+                int(self.data.screen_size[0] // 2 - (40*menu_elements[0]*self.data.tile_zoom)//2 - ((40*(current_elements[0]-menu_elements[0])*self.data.tile_zoom) // 2)*((self.animation-self._max_animation_menu)/(self._max_animation-self._max_animation_menu))),
+                int(self.data.screen_size[1] // 2 - (40*(menu_elements[1]+2)*self.data.tile_zoom)//2 - ((40*(current_elements[1]-menu_elements[1])*self.data.tile_zoom) // 2)*((self.animation-self._max_animation_menu)/(self._max_animation-self._max_animation_menu))),
+                40*menu_elements[0]*self.data.tile_zoom + int((40*(current_elements[0] - menu_elements[0])*self.data.tile_zoom)*((self.animation-self._max_animation_menu)/(self._max_animation-self._max_animation_menu))),
+                40*(menu_elements[1]+2)*self.data.tile_zoom + int((40*(current_elements[1] - menu_elements[1])*self.data.tile_zoom)*((self.animation-self._max_animation_menu)/(self._max_animation-self._max_animation_menu)))
+            )
 
         # Background
         self.data.screen.blit(self.images["background_gray_out"], self.data.Get_World_to_Screen((0, 0)))
@@ -131,7 +149,8 @@ class Collection_menu:
 
         mouse_pos : tuple[int, int] = pg.mouse.get_pos()
 
-        if self.animation == self._max_animation:
+
+        if (self.animation == self._max_animation and self.current_menu != "menu") or (self.animation == self._max_animation_menu and self.current_menu == "menu"):
             if self.current_menu == "towers":
                 self.data.Draw_text("COLLECTION - TOWERS", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*60, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
             if self.current_menu == "specialists":
@@ -142,6 +161,8 @@ class Collection_menu:
                 self.data.Draw_text("COLLECTION - ZONES", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*55, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
             if self.current_menu == "enemies":
                 self.data.Draw_text("COLLECTION - ENEMIES", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*63, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
+            if self.current_menu == "menu":
+                self.data.Draw_text("COLLECTION", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*30, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
             # Close button
             button_rect : tuple[int, int, int, int] = (
                 collection_rect[0] + collection_rect[2]//2 - self.images["close_btn"].get_width()//2,
@@ -177,6 +198,15 @@ class Collection_menu:
                 enemy_info = enemy.enemy_info.Get_enemy_info()
                 elements = list(enemy_info.keys())
                 element_texts = [enemy_info[element] for element in elements]
+            elif self.current_menu == "menu":
+                elements = ["Towers", "Specialists", "Mods", "Zones", "Enemies"]
+                element_texts = [
+                    [data_class.TextLine(text="Towers", color=(0,0,0), icon="", is_small=False)],
+                    [data_class.TextLine(text="Specialists", color=(0,0,0), icon="", is_small=False)],
+                    [data_class.TextLine(text="Mods", color=(0,0,0), icon="", is_small=False)],
+                    [data_class.TextLine(text="Zones", color=(0,0,0), icon="", is_small=False)],
+                    [data_class.TextLine(text="Enemies", color=(0,0,0), icon="", is_small=False)]
+                ]
             
 
             # Display elements
@@ -209,12 +239,34 @@ class Collection_menu:
                     self.zone_renderer.Draw_single((element_rect[0], element_rect[1]), element)
                 elif self.current_menu == "enemies":
                     self.enemy_renderer.Draw_single((element_rect[0] + 4*self.data.tile_zoom, element_rect[1] + 4*self.data.tile_zoom), element)
+                elif self.current_menu == "menu":
+                    if element == "Towers":
+                        self.tower_renderer.Draw_single((element_rect[0], element_rect[1]), "tesla_coil")
+                    elif element == "Specialists":
+                        self.specialist_renderer.Draw_single((element_rect[0], element_rect[1]), "modder")
+                    elif element == "Mods":
+                        self.mod_renderer.Draw_single((element_rect[0], element_rect[1]), "hunter_ai")
+                    elif element == "Zones":
+                        self.zone_renderer.Draw_single((element_rect[0], element_rect[1]), "shock")
+                    elif element == "Enemies":
+                        self.enemy_renderer.Draw_single((element_rect[0] + 4*self.data.tile_zoom, element_rect[1] + 4*self.data.tile_zoom), "enemy_6")
+                    if is_hovered and pg.mouse.get_pressed()[0] and not self._button_pressed:
+                        self._button_pressed = True
+                        self.current_menu = element.lower() # type: ignore
+                        self.animation_direction = 1
+                        break
+
 
             # Display info text
             if info_text != []:
                 self.tower_info_renderer.Draw_box_at_mouse(info_text)
 
 
+        if self.animation == self._max_animation_menu+1 and self.current_menu != "menu" and self.animation_direction == -1:
+            self.animation_direction = 0
+            self.animation = self._max_animation_menu
+            self.current_menu = "menu"
+        
 
         # Reset mouse button
         if not pg.mouse.get_pressed()[0]:

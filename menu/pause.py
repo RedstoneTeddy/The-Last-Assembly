@@ -124,14 +124,14 @@ class Pause_menu:
             self._button_pressed = True
             self.animation_direction = 0
             self.animation = 0
-            self.data.New_game(self.data.world_name)
+            self.data.New_game(self.data.world_name, self.data.difficulty)
             
         # Collection : Towers
         button_rect = (
             pause_rect[0] + 6*self.data.tile_zoom,
             pause_rect[1] + 57*self.data.tile_zoom,
             self.data.tile_zoom*7*12,
-            self.data.tile_zoom*24
+            self.data.tile_zoom*15
         )
         is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
         pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
@@ -140,91 +140,90 @@ class Pause_menu:
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
         self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        self.data.Draw_text("Towers", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*15, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
         if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
             self._button_pressed = True
             self.data.in_collection = True
-            self.collection_menu.current_menu = "towers"
+            self.collection_menu.current_menu = "menu"
 
-        # Collection : Specialists
-        button_rect = (
-            pause_rect[0] + 6*self.data.tile_zoom,
-            pause_rect[1] + 84*self.data.tile_zoom,
-            self.data.tile_zoom*7*12,
-            self.data.tile_zoom*24
-        )
-        is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
-        pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
-        if is_hovered:
-            pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        else:
-            pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        self.data.Draw_text("Specialists", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*21, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
-            self._button_pressed = True
-            self.data.in_collection = True
-            self.collection_menu.current_menu = "specialists"
+        # # Collection : Specialists
+        # button_rect = (
+        #     pause_rect[0] + 6*self.data.tile_zoom,
+        #     pause_rect[1] + 84*self.data.tile_zoom,
+        #     self.data.tile_zoom*7*12,
+        #     self.data.tile_zoom*24
+        # )
+        # is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
+        # pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
+        # if is_hovered:
+        #     pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # else:
+        #     pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # self.data.Draw_text("Specialists", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*21, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
+        #     self._button_pressed = True
+        #     self.data.in_collection = True
+        #     self.collection_menu.current_menu = "specialists"
 
-        # Collection : Mods
-        button_rect = (
-            pause_rect[0] + 6*self.data.tile_zoom,
-            pause_rect[1] + 111*self.data.tile_zoom,
-            self.data.tile_zoom*7*12,
-            self.data.tile_zoom*24
-        )
-        is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
-        pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
-        if is_hovered:
-            pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        else:
-            pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        self.data.Draw_text("Mods", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*11, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
-            self._button_pressed = True
-            self.data.in_collection = True
-            self.collection_menu.current_menu = "mods"
+        # # Collection : Mods
+        # button_rect = (
+        #     pause_rect[0] + 6*self.data.tile_zoom,
+        #     pause_rect[1] + 111*self.data.tile_zoom,
+        #     self.data.tile_zoom*7*12,
+        #     self.data.tile_zoom*24
+        # )
+        # is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
+        # pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
+        # if is_hovered:
+        #     pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # else:
+        #     pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # self.data.Draw_text("Mods", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*11, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
+        #     self._button_pressed = True
+        #     self.data.in_collection = True
+        #     self.collection_menu.current_menu = "mods"
 
-        # Collection : Zones
-        button_rect = (
-            pause_rect[0] + 6*self.data.tile_zoom,
-            pause_rect[1] + 138*self.data.tile_zoom,
-            self.data.tile_zoom*7*12,
-            self.data.tile_zoom*24
-        )
-        is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
-        pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
-        if is_hovered:
-            pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        else:
-            pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        self.data.Draw_text("Zones", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*12, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
-            self._button_pressed = True
-            self.data.in_collection = True
-            self.collection_menu.current_menu = "zones"
+        # # Collection : Zones
+        # button_rect = (
+        #     pause_rect[0] + 6*self.data.tile_zoom,
+        #     pause_rect[1] + 138*self.data.tile_zoom,
+        #     self.data.tile_zoom*7*12,
+        #     self.data.tile_zoom*24
+        # )
+        # is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
+        # pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
+        # if is_hovered:
+        #     pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # else:
+        #     pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # self.data.Draw_text("Zones", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*12, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
+        #     self._button_pressed = True
+        #     self.data.in_collection = True
+        #     self.collection_menu.current_menu = "zones"
 
-        # Collection : Enemies
-        button_rect = (
-            pause_rect[0] + 6*self.data.tile_zoom,
-            pause_rect[1] + 165*self.data.tile_zoom,
-            self.data.tile_zoom*7*12,
-            self.data.tile_zoom*24
-        )
-        is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
-        pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
-        if is_hovered:
-            pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        else:
-            pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
-        self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        self.data.Draw_text("Enemies", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*14, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
-        if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
-            self._button_pressed = True
-            self.data.in_collection = True
-            self.collection_menu.current_menu = "enemies"
+        # # Collection : Enemies
+        # button_rect = (
+        #     pause_rect[0] + 6*self.data.tile_zoom,
+        #     pause_rect[1] + 165*self.data.tile_zoom,
+        #     self.data.tile_zoom*7*12,
+        #     self.data.tile_zoom*24
+        # )
+        # is_hovered = button_rect[0] <= mouse_pos[0] <= button_rect[0] + button_rect[2] and button_rect[1] <= mouse_pos[1] <= button_rect[1] + button_rect[3]
+        # pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
+        # if is_hovered:
+        #     pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # else:
+        #     pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+        # self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # self.data.Draw_text("Enemies", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*14, button_rect[1] + 14*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
+        # if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection:
+        #     self._button_pressed = True
+        #     self.data.in_collection = True
+        #     self.collection_menu.current_menu = "enemies"
         
 
         # Reset mouse_button pressed

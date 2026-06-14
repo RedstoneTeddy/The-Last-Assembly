@@ -43,7 +43,7 @@ def Get_zone_info_data() -> dict[str, list[data_class.TextLine]]:
     output["hack"] = [
         data_class.TextLine(text="Hack Zone", color=title_color, icon="", is_small=False),
         data_class.TextLine(text="25% for", color=chance_color, icon="", is_small=False),
-        data_class.TextLine(text="3 damage", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="4 damage", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="1% for", color=chance_color, icon="", is_small=False),
         data_class.TextLine(text="+ 10$", color=default_color, icon="money", is_small=False),
     ]

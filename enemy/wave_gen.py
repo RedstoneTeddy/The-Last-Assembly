@@ -39,6 +39,21 @@ class Wave_gen:
             self.config.config.enemy_first_wave[(20, "faraday")] = 19
             self.config.config.enemy_first_wave[(20, "ironclad")] = 19
 
+        # Config changes based on difficulty
+        if self.data.difficulty in ["operational", "overclocked"]:
+            self.config.config.base_budget += 10
+            self.config.config.budget_increase[0] += 0.004
+            self.config.config.budget_increase[1] += 0.002
+            self.config.config.budget_increase[2] += 0.001
+            self.config.config.budget_increase[3] += 0.005
+        if self.data.difficulty in ["critical"]:
+            self.config.config.base_budget += 20
+            self.config.config.budget_increase[0] += 0.008
+            self.config.config.budget_increase[1] += 0.004
+            self.config.config.budget_increase[2] += 0.002
+            self.config.config.budget_increase[3] += 0.010
+
+
 
         # Calculating the group-weights
         group_weights : list[int] = []
