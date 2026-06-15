@@ -87,7 +87,7 @@ class Packs:
             elif self.pack_type == "specialist":
                 contained_elements = 2
             elif self.pack_type == "specialist2":
-                contained_elements = 3
+                contained_elements = 4
 
 
             # Calculate pack-position and animation frame

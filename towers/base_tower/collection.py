@@ -10,6 +10,7 @@ import towers.catalyst
 import towers.repeater
 import towers.observer
 import towers.lieutenant
+import towers.storage
 
 all_towers : list[type] = [
     towers.gear_thrower.Gear_thrower,
@@ -22,5 +23,6 @@ all_towers : list[type] = [
     towers.catalyst.Catalyst,
     towers.repeater.Repeater,
     towers.observer.Observer,
-    towers.lieutenant.Lieutenant
+    towers.lieutenant.Lieutenant,
+    towers.storage.Storage
 ]

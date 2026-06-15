@@ -83,3 +83,4 @@ def Load_World(data: 'data_class.Data_class', filename: str) -> None:
             data.zones.append([])
             for _ in range(len(data.world[y])):
                 data.zones[y].append("")
+

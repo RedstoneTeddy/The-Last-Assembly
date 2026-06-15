@@ -103,16 +103,27 @@ class Map_info:
                 tile_type : str = map_data[y][x]
                 color : tuple[int, int, int] = (255,0,0)
 
-                if "floor" in tile_type:
-                    color = (207, 198, 184)
-                elif "path" in tile_type:
-                    color = (240, 180, 27)
-                elif "hq" in tile_type:
-                    color = (57, 71, 120)
-                elif "acid" in tile_type:
-                    color = (113, 170, 52)
-                else:
-                    logging.warning(f"Unknown tile type {tile_type} in map data for {map_name}")
+                # Check for storage
+                check_locations = [(y, x), (y, x-1), (y-1, x), (y-1, x-1)]
+                for check_y, check_x in check_locations:
+                    if check_y < 0 or check_x < 0:
+                        continue
+                    if check_y >= len(map_data) or check_x >= len(map_data[check_y]):
+                        continue
+                    if "storage" in map_data[check_y][check_x]:
+                        color = (160, 91, 83)
+
+                if color == (255,0,0):
+                    if "floor" in tile_type:
+                        color = (207, 198, 184)
+                    elif "path" in tile_type:
+                        color = (240, 180, 27)
+                    elif "hq" in tile_type:
+                        color = (57, 71, 120)
+                    elif "acid" in tile_type:
+                        color = (113, 170, 52)
+                    else:
+                        logging.warning(f"Unknown tile type {tile_type} in map data for {map_name}")
                 
                 pg.draw.rect(self.data.screen, color, (pos[0]+(x-5)*size, pos[1]+y*size, size, size))
                 

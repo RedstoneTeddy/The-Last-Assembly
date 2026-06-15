@@ -37,7 +37,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.10.1"
+version : str = "0.11.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -85,21 +85,30 @@ zone_handler : zones.handle.Zone_handler = zones.handle.Zone_handler(data)
 import mods.building
 mod_building : mods.building.Mod_building = mods.building.Mod_building(data)
 
-# Shops
-import shop.main
-shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_building, mod_building)
-
 # Specialists
 import specialists.base.sell_effect
 
+# Events
+import events.handle
+event_handler : events.handle.Event_handler = events.handle.Event_handler(data)
+import events.building
+event_building : events.building.Event_building = events.building.Event_building(data, event_handler)
+
+# Shops
+import shop.main
+shop_obj : shop.main.Shop = shop.main.Shop(data, tower_info_renderer, zone_building, mod_building, event_building)
+
 # Menus
 import menu.collection
-collection_menu : menu.collection.Collection_menu = menu.collection.Collection_menu(data, tower_info_renderer, enemy_renderer, zone_renderer, specialist_renderer, mod_building, tower_renderer, shop_obj)
+collection_menu : menu.collection.Collection_menu = menu.collection.Collection_menu(data, tower_info_renderer, enemy_renderer, zone_renderer, specialist_renderer, mod_building, event_building, tower_renderer, shop_obj)
 import menu.pause
 pause_menu : menu.pause.Pause_menu = menu.pause.Pause_menu(data, collection_menu)
 import menu.map_selection
 map_selection_menu : menu.map_selection.Map_selection = menu.map_selection.Map_selection(data, tower_info_renderer)
 
+# Storage handler
+import towers.storage_handler
+storage_handler : towers.storage_handler.Storage_handler = towers.storage_handler.Storage_handler(data, tower_info_renderer, zone_building, mod_building, zone_renderer, event_building)
 
 
 # Main loop
@@ -145,8 +154,10 @@ try:
                 if not data.is_paused:
                     zone_building.Main()
                     mod_building.Main()
+                    event_building.Main()
                     tower_info_renderer.Draw()
                     specialist_info_renderer.Draw()
+                    storage_handler.Tick()
 
                     if data.start_next_wave:
                         data.start_next_wave = False

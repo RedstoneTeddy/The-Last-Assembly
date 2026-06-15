@@ -11,6 +11,8 @@ import renderer.specialists
 import mods.building
 import enemy.enemy_info
 import shop.main
+import events.building
+import events.info_data
 
 from typing import Literal, get_args
 
@@ -23,6 +25,7 @@ class Collection_menu:
                  zone_renderer : renderer.zones.Zones,
                  specialist_renderer : renderer.specialists.Specialists,
                  mod_renderer : mods.building.Mod_building,
+                 event_renderer : events.building.Event_building,
                  tower_renderer : renderer.towers.Towers,
                  shop_obj : shop.main.Shop
                 ) -> None:
@@ -32,11 +35,12 @@ class Collection_menu:
         self.enemy_renderer : renderer.enemy.Enemy = enemy_renderer
         self.zone_renderer : renderer.zones.Zones = zone_renderer
         self.specialist_renderer : renderer.specialists.Specialists = specialist_renderer
+        self.event_renderer : events.building.Event_building = event_renderer
         self.mod_renderer : mods.building.Mod_building = mod_renderer
         self.tower_renderer : renderer.towers.Towers = tower_renderer
         self.shop : shop.main.Shop = shop_obj
 
-        self.current_menu : Literal["menu", "towers", "specialists", "mods", "zones", "enemies"] = "towers"
+        self.current_menu : Literal["menu", "towers", "specialists", "mods", "zones", "events", "enemies"] = "towers"
         
         self.animation : int = 0
         self.animation_direction : int = 0
@@ -105,6 +109,7 @@ class Collection_menu:
         mod_elements : tuple[int, int] = (7, 3) # Total of up to 21 mods
         zone_elements : tuple[int, int] = (5, 2) # Total of up to 10 zones
         enemy_elements : tuple[int, int] = (5, 3) # Total of up to 15 enemies
+        event_elements : tuple[int, int] = (5, 2) # Total of up to 10 events
         menu_elements : tuple[int, int] = (3, 2) # Total of 6 menu options
 
         current_elements : tuple[int, int] = (0, 0)
@@ -118,6 +123,8 @@ class Collection_menu:
             current_elements = zone_elements
         elif self.current_menu == "enemies":
             current_elements = enemy_elements
+        elif self.current_menu == "events":
+            current_elements = event_elements
         elif self.current_menu == "menu":
             current_elements = menu_elements
 
@@ -159,6 +166,8 @@ class Collection_menu:
                 self.data.Draw_text("COLLECTION - MODS", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*53, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
             if self.current_menu == "zones":
                 self.data.Draw_text("COLLECTION - ZONES", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*55, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
+            if self.current_menu == "events":
+                self.data.Draw_text("COLLECTION - EVENTS", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*57, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
             if self.current_menu == "enemies":
                 self.data.Draw_text("COLLECTION - ENEMIES", (collection_rect[0] + collection_rect[2] // 2 - self.data.tile_zoom*63, collection_rect[1] + self.data.tile_zoom*6), self.data.tile_zoom*8, (255, 255, 255))
             if self.current_menu == "menu":
@@ -198,13 +207,18 @@ class Collection_menu:
                 enemy_info = enemy.enemy_info.Get_enemy_info()
                 elements = list(enemy_info.keys())
                 element_texts = [enemy_info[element] for element in elements]
+            elif self.current_menu == "events":
+                event_info = events.info_data.Get_event_info_data()
+                elements = list(event_info.keys())
+                element_texts = [event_info[element] for element in elements]
             elif self.current_menu == "menu":
-                elements = ["Towers", "Specialists", "Mods", "Zones", "Enemies"]
+                elements = ["Towers", "Specialists", "Zones", "Mods", "Events", "Enemies"]
                 element_texts = [
                     [data_class.TextLine(text="Towers", color=(0,0,0), icon="", is_small=False)],
                     [data_class.TextLine(text="Specialists", color=(0,0,0), icon="", is_small=False)],
-                    [data_class.TextLine(text="Mods", color=(0,0,0), icon="", is_small=False)],
                     [data_class.TextLine(text="Zones", color=(0,0,0), icon="", is_small=False)],
+                    [data_class.TextLine(text="Mods", color=(0,0,0), icon="", is_small=False)],
+                    [data_class.TextLine(text="Events", color=(0,0,0), icon="", is_small=False)],
                     [data_class.TextLine(text="Enemies", color=(0,0,0), icon="", is_small=False)]
                 ]
             
@@ -239,6 +253,8 @@ class Collection_menu:
                     self.zone_renderer.Draw_single((element_rect[0], element_rect[1]), element)
                 elif self.current_menu == "enemies":
                     self.enemy_renderer.Draw_single((element_rect[0] + 4*self.data.tile_zoom, element_rect[1] + 4*self.data.tile_zoom), element)
+                elif self.current_menu == "events":
+                    self.event_renderer.Draw_single((element_rect[0], element_rect[1]), element)
                 elif self.current_menu == "menu":
                     if element == "Towers":
                         self.tower_renderer.Draw_single((element_rect[0], element_rect[1]), "tesla_coil")
@@ -248,6 +264,8 @@ class Collection_menu:
                         self.mod_renderer.Draw_single((element_rect[0], element_rect[1]), "hunter_ai")
                     elif element == "Zones":
                         self.zone_renderer.Draw_single((element_rect[0], element_rect[1]), "shock")
+                    elif element == "Events":
+                        self.event_renderer.Draw_single((element_rect[0], element_rect[1]), "physical_boost")
                     elif element == "Enemies":
                         self.enemy_renderer.Draw_single((element_rect[0] + 4*self.data.tile_zoom, element_rect[1] + 4*self.data.tile_zoom), "enemy_6")
                     if is_hovered and pg.mouse.get_pressed()[0] and not self._button_pressed:

@@ -30,6 +30,9 @@ class Mod_building:
         green_overlay : pg.Surface = pg.Surface((32, 32), pg.SRCALPHA)
         green_overlay.fill((0, 255, 0, 150))
         self.original_images["green_overlay"] = green_overlay
+        blue_overlay : pg.Surface = pg.Surface((32, 32), pg.SRCALPHA)
+        blue_overlay.fill((0, 0, 255, 150))
+        self.original_images["blue_overlay"] = blue_overlay
 
         self.Resize(force=True)
 
@@ -53,7 +56,7 @@ class Mod_building:
             grid_pos : tuple[int, int] = self.data.Get_Screen_to_World(mouse_pos)
             current_offset : int = self.mod_offset * self.current_zoom
 
-            can_build : Literal["True", "False", "Partial"] = "True"
+            can_build : Literal["True", "False", "Partial", "Store"] = "True"
             if grid_pos[0] < 5 or grid_pos[1] < 0 or grid_pos[1] >= len(self.data.world) or grid_pos[0] >= len(self.data.world[0]):
                 can_build = "False"
             
@@ -77,6 +80,11 @@ class Mod_building:
                     mod_count += count
                 if mod_count >= self.data.max_mods_per_tower + found_tower.delta_mod_limit and self.build_mod not in ["first_one", "last_one", "close_sighted", "weak_spotter", "hunter_ai"]:
                     can_build = "False"
+                if found_tower.internal_name == "storage":
+                    if found_tower._storage == ("", ""):
+                        can_build = "Store"
+                    else:
+                        can_build = "False"
 
             # Render build hologram
             draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(grid_pos)
@@ -85,6 +93,8 @@ class Mod_building:
                 self.data.screen.blit(self.images["green_overlay"], draw_pos)
             elif can_build == "Partial":
                 self.data.screen.blit(self.images["orange_overlay"], draw_pos)
+            elif can_build == "Store":
+                self.data.screen.blit(self.images["blue_overlay"], draw_pos)
             else:
                 self.data.screen.blit(self.images["red_overlay"], draw_pos)
             
@@ -100,11 +110,12 @@ class Mod_building:
                 self._clicked = True
                 # Install (and handle) the mod into the tower (and remove incompatible mods if necessary)
                 self.Install_mod_into_tower(found_tower)
-                found_tower._mods[self.build_mod] = found_tower._mods.get(self.build_mod, 0) + 1
+                if can_build != "Store":
+                    found_tower._mods[self.build_mod] = found_tower._mods.get(self.build_mod, 0) + 1
+                    found_tower._sell_value += self.data.mod_cost // 2
                 self.build_mod = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False
-                found_tower._sell_value += self.data.mod_cost // 2
 
             elif pg.mouse.get_pressed()[2]:
                 self.build_mod = ""
@@ -133,6 +144,9 @@ class Mod_building:
         Installs the currently selected mod into the given tower, 
         if possible. Also handles the removal of incompatible mods.
         """
+        if tower.internal_name == "storage":
+            tower._storage = ("mod", self.build_mod)
+            return
 
         # Targeting mods
         if self.build_mod == "hunter_ai":

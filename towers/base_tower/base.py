@@ -61,10 +61,12 @@ class Base_tower:
         # Basic variables
         self._pos : tuple[int, int] = (-1, -1)
         self._is_selected : bool = False
+        self._is_hovered : bool = False
         self._selected_clicked : bool = False
         self._sell_value : int = 0
         self._mods : dict[data_class.ModTypes, int] = {}
         self._permanent : bool = False # Whether the tower is permanent => not sellable / removable
+        self._storage : tuple[Literal["mod", "zone", "event", ""], str] = ("", "") # Only used for storage tower
 
         # Shot / Shooting variables
         self._cooldown_timer : int = 0
@@ -119,7 +121,9 @@ class Base_tower:
         if self._actual_cooldown > 0.0:
             output.append(data_class.TextLine(text=str(round(self._actual_damage, 1)), color=(0,0,0), icon=self.damage_type.lower(), is_small=False))
             output.append(data_class.TextLine(text=str(round(self._actual_cooldown/60, 2))+" s", color=(0,0,0), icon="time", is_small=False))
-        output.append(data_class.TextLine(text=str(round(self._actual_range/ 12, 1))+" tiles", color=(0,0,0), icon="range", is_small=False))
+        
+        if self._actual_range > 0:
+            output.append(data_class.TextLine(text=str(round(self._actual_range/ 12, 1))+" tiles", color=(0,0,0), icon="range", is_small=False))
 
         if self.blast_radius > 0:
             output.append(data_class.TextLine(text="Blast: " + str(round(self.blast_radius/ 12, 1))+" t", color=(0,0,0), icon="", is_small=False))
@@ -180,6 +184,8 @@ class Base_tower:
         if pg.mouse.get_pressed()[0] == False:
             self._selected_clicked = False
 
+        self._is_hovered = False
+
         if self._is_placed:
             if self.data.in_shop and not self.data.shop_minimized:
                 self._is_selected = False
@@ -198,8 +204,9 @@ class Base_tower:
 
             # Check if the tower is clicked
             mouse_pos : tuple[int, int] = pg.mouse.get_pos()
-            if pg.mouse.get_pressed()[0] and not self._selected_clicked:
-                if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
+            if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:
+                self._is_hovered = True
+                if pg.mouse.get_pressed()[0] and not self._selected_clicked:
                     for specialist in self.data.specialists:
                         if specialist != self:
                             specialist._is_selected = False

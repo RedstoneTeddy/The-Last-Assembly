@@ -102,6 +102,23 @@ class Towers:
                     shot_pos : tuple[int, int] = self.data.Get_World_to_Screen(tower._shot_pos)
                     self.data.screen.blit(shot_image, shot_pos)
 
+                # Special tower : storage
+                if tower.internal_name == "storage":
+                    if tower._is_selected:
+                        tower._animation_counter += 1
+                        if tower._animation_counter >= tower.animation_speed:
+                            tower._animation_counter = 0
+                            tower._animation_frame += 1
+                            if tower._animation_frame > tower.number_of_frames:
+                                tower._animation_frame = tower.number_of_frames
+                    else:
+                        tower._animation_counter += 1
+                        if tower._animation_counter >= tower.animation_speed:
+                            tower._animation_counter = 0
+                            tower._animation_frame -= 1
+                            if tower._animation_frame < 1:
+                                tower._animation_frame = 1
+
         # Display tower hologram while building
         for tower in self.data.towers:
             if not tower._is_placed and tower._pos != (-1, -1): # Tower is currently being built, render hologram

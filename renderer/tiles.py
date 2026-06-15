@@ -29,8 +29,9 @@ class Tiles:
         self.original_images.update({
             f"acid_{i}" : pg.image.load(f"assets/tile/acid/acid{i}.png").convert() for i in range(1, 23)
         })
+        self.original_images["storage_1"] = pg.image.load("assets/tile/floor/storage.png").convert()
 
-        self.__cached_world_name : str = ""
+        self._cached_world_name : str = ""
 
         self.Resize(force=True)
 
@@ -49,8 +50,8 @@ class Tiles:
         """
         Cache the world name to avoid unnecessary resizing of the tile images when switching between worlds.
         """
-        if self.__cached_world_name != self.data.world_name:
-            self.__cached_world_name = self.data.world_name
+        if self._cached_world_name != self.data.world_name:
+            self._cached_world_name = self.data.world_name
             # Predraw the entire world onto a surface to cache it and reuse it
             world : pg.Surface = pg.Surface((32*self.original_tile_size, 18*self.original_tile_size))
             for y, row in enumerate(self.data.world):

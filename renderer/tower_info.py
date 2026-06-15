@@ -74,6 +74,8 @@ class Tower_info():
         for tower in self.data.towers:
             i += 1
             if tower._is_selected and tower._is_placed:
+                if tower.internal_name == "storage":
+                    continue # Gets handled in storage_handler
                 texts : list[data_class.TextLine] = tower.Get_info_texts()
                 mouse_pos : tuple[int, int] = pg.mouse.get_pos()
                 tower_rect : tuple[int, int, int, int] = (

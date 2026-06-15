@@ -18,6 +18,7 @@ from time import time
 
 ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
 ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "explosive", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
+EventTypes = Literal["", "bombing", "double_cash", "electrical_boost", "free_mod", "free_zone", "physical_boost", "freeze"]
 SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
 DifficultyLevels = Literal["", "idle", "startup", "operational", "overclocked", "critical"]
 DifficultyRated : dict[DifficultyLevels, int] = {
@@ -30,7 +31,7 @@ DifficultyRated : dict[DifficultyLevels, int] = {
 }
 
 TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper",
-                     "catalyst", "repeater", "observer", "lieutenant"]
+                     "catalyst", "repeater", "observer", "lieutenant", "storage"]
 SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
                           "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time", "investor",
                           "conductor", "gunsmith"]
@@ -95,15 +96,16 @@ class Data_class():
 
         # Game parameters
         self.max_mods_per_tower : int = 8
-        self.money_per_round : int = 100
-        self.interest_per_100 : int = 20
-        self.interest_cap : int = 100
+        self.money_per_round : int = 150
+        self.interest_per_100 : int = 30
+        self.interest_cap : int = 150
         self.zone_cost : int = 130
         self.mod_cost : int = 80
         self.specialist_cost : int = 150
-        self.shop_elements : int = 5
-        self.tower_weights : tuple[int, int, int] = (10, 7, 5) # Common-Weight, Uncommon-Weight, Rare-Weight for the shop
+        self.shop_elements : int = 6
+        self.tower_weights : tuple[int, int, int] = (10, 8, 6) # Common-Weight, Uncommon-Weight, Rare-Weight for the shop
         self.permanent_chance : float = 0.3
+        self.event_chance : float = 0.15
         
         # Permanent game variables
         self.completed_maps : dict[str, DifficultyLevels] = {} # Map name : highest completed difficulty
@@ -118,7 +120,7 @@ class Data_class():
         self.shop_minimized : bool = False
         self.start_next_wave : bool = False 
         self.in_collection : bool = False
-        self.is_building : Literal["", "tower", "zone", "mod", "specialist"] = ""
+        self.is_building : Literal["", "tower", "zone", "mod", "specialist", "event"] = ""
 
         # Settings
         self.double_speed : bool = False

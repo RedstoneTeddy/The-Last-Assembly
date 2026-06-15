@@ -29,6 +29,10 @@ class Zone_building:
         green_overlay : pg.Surface = pg.Surface((16, 16), pg.SRCALPHA)
         green_overlay.fill((0, 255, 0, 150))
         self.original_images["green_overlay"] = green_overlay
+        blue_overlay : pg.Surface = pg.Surface((32, 32), pg.SRCALPHA)
+        blue_overlay.fill((0, 0, 255, 150))
+        self.original_images["blue_overlay"] = blue_overlay
+
 
         self.Resize(force=True)
 
@@ -54,7 +58,7 @@ class Zone_building:
             grid_pos : tuple[int, int] = self.data.Get_Screen_to_World(mouse_pos)
             current_offset : int = self.zone_offset * self.current_zoom
 
-            can_build : Literal["True", "False", "Partial"] = "True"
+            can_build : Literal["True", "False", "Partial", "Store"] = "True"
 
             if grid_pos[0] < 5 or grid_pos[1] < 0 or grid_pos[1] >= len(self.data.world) or grid_pos[0] >= len(self.data.world[0]):
                 can_build = "False"
@@ -74,6 +78,13 @@ class Zone_building:
                 if self.data.zones[grid_pos[1]][grid_pos[0]] != "":
                     can_build = "Partial"
 
+            if can_build == "False":
+                for tower in self.data.towers:
+                    if tower._pos == grid_pos:
+                        if tower.internal_name == "storage":
+                            if tower._storage == ("", ""):
+                                can_build = "Store"
+
             # Render build hologram
             draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(grid_pos)
             draw_pos = (draw_pos[0] - current_offset, draw_pos[1] - current_offset)
@@ -82,12 +93,20 @@ class Zone_building:
                 self.data.screen.blit(self.images["green_overlay"], draw_pos)
             elif can_build == "Partial":
                 self.data.screen.blit(self.images["orange_overlay"], draw_pos)
+            elif can_build == "Store":
+                self.data.screen.blit(self.images["blue_overlay"], (draw_pos[0] - 2*self.data.tile_zoom, draw_pos[1] - 2*self.data.tile_zoom))
             else:
                 self.data.screen.blit(self.images["red_overlay"], draw_pos)
 
             if pg.mouse.get_pressed()[0] and can_build != "False" and not self._clicked:
                 self._clicked = True
-                self.data.zones[grid_pos[1]][grid_pos[0]] = self.build_zone
+                if can_build == "True" or can_build == "Partial":
+                    self.data.zones[grid_pos[1]][grid_pos[0]] = self.build_zone
+                elif can_build == "Store":
+                    for tower in self.data.towers:
+                        if tower._pos == grid_pos and tower.internal_name == "storage":
+                            tower._storage = ("zone", self.build_zone)
+                            break
                 self.build_zone = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False

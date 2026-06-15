@@ -38,9 +38,9 @@ class WaveGenConfig:
 
         self.base_time : int = 60*50 # Base time (for the 1. wave)
         self.time_increase_fix : list[float] = [
-            140, # Wave 1-10
-            125, # Wave 11-20
-            110, # Wave 21-30
+            150, # Wave 1-10
+            135, # Wave 11-20
+            120, # Wave 21-30
             60  # Wave 31+
         ]
         self.time_random_factor : float = 0.1

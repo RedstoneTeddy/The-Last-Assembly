@@ -8,12 +8,15 @@ pg.init()
 
 # V 0.10.0 (idle) ->        0.003260x^2 - 0.048503x + 0.187083, top-health : 12'000
 # V 0.10.1 (idle) ->        0.001904x^2 - 0.019225x + 0.083520, top-health :  9'100, ratio : 1.3273
+# V 0.10.1 (idle) ->        0.001810x^2 - 0.017951x + 0.079398, top-health :  9'100, ratio : 1.2706
 
 # V 0.10.0 (operational) -> 0.003889x^2 - 0.059135x + 0.219334, top-health : 14'000
 # V 0.10.1 (operational) -> 0.002110x^2 - 0.021187x + 0.092332, top-health :  9'100, ratio : 1.4755
+# V 0.10.1 (operational) -> 0.002035x^2 - 0.020082x + 0.088745, top-health :  9'100, ratio : 1.4288
 
 # V 0.10.0 (critical) ->    0.004489x^2 - 0.067201x + 0.248362, top-health : 16'000
 # V 0.10.1 (critical) ->    0.002356x^2 - 0.023428x + 0.102315, top-health :  9'100, ratio : 1.6482
+# V 0.10.1 (critical) ->    0.002264x^2 - 0.022099x + 0.097882, top-health :  9'100, ratio : 1.5923
 
 
 import logging
@@ -30,10 +33,10 @@ console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.10.1"
+version : str = "0.11.0"
 data : Data_class = Data_class(version)
 
-data.difficulty = "critical" # Set difficulty here for testing purposes
+data.difficulty = "idle" # Set difficulty here for testing purposes
 
 
 def fit_quadratic(points : list[float]) -> tuple[float, float, float]:
@@ -49,7 +52,7 @@ def fit_quadratic(points : list[float]) -> tuple[float, float, float]:
     return a, b, c
 
 
-print("\n---- Balacing Helper Script ----")
+print("\n---- Balancing Helper Script ----")
 
 import enemy.wave_gen
 import enemy.wave_gen_config
@@ -168,9 +171,11 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
+total_health : int = sum(health_costs)
+total_time : int = sum(time_costs)
 # Print out all the data
 print("\nWave\tAvg Health\tAvg Time\tHealth/Time Ratio\tDerivative of Ratio")
 for i in range(30):
     print(f"{i+1}\t{health_costs[i]}\t\t{time_costs[i]}\t\t{health_time_ratios[i]:.4f}\t\t\t{ht_ratio_derivative[i]:.4f}")
-
-
+print(f"\nTotal Health: {total_health}")
+print(f"Total Time: {total_time}")

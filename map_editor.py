@@ -20,7 +20,7 @@ logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
 
-version : str = "0.4.3"
+version : str = "0.11.0"
 data : Data_class = Data_class(version)
 file_name : str = ""
 
@@ -66,6 +66,7 @@ import easygui # type: ignore
 file_name = easygui.enterbox("Enter the name of the map to load (without .pkl extension):", "Load Map")
 if file_name is not None and file_name != "":
     try:
+        data.world_name = file_name
         map.save_load.Load_World(data, file_name)
     except FileNotFoundError:
         logging.info(f"File {file_name} not found. Starting with a new world instead.")
@@ -117,6 +118,7 @@ try:
                 world_pos : tuple[int, int] = data.Get_Screen_to_World(pg.mouse.get_pos())
                 if world_pos[0] >= 5 and world_pos[0] < len(data.world[0]) and world_pos[1] >= 0 and world_pos[1] < len(data.world):
                     data.world[world_pos[1]][world_pos[0]] = selector_obj.Get_current()
+                    tile_renderer._cached_world_name = "-1"
         
         elif editor_mode == "path":
             path_obj.Main()

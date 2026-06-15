@@ -8,11 +8,16 @@ from typing import Literal, get_args, cast
 import renderer.tower_info
 import zones.building
 import zones.info_data
+
 import mods.building
 import mods.info_data
 
+import events.building
+import events.info_data
+
 import towers.base_tower.base
 import towers.base_tower.collection
+import towers.storage
 
 import specialists.base.base
 import specialists.base.collection
@@ -21,11 +26,12 @@ import specialists.base.collection
 import shop.packs
 
 class Shop:
-    def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info, zone_building : zones.building.Zone_building, mod_building : mods.building.Mod_building) -> None:
+    def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info, zone_building : zones.building.Zone_building, mod_building : mods.building.Mod_building, event_building : events.building.Event_building) -> None:
         self.data : data_class.Data_class = data
         self.tower_info_renderer : renderer.tower_info.Tower_info = tower_info_renderer
         self.zone_building : zones.building.Zone_building = zone_building
         self.mod_building : mods.building.Mod_building = mod_building
+        self.event_building : events.building.Event_building = event_building
 
         # Shop variables
         self.shop_animation : int = 0
@@ -40,7 +46,7 @@ class Shop:
 
         # The current shop elements.
         self.shop_elements : list[str] = []
-        self.shop_element_types : list[Literal["tower", "specialist", "research", "mod", "zone", "pack"]] = []
+        self.shop_element_types : list[Literal["tower", "specialist", "research", "mod", "event", "zone", "pack"]] = []
         self.shop_element_costs : list[int] = []
         self.shop_element_descriptions : list[list[data_class.TextLine]] = []
         self.shop_element_bought : list[bool] = []
@@ -69,6 +75,10 @@ class Shop:
         self._mod_names : list[str] = []
         self._mod_info_box : list[list[data_class.TextLine]] = []
         self.__Load_mod_data()
+
+        self._event_names : list[str] = []
+        self._event_info_box : list[list[data_class.TextLine]] = []
+        self.__Load_event_data()
 
         self.__Load_pack_data()
 
@@ -141,7 +151,19 @@ class Shop:
         Calls all other functions internally.
         """
         if self.data.wave == 0:
-            self._show_reward_screen = False
+            self._show_reward_screen = False           
+            # Search for Storage-Tiles
+            for y in range(len(self.data.world)):
+                for x in range(len(self.data.world[y])):
+                    if self.data.world[y][x] in ["storage_1"]:
+                        new_tower = towers.storage.Storage(self.data)
+                        new_tower._pos = (x, y)
+                        new_tower._is_selected = False
+                        new_tower._is_placed = True
+                        new_tower._sell_value = 0
+                        new_tower._permanent = True
+                        self.data.towers.append(new_tower)
+                        self.data.world[y][x] = "floor_1"
 
         self.Resize()
         if self.data.shop_minimized:
@@ -149,7 +171,7 @@ class Shop:
                 self.shop_animation -= 1
                 self._button_pressed = True
         else:
-            if self.shop_animation < self._max_shop_animation:
+            if self.shop_animation < self._max_shop_animation and self.data.is_building == "":
                 self.shop_animation += 1  
                 self._button_pressed = True      
 
@@ -161,6 +183,8 @@ class Shop:
         if not self.data.shop_minimized and self.shop_animation > 1 and self.data.is_building != "":
             # If the player is currently building something and maximizes the shop, kill the building-process
             self.__Kill_building_process()
+
+
 
 
         if not pg.mouse.get_pressed()[0]:
@@ -325,7 +349,7 @@ class Shop:
             logging.warning(f"Trying to display shop element with index {i} but only {len(self.shop_elements)} elements exist.")
             return info_text
 
-        element_image : pg.Surface = self.images[self.shop_elements[i]]
+        element_image : pg.Surface = self.images[self.shop_element_types[i] + "_" + self.shop_elements[i]]
         self.data.screen.blit(element_image, (element_rect[0], element_rect[1]))
 
         if self.pack_obj.pack_type != "" and i < self.data.shop_elements:
@@ -401,6 +425,14 @@ class Shop:
                         self.mod_building._clicked = True
                                 # shop_elements stores strings; cast to ModTypes for static type checkers
                         self.mod_building.build_mod = cast(data_class.ModTypes, self.shop_elements[i])
+                        element_bought = True
+
+                elif self.shop_element_types[i] == "event":
+                    if self.shop_elements[i] in get_args(data_class.EventTypes):
+                        self.data.is_building = "event"
+                        self.event_building._clicked = True
+                                # shop_elements stores strings; cast to EventTypes for static type checkers
+                        self.event_building.build_event = cast(data_class.EventTypes, self.shop_elements[i])
                         element_bought = True
 
                 # Open a pack if element is a pack
@@ -516,8 +548,8 @@ class Shop:
                 if tile == "gold":
                     gold_zone_count += 1
         if gold_zone_count > 0:
-            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 25}$")
-            total_cash += gold_zone_count * 25
+            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 30}$")
+            total_cash += gold_zone_count * 30
 
         # Specialist wages
         total_wages : int = 0
@@ -571,8 +603,8 @@ class Shop:
         element_weights : list[float] = [
             0.2, # tower
             0.1, # zone
-            0.2, # mod
-            0.5, # pack
+            0.3, # mod
+            0.6, # pack
             0.0 # specialist (can only be get from packs)
         ]
         if self.data.wave < 2:
@@ -601,14 +633,14 @@ class Shop:
         Generates a random pack.
         """
         pack_weights : list[float] = [
-            0.2,  # tower_pack
-            0.1,  # tower_pack2
-            0.3,  # zone_pack
-            0.15, # zone_pack2
-            0.5,  # mod_pack
-            0.25, # mod_pack2
-            0.18, # specialist_pack
-            0.09  # specialist_pack2
+            0.28,  # tower_pack
+            0.14,  # tower_pack2
+            0.38,  # zone_pack
+            0.19, # zone_pack2
+            0.76,  # mod_pack
+            0.38, # mod_pack2
+            0.34, # specialist_pack
+            0.17  # specialist_pack2
         ]
         if self.data.wave < 5:
             # Disable specialist packs for the first 5 waves
@@ -712,7 +744,7 @@ class Shop:
             self.shop_element_descriptions.append([
                 data_class.TextLine(text="Specialist Box 2", color=(238, 168, 25), icon="" ,is_small=False),
                 data_class.TextLine(text="Choose 1 out", color=(0, 0, 0), icon="" , is_small=False),
-                data_class.TextLine(text="of 3 specialists", color=(0, 0, 0), icon="" , is_small=False)
+                data_class.TextLine(text="of 4 specialists", color=(0, 0, 0), icon="" , is_small=False)
             ])
         self.shop_element_types.append("pack")
         self.shop_element_bought.append(False)
@@ -740,7 +772,7 @@ class Shop:
                 self.shop_element_costs.append(self._tower_costs[random_index])
                 self.shop_element_descriptions.append(self._tower_info_box[random_index])
                 self.shop_element_bought.append(False)
-                if self.data.difficulty in ["overclocked", "critical"] and self.data.shop_random.random() < self.data.permanent_chance:
+                if (self.data.difficulty in ["overclocked", "critical"] and self.data.shop_random.random() < self.data.permanent_chance) or self._tower_names[random_index] == "storage":
                     self.shop_element_permanent.append(True)
                 else:
                     self.shop_element_permanent.append(False)
@@ -796,8 +828,8 @@ class Shop:
                     self._Generate_zone(no_double = False)
                     break
                 continue
-            if (self._zone_names[random_index] == "tax") and (self.data.shop_random.random() > 0.3):
-                # Tax zone is very strong, so only show it with ~50% chance
+            if (self._zone_names[random_index] == "tax") and (self.data.shop_random.random() > 0.4):
+                # Tax zone is very strong, so only show it with ~65% chance
                 self._Generate_zone()
                 break
             else:
@@ -812,26 +844,47 @@ class Shop:
     def _Generate_mod(self, no_double : bool = True) -> None:
         """
         Generates a random mod.
+        (or with a small chance an event)
         """
         double_tries : int = 0
         while True:
-            random_index : int = self.data.shop_random.randint(0, len(self._mod_names)-1)
-            if no_double and self._mod_names[random_index] in self.shop_elements:
-                double_tries += 1
-                if double_tries > 10:
-                    logging.warning("Failed to generate mod after 10 tries.")
-                    self._Generate_mod(no_double = False)
+            if self.data.shop_random.random() > self.data.event_chance:
+                # Generate a mod
+                random_index : int = self.data.shop_random.randint(0, len(self._mod_names)-1)
+                if no_double and self._mod_names[random_index] in self.shop_elements:
+                    double_tries += 1
+                    if double_tries > 10:
+                        logging.warning("Failed to generate mod after 10 tries.")
+                        self._Generate_mod(no_double = False)
+                        break
+                    continue
+                if (self._mod_names[random_index] in ["bloodthirst", "bounty_hunter"] and self.data.shop_random.random() > 0.3):
+                    # Bloodthirst mod is very strong, so only show it with ~50% chance
+                    self._Generate_mod()
                     break
-                continue
-            if (self._mod_names[random_index] in ["bloodthirst", "bounty_hunter"] and self.data.shop_random.random() > 0.3):
-                # Bloodthirst mod is very strong, so only show it with ~50% chance
-                self._Generate_mod()
-                break
-            else:
-                self.shop_elements.append(self._mod_names[random_index])
-                self.shop_element_types.append("mod")
+                else:
+                    self.shop_elements.append(self._mod_names[random_index])
+                    self.shop_element_types.append("mod")
+                    self.shop_element_costs.append(self.data.mod_cost)
+                    self.shop_element_descriptions.append(self._mod_info_box[random_index])
+                    self.shop_element_bought.append(False)
+                    self.shop_element_permanent.append(False)
+                    break
+
+            else: # Generate an event
+                random_index : int = self.data.shop_random.randint(0, len(self._event_names)-1)
+                if no_double and self._event_names[random_index] in self.shop_elements:
+                    double_tries += 1
+                    if double_tries > 10:
+                        logging.warning("Failed to generate event after 10 tries.")
+                        self._Generate_mod(no_double = False)
+                        break
+                    continue
+                
+                self.shop_elements.append(self._event_names[random_index])
+                self.shop_element_types.append("event")
                 self.shop_element_costs.append(self.data.mod_cost)
-                self.shop_element_descriptions.append(self._mod_info_box[random_index])
+                self.shop_element_descriptions.append(self._event_info_box[random_index])
                 self.shop_element_bought.append(False)
                 self.shop_element_permanent.append(False)
                 break
@@ -851,7 +904,7 @@ class Shop:
             self._tower_rarities.append(tower_instance.rarity)
             self._tower_costs.append(tower_instance.build_cost)
             self._tower_info_box.append(tower_instance.Get_info_texts())
-            self.original_images[tower_instance.internal_name] = pg.image.load(f"assets/tower/{tower_instance.internal_name}/{tower_instance.internal_name}1.png").convert_alpha()
+            self.original_images["tower_"+tower_instance.internal_name] = pg.image.load(f"assets/tower/{tower_instance.internal_name}/{tower_instance.internal_name}1.png").convert_alpha()
             if tower_instance.rarity == "Common":
                 self._tower_weights.append(self.data.tower_weights[0])
             elif tower_instance.rarity == "Uncommon":
@@ -872,7 +925,7 @@ class Shop:
             self._specialist_rarities.append(specialist_instance.rarity)
             self._specialist_costs.append(specialist_instance.cost)
             self._specialist_info_box.append(specialist_instance.Get_info_texts())
-            self.original_images[specialist_instance.internal_name] = pg.image.load(f"assets/specialist/{specialist_instance.internal_name}/{specialist_instance.internal_name}1.png").convert_alpha()
+            self.original_images["specialist_"+specialist_instance.internal_name] = pg.image.load(f"assets/specialist/{specialist_instance.internal_name}/{specialist_instance.internal_name}1.png").convert_alpha()
 
     
     def __Load_zone_data(self) -> None:
@@ -883,7 +936,7 @@ class Shop:
         for zone_id, info_lines in zone_info_data.items():
             self._zone_names.append(zone_id)
             self._info_box.append(info_lines)
-            self.original_images[zone_id] = pg.transform.scale(pg.image.load(f"assets/zones/{zone_id}.png").convert_alpha(), (32, 32))
+            self.original_images["zone_"+zone_id] = pg.transform.scale(pg.image.load(f"assets/zones/{zone_id}.png").convert_alpha(), (32, 32))
 
     def __Load_mod_data(self) -> None:
         """
@@ -893,21 +946,32 @@ class Shop:
         for mod_id, info_lines in mod_info_data.items():
             self._mod_names.append(mod_id)
             self._mod_info_box.append(info_lines)
-            self.original_images[mod_id] = pg.transform.scale(pg.image.load(f"assets/mods/{mod_id}.png").convert_alpha(), (32, 32))
+            self.original_images["mod_"+mod_id] = pg.transform.scale(pg.image.load(f"assets/mods/{mod_id}.png").convert_alpha(), (32, 32))
+
+
+    def __Load_event_data(self) -> None:
+        """
+        Loads the data for the events into the shop_element_data dictionary
+        """
+        event_info_data : dict[str, list[data_class.TextLine]] = events.info_data.Get_event_info_data()
+        for event_id, info_lines in event_info_data.items():
+            self._event_names.append(event_id)
+            self._event_info_box.append(info_lines)
+            self.original_images["event_"+event_id] = pg.transform.scale(pg.image.load(f"assets/events/{event_id}.png").convert_alpha(), (32, 32))
 
 
     def __Load_pack_data(self) -> None:
         """
         Loads the data for the packs into the shop_element_data dictionary
         """
-        self.original_images["tower_pack"] = pg.image.load("assets/shop/tower_pack/tower_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
-        self.original_images["tower_pack2"] = pg.image.load("assets/shop/tower_pack/tower_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
-        self.original_images["mod_pack"] = pg.image.load("assets/shop/mod_pack/mod_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
-        self.original_images["mod_pack2"] = pg.image.load("assets/shop/mod_pack/mod_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
-        self.original_images["zone_pack"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
-        self.original_images["zone_pack2"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
-        self.original_images["specialist_pack"] = pg.image.load("assets/shop/specialist_pack/specialist_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
-        self.original_images["specialist_pack2"] = pg.image.load("assets/shop/specialist_pack/specialist_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"tower_pack"] = pg.image.load("assets/shop/tower_pack/tower_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"tower_pack2"] = pg.image.load("assets/shop/tower_pack/tower_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"mod_pack"] = pg.image.load("assets/shop/mod_pack/mod_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"mod_pack2"] = pg.image.load("assets/shop/mod_pack/mod_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"zone_pack"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"zone_pack2"] = pg.image.load("assets/shop/zone_pack/zone_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"specialist_pack"] = pg.image.load("assets/shop/specialist_pack/specialist_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
+        self.original_images["pack_"+"specialist_pack2"] = pg.image.load("assets/shop/specialist_pack/specialist_pack1.png").convert_alpha().subsurface((16, 16, 32, 32)).copy()
 
 
 
@@ -939,7 +1003,7 @@ class Shop:
                 specialist._marked_for_removal = True
         self.zone_building.build_zone = ""
         self.mod_building.build_mod = ""
-
+        self.event_building.build_event = ""
 
 
 
