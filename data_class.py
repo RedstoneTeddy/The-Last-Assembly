@@ -34,7 +34,7 @@ TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapp
                      "catalyst", "repeater", "observer", "lieutenant", "storage"]
 SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
                           "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time", "investor",
-                          "conductor", "gunsmith"]
+                          "conductor", "gunsmith", "eventmaster"]
 
 
 
@@ -184,11 +184,13 @@ class Data_class():
         if self.difficulty in ["startup", "operational", "overclocked", "critical"]:
             self.money = 150
         if self.difficulty in ["overclocked", "critical"]:
-            self.interest_per_100 = 10
-            self.interest_cap = 50
-        else:
             self.interest_per_100 = 20
             self.interest_cap = 100
+            self.money_per_round = 100
+        else:
+            self.interest_per_100 = 30
+            self.interest_cap = 150
+            self.money_per_round = 150
         if self.difficulty == "startup":
             self.health = 100
         elif self.difficulty in ["operational", "overclocked"]:

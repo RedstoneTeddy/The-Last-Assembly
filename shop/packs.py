@@ -53,6 +53,7 @@ class Packs:
             self.shop_main.shop_element_types.pop()
             self.shop_main.shop_element_descriptions.pop()
             self.shop_main.shop_element_bought.pop()
+            self.shop_main.shop_element_permanent.pop()
 
 
     def Main(self):

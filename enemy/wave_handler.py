@@ -3,6 +3,8 @@ import logging
 import data_class
 import enemy.wave_gen
 
+from typing import get_args
+
 
 class Wave_handler:
     def __init__(self, data : data_class.Data_class) -> None:
@@ -29,6 +31,18 @@ class Wave_handler:
         self.last_wave_tick = 0
         for tick in self.wave:
             self.last_wave_tick = max(self.last_wave_tick, tick)
+        
+        # Check if player has an event-master, handle him
+        if "eventmaster" in self.data.bought_specialists:
+                chosen_event : str = ""
+                while True:
+                    chosen_event = self.data.shop_random.choice(get_args(data_class.EventTypes))
+                    if chosen_event != "":
+                        break
+                for tower in self.data.towers:
+                    if tower.internal_name == "storage" and tower._storage[0] == "" and tower._storage[1] == "":
+                        tower._storage = ("event", chosen_event)
+                        break
         
 
     def Tick(self) -> None:

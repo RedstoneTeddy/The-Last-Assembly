@@ -133,18 +133,40 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
         # Deal damage
         damage_to_deal : float = left_damage
 
+        # Special effect of towers or mods on specific enemy
         if tower.data.enemies.health[tower._shoot_at_id] < 11:
             damage_to_deal *= tower._extra_dmg_for_low_health
 
         if tower.data.enemies.health.get(tower._shoot_at_id, 0) > 0:
             damage_to_deal *= tower._extra_dmg_for_slowed
+                
+        # Combat-robot special effect
+        if tower.internal_name == "combat_robot":
+            if tower.data.enemies.health[tower._shoot_at_id] > 10:
+                damage_to_deal *= 1.4        
 
-        
+        # Catalyst special effect
+        if tower.internal_name == "catalyst":
+            # For each effect on the enemy, increase the damage by 100%
+            effects_on_enemy : int = 0
+            if tower.data.enemies.slowness.get(tower._shoot_at_id, 0) > 0:
+                effects_on_enemy += 1
+            if tower.data.enemies.golden.get(tower._shoot_at_id, 0) > 0:
+                effects_on_enemy += 1
+            if tower.data.enemies.speed.get(tower._shoot_at_id, 0) > 0:
+                effects_on_enemy += 1
+            if tower.data.enemies.frozen.get(tower._shoot_at_id, 0) > 0:
+                effects_on_enemy += 1
+            damage_to_deal *= (1 + effects_on_enemy)
+    
+
+        # Check for enemy resistances
         if tower.data.enemies.special_type.get(tower._shoot_at_id, "") == "faraday" and tower.damage_type == "Electrical":
             damage_to_deal = 0
         if tower.data.enemies.special_type.get(tower._shoot_at_id, "") == "ironclad" and tower.damage_type == "Physical":
             damage_to_deal = 0
 
+        # Deal the damage to the enemy
         tower.data.enemies.health[tower._shoot_at_id] -= int(damage_to_deal)
         damage_to_deal -= int(damage_to_deal)
         if damage_to_deal > 0:
@@ -176,7 +198,7 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
             # Bloodthirst
             if tower._bloodthirst_chance > 0:
                 if tower.data.path_random.random() < tower._bloodthirst_chance:
-                    tower.damage *= 1.023
+                    tower.damage *= 1.024
 
         else:
             # Cryo_rounds
@@ -199,36 +221,18 @@ def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
     enemy_pos : tuple[int, int] = tower.data.enemies.position[tower._shoot_at_id]
     if enemy_pos[0] >= 0 and enemy_pos[1] >= 0 and enemy_pos[1] < len(tower.data.zones) and enemy_pos[0] < len(tower.data.zones[0]):
         if tower.data.zones[enemy_pos[1]][enemy_pos[0]] == "focus":
-            damage_to_deal *= 1.5
+            damage_to_deal *= 1.75
     
-    # Combat-robot special effect
-    if tower.internal_name == "combat_robot":
-        if tower.data.enemies.health[tower._shoot_at_id] > 10:
-            damage_to_deal *= 1.4
 
     # Critical hit
     if tower._crit_chance > 0:
         if tower.data.path_random.random() < tower._crit_chance:
-            damage_to_deal *= 3
+            damage_to_deal *= 4
 
     # Roulette Round
     if tower._roulette_multiplier > 1:
         damage_to_deal *= tower.data.path_random.uniform(1/tower._roulette_multiplier, tower._roulette_multiplier)
 
-    # Catalyst special effect
-    if tower.internal_name == "catalyst":
-        # For each effect on the enemy, increase the damage by 100%
-        effects_on_enemy : int = 0
-        if tower.data.enemies.slowness.get(tower._shoot_at_id, 0) > 0:
-            effects_on_enemy += 1
-        if tower.data.enemies.golden.get(tower._shoot_at_id, 0) > 0:
-            effects_on_enemy += 1
-        if tower.data.enemies.speed.get(tower._shoot_at_id, 0) > 0:
-            effects_on_enemy += 1
-        if tower.data.enemies.frozen.get(tower._shoot_at_id, 0) > 0:
-            effects_on_enemy += 1
-        damage_to_deal *= (1 + effects_on_enemy)
-    
     return damage_to_deal
 
         

@@ -16,7 +16,7 @@ def Get_zone_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["focus"] = [
         data_class.TextLine(text="Focus Zone", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 50%", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="+ 75%", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="damage to enemy", color=default_color, icon="", is_small=False),
     ]
 

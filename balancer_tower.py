@@ -43,6 +43,10 @@ print("\n-- All Towers --")
 column_names : list[str] = ["Name", "Rarity", "Damage", "Fire Rate", "Range", "Blast", "Cost", "DpS", "DpSC", "DRpSC", "DRBpSC"]
 table : list[list[str]] = []
 for tower in all_towers:
+    if tower.cooldown <= 0:
+        tower.cooldown = 0.01
+    if tower.range <= 0:
+        tower.range = 1
     line : list[str] = []
     line.append(tower.name)
     line.append(tower.rarity)

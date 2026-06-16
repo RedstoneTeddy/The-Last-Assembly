@@ -65,5 +65,5 @@ class Event_handler:
                         break
 
             case "freeze":
-                for enemy in self.data.enemies.speed.keys():
+                for enemy in self.data.enemies.health.keys():
                     self.data.enemies.frozen[enemy] = 10*60 # 10 seconds at 60 FPS

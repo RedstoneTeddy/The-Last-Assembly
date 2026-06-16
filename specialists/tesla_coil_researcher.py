@@ -12,7 +12,7 @@ class Tesla_coil_researcher(base.Base_specialist):
             data_class.TextLine(text="Improves all", color=(0,0,0), icon="", is_small=False),
             data_class.TextLine(text="Tesla Coils", color=(0,0,150), icon="", is_small=False),
             data_class.TextLine(text="+ 40%", color=(0,0,0), icon="electrical", is_small=False),
-            data_class.TextLine(text="+ 25%", color=(0,0,0), icon="range", is_small=False)
+            data_class.TextLine(text="+ 40%", color=(0,0,0), icon="range", is_small=False)
         ]
 
         self.number_of_frames : int = 7

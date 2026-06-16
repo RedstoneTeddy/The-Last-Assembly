@@ -18,7 +18,7 @@ class Catalyst(base.Base_tower):
 
         self.range : int = 4*12
         self.damage : float = 4
-        self.cooldown : float = 35.0
+        self.cooldown : float = 40.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Electrical"
 

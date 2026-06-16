@@ -30,7 +30,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             case "tesla_coil":
                 if specialist.internal_name == "tesla_coil_researcher":
                     tower._actual_damage *= 1.4
-                    tower._actual_range = int(tower._actual_range * 1.25)
+                    tower._actual_range = int(tower._actual_range * 1.4)
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
                     tower._buffed_type.append("specialist")
 
@@ -44,12 +44,13 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             case "combat_robot":
                 if specialist.internal_name == "combat_robot_researcher":
                     tower._actual_damage *= 1.5
+                    tower._actual_cooldown *= 0.9
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
                     tower._buffed_type.append("specialist")
 
             case "economist":
                 if specialist.internal_name == "economist_researcher":
-                    tower._actual_range = int(tower._actual_range * 1.25)
+                    tower._actual_range = int(tower._actual_range * 1.35)
                     tower._actual_cooldown *= 0.7
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
                     tower._buffed_type.append("specialist")
@@ -59,15 +60,15 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
 
             case "sniper":
                 if specialist.internal_name == "sniper_researcher":
-                    tower._actual_damage *= 1.25
-                    tower._actual_cooldown *= 0.85
+                    tower._actual_damage *= 1.3
+                    tower._actual_cooldown *= 0.8
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
                     tower._buffed_type.append("specialist")
 
             case "catalyst":
                 if specialist.internal_name == "catalyst_researcher":
-                    tower._actual_damage *= 1.2
-                    tower._actual_cooldown *= 0.8
+                    tower._actual_damage *= 1.22
+                    tower._actual_cooldown *= 0.78
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
                     tower._buffed_type.append("specialist")            
 

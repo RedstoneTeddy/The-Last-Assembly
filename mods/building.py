@@ -171,22 +171,22 @@ class Mod_building:
 
         # Base stat mods
         elif self.build_mod == "rapid_loader":
-            tower.cooldown *= 0.75
+            tower.cooldown *= 0.72
         elif self.build_mod == "critical_core":
             if tower._crit_chance <= 0.1:
-                tower._crit_chance = 0.25
+                tower._crit_chance = 0.20
             else:
                 before = 1 - tower._crit_chance
-                tower._crit_chance = 1 - (before * 0.75)
+                tower._crit_chance = 1 - (before * 0.8)
         elif self.build_mod == "cryo_rounds":
             pass # Cryo rounds is handled in towers.base_tower.shooting.Tick_shooting
         elif self.build_mod == "spyglass":
-            tower.range = int(tower.range * 1.25)
+            tower.range = int(tower.range * 1.35)
             tower.cooldown *= 1.05
         elif self.build_mod == "sharpshooter":
-            tower.damage *= 1.33
+            tower.damage *= 1.40
         elif self.build_mod == "explosive":
-            tower.blast_radius = int(tower.blast_radius * 1.35)
+            tower.blast_radius = int(tower.blast_radius * 1.40)
         elif self.build_mod == "bounty_hunter":
             if tower._bounty_chance <= 0.1:
                 tower._bounty_chance = 0.15
@@ -196,22 +196,22 @@ class Mod_building:
 
         # Special / funny mods
         elif self.build_mod == "heavy_rounds":
-            tower.damage *= 1.7
+            tower.damage *= 1.77
             tower.cooldown *= 1.25
         elif self.build_mod == "bloodthirst":
             if tower._bloodthirst_chance <= 0.01:
                 if "vampire" in self.data.bought_specialists:
-                    tower._bloodthirst_chance = 0.028
+                    tower._bloodthirst_chance = 0.029
                 else:
-                    tower._bloodthirst_chance = 0.023
+                    tower._bloodthirst_chance = 0.024
             else:
                 before = 1 - tower._bloodthirst_chance
                 if "vampire" in self.data.bought_specialists:
-                    tower._bloodthirst_chance = 1 - (before * 0.972)
+                    tower._bloodthirst_chance = 1 - (before * 0.971)
                 else:
-                    tower._bloodthirst_chance = 1 - (before * 0.977)
+                    tower._bloodthirst_chance = 1 - (before * 0.976)
         elif self.build_mod == "finisher":
-            tower._extra_dmg_for_low_health *= 1.5
+            tower._extra_dmg_for_low_health *= 1.6
         elif self.build_mod == "slow_shot":
             tower._extra_dmg_for_slowed *= 1.5
         elif self.build_mod == "roulette_round":

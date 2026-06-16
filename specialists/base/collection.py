@@ -23,6 +23,7 @@ import specialists.back_in_time
 import specialists.investor
 import specialists.conductor
 import specialists.gunsmith
+import specialists.eventmaster
 
 # PhD-Specialists
 import specialists.modder
@@ -48,6 +49,7 @@ all_specialists : list[type] = [
     specialists.investor.Investor,
     specialists.conductor.Conductor,
     specialists.gunsmith.Gunsmith,
+    specialists.eventmaster.Eventmaster,
     
     specialists.modder.Modder
 ]
