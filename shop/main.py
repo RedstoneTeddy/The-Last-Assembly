@@ -760,10 +760,13 @@ class Shop:
         double_tries : int = 0
         while True:
             random_index : int = self.data.shop_random.choices(list(range(len(self._tower_names))), weights=self._tower_weights)[0]
+            if self.data.statistic.stat_raw["unlocked"]["towers"][self._tower_names[random_index]] == False:
+                double_tries += 1
+                continue
             if no_double and self._tower_names[random_index] in self.shop_elements:
                 double_tries += 1
-                if double_tries > 10:
-                    logging.warning("Failed to generate tower after 10 tries.")
+                if double_tries > 20:
+                    logging.warning("Failed to generate tower after 20 tries.")
                     self._Generate_tower(rarity = rarity, no_double = False)
                     break
                 continue
@@ -792,12 +795,17 @@ class Shop:
             # Check if specialist is allowed
             if specialist_name in self.data.bought_specialists:
                 allowed = False
+                fails += 1
             if specialist_name in self.shop_elements:
                 allowed = False
+                fails += 1
+            if self.data.statistic.stat_raw["unlocked"]["specialists"][specialist_name] == False:
+                allowed = False
+                fails += 1
             if not allowed:
                 fails += 1
-                if fails > 10:
-                    logging.warning("Failed to generate specialist after 10 tries.")
+                if fails > 20:
+                    logging.warning("Failed to generate specialist after 20 tries.")
                     self._Generate_tower()
                     break
                 continue
