@@ -70,7 +70,19 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
                     tower._actual_damage *= 1.22
                     tower._actual_cooldown *= 0.78
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
-                    tower._buffed_type.append("specialist")            
+                    tower._buffed_type.append("specialist")  
+
+
+    # Apply fund_raiser buff  
+    fund_buff : int = tower.data.money // 50
+    if fund_buff > 0 and "fund_raiser" in tower.data.bought_specialists:
+        tower._actual_damage *= 1 + 0.01 * fund_buff
+        for specialist in tower.data.specialists:
+            if specialist.internal_name == "fund_raiser":
+                tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                tower._buffed_type.append("money")
+                break
+
 
 
     # Apply the buffs of the lieutenant and observer

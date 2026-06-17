@@ -37,7 +37,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.11.2"
+version : str = "0.11.3"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -201,6 +201,7 @@ try:
             if data.in_collection:
                 collection_menu.Collection_main()
 
+            data.statistic.Tick_stats_updater()
             debug_handler.Main()
 
         if data.in_map_selection:

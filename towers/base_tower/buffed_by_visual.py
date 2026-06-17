@@ -24,6 +24,8 @@ def Tower_show_buffed_by(tower : "base.Base_tower") -> None:
             line_color = (220, 120, 0)
         elif tower._buffed_type[i] == "nearby":
             line_color = (160, 0, 0)
+        elif tower._buffed_type[i] == "money":
+            line_color = (200, 200, 0)
 
         end_pos : tuple[int, int] = tower.data.Get_World_to_Screen((tower._pos[0]+1, tower._pos[1]+1))
         start_pos : tuple[int, int] = tower.data.Get_World_to_Screen(pos)

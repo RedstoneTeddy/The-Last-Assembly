@@ -54,10 +54,10 @@ def Get_specialist_unlock(specialist_name : str) -> list[data_class.TextLine]:
             output.append(data_class.TextLine(text="Have 3 economists;at one time", color=(0, 0, 0), icon="", is_small=True))
         case "conductor":
             output.append(data_class.TextLine(text="Unlock by", color=(0, 0, 0), icon="lock", is_small=False))
-            output.append(data_class.TextLine(text="Have 5 electrical;towers at one time", color=(0, 0, 0), icon="", is_small=True))
+            output.append(data_class.TextLine(text="Have 10 electrical;towers at one time", color=(0, 0, 0), icon="", is_small=True))
         case "gunsmith":
             output.append(data_class.TextLine(text="Unlock by", color=(0, 0, 0), icon="lock", is_small=False))
-            output.append(data_class.TextLine(text="Have 5 physical;towers at one time", color=(0, 0, 0), icon="", is_small=True))
+            output.append(data_class.TextLine(text="Have 10 physical;towers at one time", color=(0, 0, 0), icon="", is_small=True))
         case "eventmaster":
             output.append(data_class.TextLine(text="Unlock by", color=(0, 0, 0), icon="lock", is_small=False))
             output.append(data_class.TextLine(text="In total use;100x Events", color=(0, 0, 0), icon="", is_small=True))
@@ -65,6 +65,9 @@ def Get_specialist_unlock(specialist_name : str) -> list[data_class.TextLine]:
             output.append(data_class.TextLine(text="Unlock by", color=(0, 0, 0), icon="lock", is_small=False))
             output.append(data_class.TextLine(text="Have a tower;with 8 mods", color=(0, 0, 0), icon="", is_small=True))
             output.append(data_class.TextLine(text="installed at;one time", color=(0, 0, 0), icon="", is_small=True))
+        case "fund_raiser":
+            output.append(data_class.TextLine(text="Unlock by", color=(0, 0, 0), icon="lock", is_small=False))
+            output.append(data_class.TextLine(text="Have 5000 money;at one time", color=(0, 0, 0), icon="", is_small=True))
 
 
     return output

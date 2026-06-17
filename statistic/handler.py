@@ -69,7 +69,7 @@ def Handle_stats(stat : 'statistic.statistic.Statistic', data : 'data_class.Data
         for tower in stat.data.towers:
             if tower.damage_type == "Electrical" and tower._actual_damage > 0 and tower._actual_cooldown > 0:
                 electrical_tower_amount += 1
-        if electrical_tower_amount >= 5:
+        if electrical_tower_amount >= 10:
             stat.stat_raw["unlocked"]["specialists"]["conductor"] = True
 
     if not stat.stat_raw["unlocked"]["specialists"]["gunsmith"]:
@@ -77,7 +77,7 @@ def Handle_stats(stat : 'statistic.statistic.Statistic', data : 'data_class.Data
         for tower in stat.data.towers:
             if tower.damage_type == "Physical" and tower._actual_damage > 0 and tower._actual_cooldown > 0:
                 physical_tower_amount += 1
-        if physical_tower_amount >= 5:
+        if physical_tower_amount >= 10:
             stat.stat_raw["unlocked"]["specialists"]["gunsmith"] = True
     
     if not stat.stat_raw["unlocked"]["specialists"]["eventmaster"]:
@@ -96,4 +96,8 @@ def Handle_stats(stat : 'statistic.statistic.Statistic', data : 'data_class.Data
                 break
         if has_8_mods_on_a_tower:
             stat.stat_raw["unlocked"]["specialists"]["modder"] = True
+
+    if not stat.stat_raw["unlocked"]["specialists"]["fund_raiser"]:
+        if stat.data.money >= 5000:
+            stat.stat_raw["unlocked"]["specialists"]["fund_raiser"] = True
 

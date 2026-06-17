@@ -71,7 +71,8 @@ class Statistic:
                     "gunsmith": False,
                     "eventmaster": False,
 
-                    "modder": False
+                    "modder": False,
+                    "fund_raiser": False
                 }
             },
             "times_rerolled_in_shop": 0,
