@@ -1,4 +1,4 @@
-from typing import TypedDict, Literal
+from typing import Any, TypedDict, Literal, get_type_hints
 
 import pygame as pg
 import logging
@@ -13,6 +13,8 @@ if TYPE_CHECKING:
 
 import random
 from time import time
+
+import statistic.statistic
 
 
 
@@ -125,6 +127,9 @@ class Data_class():
         # Settings
         self.double_speed : bool = False
 
+        # Statistics
+        self.statistic : statistic.statistic.Statistic = statistic.statistic.Statistic(self)
+
 
         # Random generators
         self.path_random  : random.Random
@@ -197,6 +202,8 @@ class Data_class():
             self.health = 50
         elif self.difficulty == "critical":
             self.health = 1
+
+        self.statistic.New_game_reset()
         
 
     
@@ -301,14 +308,21 @@ class Data_class():
                     logging.info("Permanent data loaded")
                 else:
                     logging.warning("Permanent data file does not contain completed_maps, resetting to empty")
+
+                if "stats" in loaded_data:
+                    self.__load_stats_recursively(self.statistic.stat_raw, loaded_data["stats"]) # type: ignore
+                else:
+                    logging.warning("Permanent data file does not contain stats, using defaults")
+
         except FileNotFoundError:
             logging.warning("Permanent data file not found, resetting to empty")
         except Exception as e:
             logging.error(f"Error loading permanent data: {e}, resetting to empty")
         
     def Save_permanent_data(self) -> None:
-        data_to_save : dict[str, dict[str, DifficultyLevels]] = {
-            "completed_maps": self.completed_maps
+        data_to_save : dict[str, Any] = {
+            "completed_maps": self.completed_maps,
+            "stats" : self.statistic.stat_raw
         }
         try:
             with open("data.pkl", "wb") as f:
@@ -320,7 +334,40 @@ class Data_class():
 
     def Reset_permanent_data(self) -> None:
         self.completed_maps = {}
+        self.statistic = statistic.statistic.Statistic(self)
 
+
+    def __load_stats_recursively(self, defaults: dict[str, Any], loaded: dict[str, Any]) -> None:
+        for key, default_value in defaults.items():
+
+            # Key missing in save file -> keep default
+            if key not in loaded:
+                logging.warning(
+                    f"Permanent data file is missing stat '{key}', using default value"
+                )
+                continue
+
+            loaded_value = loaded[key]
+
+            # Nested dictionary -> recurse
+            if isinstance(default_value, dict):
+                if isinstance(loaded_value, dict):
+                    self.__load_stats_recursively(default_value, loaded_value)
+                else:
+                    logging.warning(
+                        f"Stat '{key}' should be a dict, using default value"
+                    )
+
+            # Leaf value -> overwrite if type matches
+            elif type(loaded_value) is type(default_value):
+                defaults[key] = loaded_value
+
+            else:
+                logging.warning(
+                    f"Stat '{key}' has invalid type "
+                    f"({type(loaded_value).__name__}), "
+                    f"expected {type(default_value).__name__}, using default value"
+                )
 
 
 

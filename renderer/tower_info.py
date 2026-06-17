@@ -21,6 +21,7 @@ class Tower_info():
         self.original_images["icon_slower"] = pg.image.load("assets/icons/slower.png").convert_alpha()
         self.original_images["icon_speed"] = pg.image.load("assets/icons/speed.png").convert_alpha()
         self.original_images["icon_time"] = pg.image.load("assets/icons/time.png").convert_alpha()
+        self.original_images["icon_lock"] = pg.image.load("assets/icons/lock.png").convert_alpha()
 
         self.original_images["icon_idle"] = pg.image.load("assets/icons/difficulties/difficulties1.png").convert_alpha()
         self.original_images["icon_startup"] = pg.image.load("assets/icons/difficulties/difficulties2.png").convert_alpha()

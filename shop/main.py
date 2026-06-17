@@ -257,6 +257,7 @@ class Shop:
                         self._rerolled_shop += 1
                         self.data.money -= needed_money_for_reroll
                         self.Generate_shop()
+                        self.data.statistic.stat_raw["times_rerolled_in_shop"] += 1
                 else:
                     self.data.screen.blit(self.images["reroll_btn"], (reroll_rect[0], reroll_rect[1]))
                 reroll_color : tuple[int, int, int] = (238, 168, 25) if self.data.money >= needed_money_for_reroll else (255, 100, 100)

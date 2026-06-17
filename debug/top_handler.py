@@ -1,8 +1,11 @@
+import pprint
+
 import pygame as pg
 import data_class
 from typing import Literal
 
 import debug.sorted_world
+import logging
 
 
 class Top_handler:
@@ -43,6 +46,11 @@ class Top_handler:
             if not self.debug_pressed:
                 self.debug_pressed = True
                 self.data.double_speed = not self.data.double_speed
+        elif keys[pg.K_F6]:
+            if not self.debug_pressed:
+                self.debug_pressed = True
+                logging.debug("Logging of the Raw-Statistic was requested by the (debugging-)user : \n"+pprint.pformat(self.data.statistic.stat_raw, indent=1))
+                print("\nLogging of the Raw-Statistic was requested by the (debugging-)user : \n"+pprint.pformat(self.data.statistic.stat_raw, indent=1))
         else:
             self.debug_pressed = False
 
@@ -79,6 +87,7 @@ class Top_handler:
             "F3 - No Clock",
             "F4 - Slow Clock",
             "F5 - Double Speed",
+            "F6 - Print Raw Stats",
             "F11 - Fullscreen"
         ]
         pg.draw.rect(self.data.screen, (255, 255, 255), (0, 0, 70*self.data.tile_zoom, len(lines)*6*self.data.tile_zoom+10))

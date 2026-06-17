@@ -37,7 +37,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.11.1"
+version : str = "0.11.2"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -111,8 +111,10 @@ import towers.storage_handler
 storage_handler : towers.storage_handler.Storage_handler = towers.storage_handler.Storage_handler(data, tower_info_renderer, zone_building, mod_building, zone_renderer, event_building)
 
 
+
 # Main loop
 try:
+    data.Load_permanent_data()
     while data.run:
 
         if data.in_map_selection:

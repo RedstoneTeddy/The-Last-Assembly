@@ -16,6 +16,7 @@ class Event_handler:
         """
         Handle the given event. This is called when an event is triggered.
         """
+        self.data.statistic.stat_raw["events_used"] += 1
         match event_name:
             case "bombing":
                 dead_enemies : list[int] = []

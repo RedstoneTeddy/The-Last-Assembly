@@ -14,6 +14,8 @@ import shop.main
 import events.building
 import events.info_data
 
+import statistic.unlock_info
+
 from typing import Literal, get_args
 
 
@@ -58,6 +60,8 @@ class Collection_menu:
         self.original_images["close_btn_selected"] = pg.image.load("assets/shop/buttons/close_selected.png").convert_alpha()
         self.original_images["background_gray_out"] = pg.Surface((32*12, 18*12), pg.SRCALPHA)
         self.original_images["background_gray_out"].fill((100, 100, 100, 150))
+
+        self.original_images["unknown"] = pg.image.load("assets/shop/buttons/unknown.png").convert_alpha()
 
         self.Resize(True)
         
@@ -191,26 +195,37 @@ class Collection_menu:
             # Load elements
             elements : list[str] = []
             element_texts : list[list[data_class.TextLine]] = []
+            unlocked : dict[str, bool] = {}
             if self.current_menu == "towers":
                 elements = self.shop._tower_names
                 element_texts = self.shop._tower_info_box
+                unlocked = self.data.statistic.stat_raw["unlocked"]["towers"]
             elif self.current_menu == "specialists":
                 elements = self.shop._specialist_names
                 element_texts = self.shop._specialist_info_box
+                unlocked = self.data.statistic.stat_raw["unlocked"]["specialists"]
             elif self.current_menu == "mods":
                 elements = self.shop._mod_names
                 element_texts = self.shop._mod_info_box
+                for key in elements:
+                    unlocked[key] = True # Mods are always unlocked
             elif self.current_menu == "zones":
                 elements = self.shop._zone_names
                 element_texts = self.shop._info_box
+                for key in elements:
+                    unlocked[key] = True # Zones are always unlocked
             elif self.current_menu == "enemies":
                 enemy_info = enemy.enemy_info.Get_enemy_info()
                 elements = list(enemy_info.keys())
                 element_texts = [enemy_info[element] for element in elements]
+                for key in elements:
+                    unlocked[key] = True # Enemies are always unlocked
             elif self.current_menu == "events":
                 event_info = events.info_data.Get_event_info_data()
                 elements = list(event_info.keys())
                 element_texts = [event_info[element] for element in elements]
+                for key in elements:
+                    unlocked[key] = True # Events are always unlocked
             elif self.current_menu == "menu":
                 elements = ["Towers", "Specialists", "Zones", "Mods", "Events", "Enemies"]
                 element_texts = [
@@ -221,12 +236,26 @@ class Collection_menu:
                     [data_class.TextLine(text="Events", color=(0,0,0), icon="", is_small=False)],
                     [data_class.TextLine(text="Enemies", color=(0,0,0), icon="", is_small=False)]
                 ]
+                for key in elements:
+                    unlocked[key] = True # Main Menu items are always unlocked
+
+            # Replace info-text for locked towers and specialists
+            if self.current_menu == "towers":
+                for i in range(len(elements)):
+                    element : str = elements[i]
+                    if not unlocked[element]:
+                        element_texts[i] = statistic.unlock_info.Get_tower_unlock(element)
+            elif self.current_menu == "specialists":
+                for i in range(len(elements)):
+                    element = elements[i]
+                    if not unlocked[element]:
+                        element_texts[i] = statistic.unlock_info.Get_specialist_unlock(element)
             
 
             # Display elements
             info_text : list[data_class.TextLine] = []
             for i in range(len(elements)):
-                element : str = elements[i]
+                element = elements[i]
                 element_text : list[data_class.TextLine] = element_texts[i]
                 x : int = i % current_elements[0]
                 y : int = i // current_elements[0]
@@ -244,9 +273,15 @@ class Collection_menu:
                     self.data.screen.blit(self.images["outline"], (element_rect[0], element_rect[1]))
                 # Display element image
                 if self.current_menu == "towers":
-                    self.tower_renderer.Draw_single((element_rect[0], element_rect[1]), element)
+                    if unlocked[element]:
+                        self.tower_renderer.Draw_single((element_rect[0], element_rect[1]), element)
+                    else:
+                        self.data.screen.blit(self.images["unknown"], (element_rect[0], element_rect[1]))
                 elif self.current_menu == "specialists":
-                    self.specialist_renderer.Draw_single((element_rect[0], element_rect[1]), element)
+                    if unlocked[element]:
+                        self.specialist_renderer.Draw_single((element_rect[0], element_rect[1]), element)
+                    else:
+                        self.data.screen.blit(self.images["unknown"], (element_rect[0], element_rect[1]))
                 elif self.current_menu == "mods":
                     self.mod_renderer.Draw_single((element_rect[0], element_rect[1]), element)
                 elif self.current_menu == "zones":
