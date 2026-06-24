@@ -97,7 +97,6 @@ class Wave_handler:
             enemies.special_type[new_id] = self.wave[self.__wave_counter][1]
             enemies.exact_pos[new_id] = (-1, -1)
             enemies.pos_direction[new_id] = "Up"
-            enemies.pos_exact_frame_offset[new_id] = 0
 
             
         

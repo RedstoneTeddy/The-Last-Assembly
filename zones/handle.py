@@ -46,15 +46,20 @@ class Zone_handler:
                                 if enemies.special_type.get(enemy_id, "") == "ironclad":
                                     continue
                                 enemies.health[enemy_id] -= 4
+                                self.data.statistic.stat_raw["damage_dealt"] += 4
                                 if enemies.health[enemy_id] <= 0:
+                                    if enemies.health[enemy_id] < 0:
+                                        self.data.statistic.stat_raw["damage_dealt"] -= abs(enemies.health[enemy_id])
                                     enemies.Remove_enemy(enemy_id)
                             if self.data.path_random.random() < 0.01:
                                 self.data.money += 10
+                                self.data.statistic.stat_raw["gold_earned"] += 10
 
                         case "shock":
                             if enemies.special_type.get(enemy_id, "") == "faraday":
                                 continue
                             enemies.health[enemy_id] -= 1
+                            self.data.statistic.stat_raw["damage_dealt"] += 1
                             if enemies.health[enemy_id] <= 0:
                                 enemies.Remove_enemy(enemy_id)
 
@@ -65,5 +70,6 @@ class Zone_handler:
                         case "tax":
                             if self.data.path_random.random() < 0.15:
                                 self.data.money += 1
+                                self.data.statistic.stat_raw["gold_earned"] += 1
 
 

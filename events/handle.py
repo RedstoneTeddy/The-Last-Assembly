@@ -21,6 +21,7 @@ class Event_handler:
             case "bombing":
                 dead_enemies : list[int] = []
                 for id in self.data.enemies.health.keys():
+                    self.data.statistic.stat_raw["damage_dealt"] += self.data.enemies.health[id] // 2
                     self.data.enemies.health[id] //= 2
                     if self.data.enemies.health[id] <= 0:
                         dead_enemies.append(id)
@@ -32,6 +33,7 @@ class Event_handler:
                 if cash_bonus > 500:
                     cash_bonus = 500
                 self.data.money += cash_bonus
+                self.data.statistic.stat_raw["gold_earned"] += cash_bonus
 
             case "electrical_boost":
                 for tower in self.data.towers:

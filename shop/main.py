@@ -523,6 +523,7 @@ class Shop:
                 self._button_pressed = True
                 self._show_reward_screen = False
                 self.data.money += total_cash
+                self.data.statistic.stat_raw["gold_earned"] += total_cash
         else:
             self.data.screen.blit(self.images["close_btn"], (close_button_rect[0], close_button_rect[1]))
 

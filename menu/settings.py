@@ -54,6 +54,30 @@ def _Button_double_speed(settings : 'Settings', data : data_class.Data_class, cl
         if clicked:
             data.double_speed = True
 
+def _Button_enemy_effects(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    if data.display_enemy_effects:
+        data.Draw_text("On", text_pos, data.tile_zoom*6, (200, 255, 200))
+        if clicked:
+            data.display_enemy_effects = False
+    else:
+        data.Draw_text("Off", text_pos, data.tile_zoom*6, (255, 200, 200))
+        if clicked:
+            data.display_enemy_effects = True
+
+def _Button_tower_range(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    if data.display_tower_range == "always":
+        data.Draw_text("Always", text_pos, data.tile_zoom*6, (200, 255, 200))
+        if clicked:
+            data.display_tower_range = "selected"
+    elif data.display_tower_range == "selected":
+        data.Draw_text("Selected", text_pos, data.tile_zoom*6, (255, 255, 200))
+        if clicked:
+            data.display_tower_range = "never"
+    elif data.display_tower_range == "never":
+        data.Draw_text("Never", text_pos, data.tile_zoom*6, (255, 200, 200))
+        if clicked:
+            data.display_tower_range = "always"
+
 def _Button_toggle_fullscreen(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
     if data.is_fullscreen:
         data.Draw_text("On", text_pos, data.tile_zoom*6, (200, 255, 200))
@@ -180,7 +204,7 @@ class Settings:
         if (self.animation == self._max_animation):
             
             # Handle Scrolling
-            MAX_SCROLL : int = 12
+            MAX_SCROLL : int = 16
             if self.data.mouse_wheel_down or pg.key.get_pressed()[pg.K_DOWN]:
                 if not self.__scroll_pressed:
                     self.__scroll_pressed = True
@@ -305,6 +329,29 @@ class Settings:
                 info_text = new_text
 
             new_text = self.__Settings_line(
+                "Enemy Effects",
+                [data_class.TextLine(text="Enable / Disable", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Rendering of", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Enemy Effects", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Default : On;", color=info_text_color, icon="", is_small=True)],
+                button_funct = _Button_enemy_effects
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "Tower Range",
+                [data_class.TextLine(text="Change when the;Tower Range Indicator", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="is displayed;or not", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Options:;Always show it", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Only show selected;Never show it", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Default : Selected;", color=info_text_color, icon="", is_small=True)],
+                button_funct = _Button_tower_range
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
                 "Fullscreen",
                 [data_class.TextLine(text="Enable / Disable", color=info_text_color, icon="", is_small=False),
                  data_class.TextLine(text="Fullscreen Mode", color=info_text_color, icon="", is_small=False),
@@ -350,6 +397,18 @@ class Settings:
 
             _ = self.__Settings_line(
                 f"Wave-Highscore : {self.data.statistic.stat_raw.get('max_wave', 0)}",
+                [],
+                adjust_x = -1,
+            )
+
+            _ = self.__Settings_line(
+                f"Damage Dealt : {self.data.statistic.stat_raw.get('damage_dealt', 0)}",
+                [],
+                adjust_x = -1,
+            )
+
+            _ = self.__Settings_line(
+                f"Money Earned : {self.data.statistic.stat_raw.get('gold_earned', 0)}$",
                 [],
                 adjust_x = -1,
             )

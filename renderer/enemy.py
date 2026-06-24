@@ -63,53 +63,54 @@ class Enemy:
             enemy_img : str = self.__Get_image(id)
             self.data.screen.blit(self.images[enemy_img], draw_pos)
 
-        effect_frame : int = (self.animation_timer // 10) % self.effect_max_frame["golden"] + 1
-        effect_img : str = f"golden_{effect_frame}"
-        effect_big_img : str = f"golden_big_{effect_frame}"
-        for id, _ in self.data.enemies.golden.items():
-            if self.data.enemies.golden[id] <= 0:
-                continue
-            draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            if self.data.enemies.health[id] > 50:
-                self.data.screen.blit(self.images[effect_big_img], draw_pos)
-            else:
-                self.data.screen.blit(self.images[effect_img], draw_pos)
+        if self.data.display_enemy_effects:
+            effect_frame : int = (self.animation_timer // 10) % self.effect_max_frame["golden"] + 1
+            effect_img : str = f"golden_{effect_frame}"
+            effect_big_img : str = f"golden_big_{effect_frame}"
+            for id, _ in self.data.enemies.golden.items():
+                if self.data.enemies.golden[id] <= 0:
+                    continue
+                draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
+                if self.data.enemies.health[id] > 50:
+                    self.data.screen.blit(self.images[effect_big_img], draw_pos)
+                else:
+                    self.data.screen.blit(self.images[effect_img], draw_pos)
 
-        effect_frame = (self.animation_timer // 10) % self.effect_max_frame["frozen"] + 1
-        effect_img = f"frozen_{effect_frame}"
-        effect_big_img = f"frozen_big_{effect_frame}"
-        for id, _ in self.data.enemies.frozen.items():
-            if self.data.enemies.frozen[id] <= 0:
-                continue
-            draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            if self.data.enemies.health[id] > 50:
-                self.data.screen.blit(self.images[effect_big_img], draw_pos)
-            else:
-                self.data.screen.blit(self.images[effect_img], draw_pos)
+            effect_frame = (self.animation_timer // 10) % self.effect_max_frame["frozen"] + 1
+            effect_img = f"frozen_{effect_frame}"
+            effect_big_img = f"frozen_big_{effect_frame}"
+            for id, _ in self.data.enemies.frozen.items():
+                if self.data.enemies.frozen[id] <= 0:
+                    continue
+                draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
+                if self.data.enemies.health[id] > 50:
+                    self.data.screen.blit(self.images[effect_big_img], draw_pos)
+                else:
+                    self.data.screen.blit(self.images[effect_img], draw_pos)
 
-        effect_frame = (self.animation_timer // 12) % self.effect_max_frame["slowness"] + 1
-        effect_img = f"slowness_{effect_frame}"
-        effect_big_img = f"slowness_big_{effect_frame}"
-        for id, _ in self.data.enemies.slowness.items():
-            if self.data.enemies.slowness[id] <= 0:
-                continue
-            draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            if self.data.enemies.health[id] > 50:
-                self.data.screen.blit(self.images[effect_big_img], draw_pos)
-            else:
-                self.data.screen.blit(self.images[effect_img], draw_pos)
+            effect_frame = (self.animation_timer // 12) % self.effect_max_frame["slowness"] + 1
+            effect_img = f"slowness_{effect_frame}"
+            effect_big_img = f"slowness_big_{effect_frame}"
+            for id, _ in self.data.enemies.slowness.items():
+                if self.data.enemies.slowness[id] <= 0:
+                    continue
+                draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
+                if self.data.enemies.health[id] > 50:
+                    self.data.screen.blit(self.images[effect_big_img], draw_pos)
+                else:
+                    self.data.screen.blit(self.images[effect_img], draw_pos)
 
-        effect_frame = (self.animation_timer // 10) % self.effect_max_frame["speed"] + 1
-        effect_img = f"speed_{effect_frame}"
-        effect_big_img = f"speed_big_{effect_frame}"
-        for id, _ in self.data.enemies.speed.items():
-            if self.data.enemies.speed[id] <= 0:
-                continue
-            draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
-            if self.data.enemies.health[id] > 50:
-                self.data.screen.blit(self.images[effect_big_img], draw_pos)
-            else:
-                self.data.screen.blit(self.images[effect_img], draw_pos)
+            effect_frame = (self.animation_timer // 10) % self.effect_max_frame["speed"] + 1
+            effect_img = f"speed_{effect_frame}"
+            effect_big_img = f"speed_big_{effect_frame}"
+            for id, _ in self.data.enemies.speed.items():
+                if self.data.enemies.speed[id] <= 0:
+                    continue
+                draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
+                if self.data.enemies.health[id] > 50:
+                    self.data.screen.blit(self.images[effect_big_img], draw_pos)
+                else:
+                    self.data.screen.blit(self.images[effect_img], draw_pos)
 
             
 

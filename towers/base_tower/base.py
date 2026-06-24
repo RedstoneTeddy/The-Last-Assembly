@@ -216,7 +216,7 @@ class Base_tower:
                     self._is_selected = not self._is_selected
                     self._selected_clicked = True
 
-            if self._is_selected and self._actual_range > 0:
+            if (self.data.display_tower_range == "always" or self.data.display_tower_range == "selected" and self._is_selected) and self._actual_range > 0:
                 center_pos : tuple[int, int] = self.data.Get_World_to_Screen((self._pos[0]+1, self._pos[1]+1))
                 pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self._actual_range*self.data.tile_zoom, self.data.tile_zoom)
             if self._is_selected and len(self._buffed_by_pos) > 0:

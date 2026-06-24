@@ -140,6 +140,8 @@ class Data_class():
         self.double_speed : bool = False
         self.screen_shake : int = 2
         self.display_shots : bool = True
+        self.display_enemy_effects : bool = True
+        self.display_tower_range : Literal["always", "selected", "never"] = "selected"
 
         # Statistics
         self.statistic : statistic.statistic.Statistic = statistic.statistic.Statistic(self)
@@ -367,6 +369,14 @@ class Data_class():
                     self.display_shots = loaded_data["display_shots"]
                 else:
                     logging.warning("Permanent data file does not contain display_shots, using default")
+                if "display_enemy_effects" in loaded_data:
+                    self.display_enemy_effects = loaded_data["display_enemy_effects"]
+                else:
+                    logging.warning("Permanent data file does not contain display_enemy_effects, using default")
+                if "display_tower_range" in loaded_data:
+                    self.display_tower_range = loaded_data["display_tower_range"]
+                else:
+                    logging.warning("Permanent data file does not contain display_tower_range, using default")
 
                 # Load statistics
                 if "stats" in loaded_data:
@@ -386,7 +396,9 @@ class Data_class():
             "stats" : self.statistic.stat_raw,
             "double_speed" : self.double_speed,
             "screen_shake" : self.screen_shake,
-            "display_shots" : self.display_shots
+            "display_shots" : self.display_shots,
+            "display_enemy_effects" : self.display_enemy_effects,
+            "display_tower_range" : self.display_tower_range
         }
         try:
             with open("data.pkl", "wb") as f:
