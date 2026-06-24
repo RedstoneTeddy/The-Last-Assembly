@@ -56,11 +56,20 @@ class Data_class():
 
         self.tile_zoom : int = 2
         self.world_margin : tuple[int, int] = (0, 0)
+        
+        # Screenshake-effect
+        self.__screenshake_offset : tuple[int, int] = (0, 0)
+        self.__screenshake_timer : int = 0
+        self.__max_screenshake_timer : int = 5
 
-        self.__default_screen_flags : int = pg.SHOWN # pg.DOUBLEBUF made performance worse...
-        self.screen : pg.Surface = pg.display.set_mode(self.screen_size, self.__default_screen_flags | pg.RESIZABLE)
-        pg.display.set_caption(self.screen_title)
+        self.__save_timer : int = 0
+        self.__save_interval : int = 60*60*5 # 5 minutes in frames (60 fps)
+
+        # Window
+        self._default_screen_flags : int = pg.SHOWN # pg.DOUBLEBUF made performance worse...
         pg.display.set_icon(pg.image.load("assets/icon.png"))
+        self.screen : pg.Surface = pg.display.set_mode(self.screen_size, self._default_screen_flags | pg.RESIZABLE)
+        pg.display.set_caption(self.screen_title)
         self.Check_resize(force=True)
         
         # Basic window variables
@@ -86,8 +95,8 @@ class Data_class():
         self.difficulty : DifficultyLevels = ""
 
         self.wave : int = 0
-        self.money : int = 400
-        self.health : int = 100
+        self.money : int = 0
+        self.health : int = 0
         self.fast_forward : bool = False
 
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
@@ -116,7 +125,9 @@ class Data_class():
 
         # Menu variables
         self.in_game : bool = False
-        self.in_map_selection : bool = True
+        self.in_map_selection : bool = False
+        self.in_main_menu : bool = True
+        self.in_settings : bool = False 
         self.is_paused : bool = False
         self.wave_in_progress : bool = False
         self.in_shop : bool = False
@@ -127,10 +138,11 @@ class Data_class():
 
         # Settings
         self.double_speed : bool = False
+        self.screen_shake : int = 2
+        self.display_shots : bool = True
 
         # Statistics
         self.statistic : statistic.statistic.Statistic = statistic.statistic.Statistic(self)
-
 
         # Random generators
         self.path_random  : random.Random
@@ -145,6 +157,11 @@ class Data_class():
         self.shop_random = random.Random(seed)
         self.other_random = random.Random(seed)
 
+
+    def Start_screenshake(self) -> None:
+        self.__screenshake_timer = 1
+        self.__screenshake_offset = (self.other_random.randint(-self.screen_shake, self.screen_shake), self.other_random.randint(-self.screen_shake, self.screen_shake))
+        
     
     def New_game(self, world_name : str, difficulty : DifficultyLevels, seed : int = 0) -> None:
         if seed == 0:
@@ -207,26 +224,52 @@ class Data_class():
         self.statistic.New_game_reset()
         
 
+    def Toggle_fullscreen(self) -> None:
+        self.is_fullscreen = not self.is_fullscreen
+        if self.is_fullscreen:
+            self.screen_size_before_fullscreen = self.screen_size   
+            self.screen = pg.display.set_mode((0, 0), self._default_screen_flags | pg.FULLSCREEN)
+        else:
+            self.screen_size = self.screen_size_before_fullscreen
+            self.screen = pg.display.set_mode(self.screen_size, self._default_screen_flags | pg.RESIZABLE)
+        self.Check_resize(force=True)
+
+
     
     def Check_resize(self, force : bool = False) -> bool:
+        # Handle screen_shake
+        if self.__screenshake_timer > 0:
+            move : tuple[int, int] = (0,0)
+            if self.__screenshake_timer >= self.__max_screenshake_timer:
+                move = (-self.__screenshake_offset[0]//(self.__max_screenshake_timer*2-self.__screenshake_timer), -self.__screenshake_offset[1]//(self.__max_screenshake_timer*2-self.__screenshake_timer))
+            else:
+                move = (self.__screenshake_offset[0]//(self.__screenshake_timer), self.__screenshake_offset[1]//(self.__screenshake_timer))
+            self.__screenshake_timer += 1
+            self.__screenshake_offset = (self.__screenshake_offset[0]+move[0], self.__screenshake_offset[1]+move[1])
+
+            if self.__screenshake_timer >= self.__max_screenshake_timer*2:
+                self.__screenshake_timer = 0
+                self.__screenshake_offset = (0, 0)
+
+        # Auto-save
+        if self.__save_timer >= self.__save_interval:
+            self.__save_timer = 0
+            self.Save_permanent_data()
+        self.__save_timer += 1
+
         # Toggle fullscreen if F11 is pressed
         self.keys = pg.key.get_pressed()
         keys = self.keys
         if keys[pg.K_F11] and not self.__fullscreen_clicked:
             self.__fullscreen_clicked = True
-            self.is_fullscreen = not self.is_fullscreen
-            if self.is_fullscreen:
-                self.screen_size_before_fullscreen = self.screen_size   
-                self.screen = pg.display.set_mode((0, 0), self.__default_screen_flags | pg.FULLSCREEN)
-            else:
-                self.screen_size = self.screen_size_before_fullscreen
-                self.screen = pg.display.set_mode(self.screen_size, self.__default_screen_flags | pg.RESIZABLE)
+            self.Toggle_fullscreen()
             force = True
         elif not keys[pg.K_F11]:
             self.__fullscreen_clicked = False
 
         # Check if the screen size has changed
         if self.screen_size != pg.display.get_window_size() or force:
+            old_zoom : int = self.tile_zoom
             self.screen_size = pg.display.get_window_size()
 
             # Calculate the new zoom
@@ -256,7 +299,8 @@ class Data_class():
             # Calculate the margin to center the world
             self.world_margin = ((self.screen_size[0] - chosen_size[0]) // 2, (self.screen_size[1] - chosen_size[1]) // 2)
 
-
+            if old_zoom != self.tile_zoom:
+                logging.info(f"Screen resized to {self.screen_size}, new tile zoom: {self.tile_zoom}, world margin: {self.world_margin}")
 
             return True
         return False
@@ -280,13 +324,13 @@ class Data_class():
 
 
     def Get_Screen_to_World(self, screen_pos : tuple[int, int]) -> tuple[int, int]:
-        world_x : int = (screen_pos[0] - self.world_margin[0]) // (self.tile_zoom * 12)
-        world_y : int = (screen_pos[1] - self.world_margin[1]) // (self.tile_zoom * 12)
+        world_x : int = (screen_pos[0] - self.world_margin[0] - self.__screenshake_offset[0]*self.tile_zoom) // (self.tile_zoom * 12)
+        world_y : int = (screen_pos[1] - self.world_margin[1] - self.__screenshake_offset[1]*self.tile_zoom) // (self.tile_zoom * 12)
         return (world_x, world_y)
 
     def Get_World_to_Screen(self, world_pos : tuple[int, int] | tuple[float, float]) -> tuple[int, int]:
-        screen_x : int = int(world_pos[0] * self.tile_zoom * 12 + self.world_margin[0])
-        screen_y : int = int(world_pos[1] * self.tile_zoom * 12 + self.world_margin[1])
+        screen_x : int = int(world_pos[0] * self.tile_zoom * 12 + self.world_margin[0] + self.__screenshake_offset[0]*self.tile_zoom)
+        screen_y : int = int(world_pos[1] * self.tile_zoom * 12 + self.world_margin[1] + self.__screenshake_offset[1]*self.tile_zoom)
         return (screen_x, screen_y)
     
 
@@ -304,12 +348,27 @@ class Data_class():
         try:
             with open("data.pkl", "rb") as f:
                 loaded_data = pickle.load(f)
+                # Load maps
                 if "completed_maps" in loaded_data:
                     self.completed_maps = loaded_data["completed_maps"]
-                    logging.info("Permanent data loaded")
                 else:
                     logging.warning("Permanent data file does not contain completed_maps, resetting to empty")
+                
+                # Load settings
+                if "double_speed" in loaded_data:
+                    self.double_speed = loaded_data["double_speed"]
+                else:
+                    logging.warning("Permanent data file does not contain double_speed, using default")
+                if "screen_shake" in loaded_data:
+                    self.screen_shake = loaded_data["screen_shake"]
+                else:
+                    logging.warning("Permanent data file does not contain screen_shake, using default")
+                if "display_shots" in loaded_data:
+                    self.display_shots = loaded_data["display_shots"]
+                else:
+                    logging.warning("Permanent data file does not contain display_shots, using default")
 
+                # Load statistics
                 if "stats" in loaded_data:
                     self.__load_stats_recursively(self.statistic.stat_raw, loaded_data["stats"]) # type: ignore
                 else:
@@ -319,11 +378,15 @@ class Data_class():
             logging.warning("Permanent data file not found, resetting to empty")
         except Exception as e:
             logging.error(f"Error loading permanent data: {e}, resetting to empty")
+        logging.info("Permanent data loaded")
         
     def Save_permanent_data(self) -> None:
         data_to_save : dict[str, Any] = {
             "completed_maps": self.completed_maps,
-            "stats" : self.statistic.stat_raw
+            "stats" : self.statistic.stat_raw,
+            "double_speed" : self.double_speed,
+            "screen_shake" : self.screen_shake,
+            "display_shots" : self.display_shots
         }
         try:
             with open("data.pkl", "wb") as f:

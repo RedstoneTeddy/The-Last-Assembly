@@ -268,6 +268,7 @@ class Map_selection:
             self.data.is_paused = False
             self.data.in_game = False
             self.data.wave_in_progress = False
+            self.data.in_main_menu = False
 
         if self._animation == 3*self._max_animation:
             self.data.New_game(self.selected_map, self.selected_difficulty)

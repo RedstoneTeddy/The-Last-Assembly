@@ -37,7 +37,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.11.3"
+version : str = "0.12.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -105,6 +105,10 @@ import menu.pause
 pause_menu : menu.pause.Pause_menu = menu.pause.Pause_menu(data, collection_menu)
 import menu.map_selection
 map_selection_menu : menu.map_selection.Map_selection = menu.map_selection.Map_selection(data, tower_info_renderer)
+import menu.main_menu
+main_menu_obj : menu.main_menu.Main_menu = menu.main_menu.Main_menu(data, tower_info_renderer, tile_renderer)
+import menu.settings
+settings_menu : menu.settings.Settings = menu.settings.Settings(data, tower_info_renderer)
 
 # Storage handler
 import towers.storage_handler
@@ -117,13 +121,13 @@ try:
     data.Load_permanent_data()
     while data.run:
 
-        if data.in_map_selection:
-            data.screen.fill((0, 0, 0))
-        elif data.in_game:
-            pg.draw.rect(data.screen, (0,0,0), (0, 0, data.world_margin[0], data.screen_size[1]))
-            pg.draw.rect(data.screen, (0,0,0), (data.screen_size[0]-data.world_margin[0], 0, data.world_margin[0], data.screen_size[1]))
-            pg.draw.rect(data.screen, (0,0,0), (data.world_margin[0], 0, data.screen_size[0]-2*data.world_margin[0], data.world_margin[1]))
-            pg.draw.rect(data.screen, (0,0,0), (data.world_margin[0], data.screen_size[1]-data.world_margin[1], data.screen_size[0]-2*data.world_margin[0], data.world_margin[1]))
+        # if data.in_map_selection or data.in_main_menu:
+        data.screen.fill((0, 0, 0))
+        # elif data.in_game:
+        #     pg.draw.rect(data.screen, (0,0,0), (0, 0, data.world_margin[0], data.screen_size[1]))
+        #     pg.draw.rect(data.screen, (0,0,0), (data.screen_size[0]-data.world_margin[0], 0, data.world_margin[0], data.screen_size[1]))
+        #     pg.draw.rect(data.screen, (0,0,0), (data.world_margin[0], 0, data.screen_size[0]-2*data.world_margin[0], data.world_margin[1]))
+        #     pg.draw.rect(data.screen, (0,0,0), (data.world_margin[0], data.screen_size[1]-data.world_margin[1], data.screen_size[0]-2*data.world_margin[0], data.world_margin[1]))
         
         
         data.Check_resize()
@@ -196,16 +200,24 @@ try:
                     if data.keys[pg.K_ESCAPE]:
                         data.is_paused = True
 
-            if data.is_paused:
-                pause_menu.Pause_main()
-            if data.in_collection:
-                collection_menu.Collection_main()
-
-            data.statistic.Tick_stats_updater()
-            debug_handler.Main()
-
+        # Other Menus
+        if data.in_main_menu:
+            main_menu_obj.Main_menu()
+            
         if data.in_map_selection:
             map_selection_menu.Main()
+
+        if data.is_paused:
+            pause_menu.Pause_main()
+
+        if data.in_collection:
+            collection_menu.Collection_main()
+
+        if data.in_settings:
+            settings_menu.Settings_main()
+
+        data.statistic.Tick_stats_updater()
+        debug_handler.Main()
 
 
 

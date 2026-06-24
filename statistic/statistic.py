@@ -15,6 +15,9 @@ class StatRaw(TypedDict):
     times_rerolled_in_shop : int
     events_used : int
 
+    games_played : int
+    games_won : int
+
     # Tower / Specialist Unlocks
     unlocked : dict[Literal["towers", "specialists"], dict[str, bool]]  # A dictionary to track unlocked towers and specialists.
 
@@ -76,7 +79,9 @@ class Statistic:
                 }
             },
             "times_rerolled_in_shop": 0,
-            "events_used": 0
+            "events_used": 0,
+            "games_played": 0,
+            "games_won": 0
         }
 
     def Tick_stats_updater(self) -> None:

@@ -11,7 +11,7 @@ class Fund_raiser(base.Base_specialist):
         self.description : list[data_class.TextLine] = [
             data_class.TextLine(text="+1% damage for;each 50$ you have", color=(0,0,0), icon="", is_small=True),
             data_class.TextLine(text="(Gets calculated;at the beginning", color=(0,0,0), icon="", is_small=True),
-            data_class.TextLine(text="of a each;wave", color=(0,0,0), icon="", is_small=True)
+            data_class.TextLine(text="of a each;wave)", color=(0,0,0), icon="", is_small=True)
         ]
 
         self.number_of_frames : int = 1

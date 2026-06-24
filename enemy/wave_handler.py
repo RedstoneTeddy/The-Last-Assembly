@@ -64,6 +64,8 @@ class Wave_handler:
             self.data.in_shop = True
             if self.data.wave == 30:
                 # Player has won the game
+                self.data.statistic.stat_raw["games_played"] += 1
+                self.data.statistic.stat_raw["games_won"] += 1
                 print("Congratulations! You have completed all the waves!")
                 logging.info("Player has won the game.")
                 previous_difficulty : data_class.DifficultyLevels = self.data.completed_maps.get(self.data.world_name, "")
@@ -75,6 +77,7 @@ class Wave_handler:
         # Check if player has lost
         if self.data.health <= 0:
             self.data.run = False
+            self.data.statistic.stat_raw["games_played"] += 1
             print("Game Over")
             logging.info("Player has lost the game.")
         

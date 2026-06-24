@@ -96,7 +96,7 @@ class Towers:
                             tower._animation_frame = 1
 
                 # Render shot
-                if self.data.wave_in_progress and tower._shot_pos != (-1, -1):
+                if self.data.wave_in_progress and tower._shot_pos != (-1, -1) and self.data.display_shots: 
                     # print("Test")
                     shot_image : pg.Surface = self.images[tower.internal_name + "_shot"]
                     shot_pos : tuple[int, int] = self.data.Get_World_to_Screen(tower._shot_pos)

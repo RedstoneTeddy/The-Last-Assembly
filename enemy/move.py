@@ -104,6 +104,7 @@ class EnemyMove:
                 if enemies.next_position[enemy_id] == (-1, -1):
                     self.data.health -= enemies.health[enemy_id]
                     enemies.Remove_enemy(enemy_id)
+                    self.data.Start_screenshake()
                     continue
 
                 enemies.position[enemy_id] = enemies.next_position[enemy_id]

@@ -42,7 +42,7 @@ class Collection_menu:
         self.tower_renderer : renderer.towers.Towers = tower_renderer
         self.shop : shop.main.Shop = shop_obj
 
-        self.current_menu : Literal["menu", "towers", "specialists", "mods", "zones", "events", "enemies"] = "towers"
+        self.current_menu : Literal["menu", "towers", "specialists", "mods", "zones", "events", "enemies"] = "menu"
         
         self.animation : int = 0
         self.animation_direction : int = 0
