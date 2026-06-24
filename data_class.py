@@ -36,7 +36,7 @@ TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapp
                      "catalyst", "repeater", "observer", "lieutenant", "storage"]
 SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
                           "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time", "investor",
-                          "conductor", "gunsmith", "eventmaster", "fund_raiser"]
+                          "conductor", "gunsmith", "eventmaster", "fund_raiser", "collector"]
 
 
 

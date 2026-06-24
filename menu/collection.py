@@ -1,3 +1,4 @@
+from copy import deepcopy
 import logging
 import pygame as pg
 import data_class
@@ -198,11 +199,11 @@ class Collection_menu:
             unlocked : dict[str, bool] = {}
             if self.current_menu == "towers":
                 elements = self.shop._tower_names
-                element_texts = self.shop._tower_info_box
+                element_texts = deepcopy(self.shop._tower_info_box)
                 unlocked = self.data.statistic.stat_raw["unlocked"]["towers"]
             elif self.current_menu == "specialists":
                 elements = self.shop._specialist_names
-                element_texts = self.shop._specialist_info_box
+                element_texts = deepcopy(self.shop._specialist_info_box)
                 unlocked = self.data.statistic.stat_raw["unlocked"]["specialists"]
             elif self.current_menu == "mods":
                 elements = self.shop._mod_names

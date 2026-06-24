@@ -74,7 +74,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
 
 
     # Apply fund_raiser buff  
-    fund_buff : int = tower.data.money // 50
+    fund_buff : int = tower.data.money // 100
     if fund_buff > 0 and "fund_raiser" in tower.data.bought_specialists:
         tower._actual_damage *= 1 + 0.01 * fund_buff
         for specialist in tower.data.specialists:
@@ -84,6 +84,18 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
                 break
 
 
+    # Apply collector buff
+    if "collector" in tower.data.bought_specialists:
+        towers : list[str] = []
+        for other_tower in tower.data.towers:
+            if other_tower.internal_name not in towers:
+                towers.append(other_tower.internal_name)
+        tower._actual_damage *= 1 + 0.05 * len(towers)
+        for specialist in tower.data.specialists:
+            if specialist.internal_name == "collector":
+                tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                tower._buffed_type.append("specialist")
+                break
 
     # Apply the buffs of the lieutenant and observer
     if tower.internal_name not in ["lieutenant", "observer"]:

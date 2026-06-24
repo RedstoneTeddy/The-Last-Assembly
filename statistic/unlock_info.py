@@ -68,6 +68,9 @@ def Get_specialist_unlock(specialist_name : str) -> list[data_class.TextLine]:
         case "fund_raiser":
             output.append(data_class.TextLine(text="Unlock by", color=(0, 0, 0), icon="lock", is_small=False))
             output.append(data_class.TextLine(text="Have 5000 money;at one time", color=(0, 0, 0), icon="", is_small=True))
+        case "collector":
+            output.append(data_class.TextLine(text="Unlock by", color=(0, 0, 0), icon="lock", is_small=False))
+            output.append(data_class.TextLine(text="Have all towers;unlocked", color=(0, 0, 0), icon="", is_small=True))
 
 
     return output

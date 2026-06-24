@@ -28,6 +28,7 @@ import specialists.eventmaster
 # PhD-Specialists
 import specialists.modder
 import specialists.fund_raiser
+import specialists.collector
 
 all_specialists : list[type] = [
     specialists.tesla_coil_researcher.Tesla_coil_researcher,
@@ -53,5 +54,6 @@ all_specialists : list[type] = [
     specialists.eventmaster.Eventmaster,
     
     specialists.modder.Modder,
-    specialists.fund_raiser.Fund_raiser
+    specialists.fund_raiser.Fund_raiser,
+    specialists.collector.Collector
 ]

@@ -77,7 +77,8 @@ class Statistic:
                     "eventmaster": False,
 
                     "modder": False,
-                    "fund_raiser": False
+                    "fund_raiser": False,
+                    "collector" : False
                 }
             },
             "times_rerolled_in_shop": 0,

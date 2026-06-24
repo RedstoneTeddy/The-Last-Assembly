@@ -60,7 +60,10 @@ def Handle_stats(stat : 'statistic.statistic.Statistic', data : 'data_class.Data
             stat.stat_raw["unlocked"]["specialists"]["back_in_time"] = True
 
     if not stat.stat_raw["unlocked"]["specialists"]["investor"]:
-        economist_amount : int = sum(1 for tower in stat.data.towers if tower.name == "economist")
+        economist_amount : int = 0
+        for tower in stat.data.towers:
+            if tower.internal_name == "economist":
+                economist_amount += 1
         if economist_amount >= 3:
             stat.stat_raw["unlocked"]["specialists"]["investor"] = True
     
@@ -100,4 +103,13 @@ def Handle_stats(stat : 'statistic.statistic.Statistic', data : 'data_class.Data
     if not stat.stat_raw["unlocked"]["specialists"]["fund_raiser"]:
         if stat.data.money >= 5000:
             stat.stat_raw["unlocked"]["specialists"]["fund_raiser"] = True
+
+    if not stat.stat_raw["unlocked"]["specialists"]["collector"]:
+        unlocked : bool = True
+        for tower_name, is_unlocked in stat.stat_raw["unlocked"]["towers"].items():
+            if not is_unlocked:
+                unlocked = False
+                break
+        if unlocked:
+            stat.stat_raw["unlocked"]["specialists"]["collector"] = True
 
