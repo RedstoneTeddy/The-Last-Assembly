@@ -60,7 +60,7 @@ class Data_class():
         # Screenshake-effect
         self.__screenshake_offset : tuple[int, int] = (0, 0)
         self.__screenshake_timer : int = 0
-        self.__max_screenshake_timer : int = 5
+        self.__max_screenshake_timer : int = 3
 
         self.__save_timer : int = 0
         self.__save_interval : int = 60*60*5 # 5 minutes in frames (60 fps)
@@ -98,6 +98,10 @@ class Data_class():
         self.money : int = 0
         self.health : int = 0
         self.fast_forward : bool = False
+
+        # Used for events:
+        self.physical_multiplier : float = 1.0
+        self.electrical_multiplier : float = 1.0
 
         self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
         self.towers : list[base_tower.Base_tower] = []

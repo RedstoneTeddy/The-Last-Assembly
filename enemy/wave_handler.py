@@ -31,6 +31,7 @@ class Wave_handler:
         self.last_wave_tick = 0
         for tick in self.wave:
             self.last_wave_tick = max(self.last_wave_tick, tick)
+
         
         # Check if player has an event-master, handle him
         if "eventmaster" in self.data.bought_specialists:
@@ -73,13 +74,8 @@ class Wave_handler:
                 if data_class.DifficultyRated[current_difficulty] > data_class.DifficultyRated.get(previous_difficulty, 0):
                     self.data.completed_maps[self.data.world_name] = current_difficulty
                     logging.info(f"Player has completed {self.data.world_name} for the first time on {current_difficulty} difficulty.")
+                # The Win-Screen gets handled by the shop-loop (gets called by the shop-loop)
 
-        # Check if player has lost
-        if self.data.health <= 0:
-            self.data.run = False
-            self.data.statistic.stat_raw["games_played"] += 1
-            print("Game Over")
-            logging.info("Player has lost the game.")
         
 
     def __Internal_tick(self) -> None:

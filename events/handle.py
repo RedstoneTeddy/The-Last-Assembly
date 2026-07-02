@@ -2,8 +2,7 @@
 import data_class
 from typing import get_args, Literal
 from towers.base_tower.base import Base_tower
-from typing import TYPE_CHECKING
-# if TYPE_CHECKING:
+
 
 
 class Event_handler:
@@ -36,14 +35,14 @@ class Event_handler:
                 self.data.statistic.stat_raw["gold_earned"] += cash_bonus
 
             case "electrical_boost":
+                self.data.electrical_multiplier *= 3
                 for tower in self.data.towers:
-                    if tower.damage_type == "Electrical":
-                        tower._actual_damage *= 2
+                    tower.Wave_start_calculations()
 
             case "physical_boost":
+                self.data.physical_multiplier *= 3
                 for tower in self.data.towers:
-                    if tower.damage_type == "Physical":
-                        tower._actual_damage *= 2
+                    tower.Wave_start_calculations()
 
             case "free_mod":
                 chosen_mod : str = ""

@@ -29,13 +29,13 @@ def Get_event_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="Damage Boost", color=title_color, icon="", is_small=False),
         data_class.TextLine(text="Event;- One-Time Use", color=subtitle_color, icon="", is_small=True),
         data_class.TextLine(text="For this wave:", color=default_color, icon="", is_small=False),
-        data_class.TextLine(text="x 2", color=default_color, icon="electrical", is_small=False)
+        data_class.TextLine(text="x 3", color=default_color, icon="electrical", is_small=False)
     ]
     output["physical_boost"] = [
         data_class.TextLine(text="Damage Boost", color=title_color, icon="", is_small=False),
         data_class.TextLine(text="Event;- One-Time Use", color=subtitle_color, icon="", is_small=True),
         data_class.TextLine(text="For this wave:", color=default_color, icon="", is_small=False),
-        data_class.TextLine(text="x 2", color=default_color, icon="physical", is_small=False)
+        data_class.TextLine(text="x 3", color=default_color, icon="physical", is_small=False)
     ]
     output["free_mod"]= [
         data_class.TextLine(text="Free Mod", color=title_color, icon="", is_small=False),

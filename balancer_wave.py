@@ -9,14 +9,17 @@ pg.init()
 # V 0.10.0 (idle) ->        0.003260x^2 - 0.048503x + 0.187083, top-health : 12'000
 # V 0.10.1 (idle) ->        0.001904x^2 - 0.019225x + 0.083520, top-health :  9'100, ratio : 1.3273
 # V 0.10.1 (idle) ->        0.001810x^2 - 0.017951x + 0.079398, top-health :  9'100, ratio : 1.2706
+# V 0.12.3 (idle) ->        0.001813x^2 - 0.018001x + 0.079613, top-health :  9'100, ratio : 1.2733
 
 # V 0.10.0 (operational) -> 0.003889x^2 - 0.059135x + 0.219334, top-health : 14'000
 # V 0.10.1 (operational) -> 0.002110x^2 - 0.021187x + 0.092332, top-health :  9'100, ratio : 1.4755
 # V 0.10.1 (operational) -> 0.002035x^2 - 0.020082x + 0.088745, top-health :  9'100, ratio : 1.4288
+# V 0.12.3 (operational) -> 0.002044x^2 - 0.020147x + 0.088895, top-health :  9'100, ratio : 1.4409
 
 # V 0.10.0 (critical) ->    0.004489x^2 - 0.067201x + 0.248362, top-health : 16'000
 # V 0.10.1 (critical) ->    0.002356x^2 - 0.023428x + 0.102315, top-health :  9'100, ratio : 1.6482
 # V 0.10.1 (critical) ->    0.002264x^2 - 0.022099x + 0.097882, top-health :  9'100, ratio : 1.5923
+# V 0.12.3 (critical) ->    0.002552x^2 - 0.023049x + 0.110183, top-health :  9'100, ratio : 1.8464
 
 
 import logging
@@ -33,7 +36,7 @@ console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.11.0"
+version : str = "0.12.3"
 data : Data_class = Data_class(version)
 
 data.difficulty = "idle" # Set difficulty here for testing purposes
@@ -171,8 +174,8 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-total_health : int = sum(health_costs)
-total_time : int = sum(time_costs)
+total_health = sum(health_costs)
+total_time = sum(time_costs)
 # Print out all the data
 print("\nWave\tAvg Health\tAvg Time\tHealth/Time Ratio\tDerivative of Ratio")
 for i in range(30):

@@ -2,6 +2,7 @@ import data_class
 from typing import Literal, TYPE_CHECKING
 if TYPE_CHECKING:
     import towers.base_tower.base as base
+import logging
 
 def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
     """
@@ -10,6 +11,21 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
     # Apply specialist buffs and do the buffed_by_pos list
     tower._buffed_by_pos = []
     tower._buffed_type = []
+
+    tower._actual_damage = tower.damage
+    tower._actual_range = tower.range
+    tower._actual_cooldown = tower.cooldown
+
+    if tower.data is None:
+        logging.error("Tower data is None in Tower_wave_start_calculations")
+    else:
+        if tower.damage_type == "Physical":
+            tower._actual_damage *= tower.data.physical_multiplier
+        elif tower.damage_type == "Electrical":
+            tower._actual_damage *= tower.data.electrical_multiplier
+        
+    
+
 
     for specialist in tower.data.specialists:
         match tower.internal_name:

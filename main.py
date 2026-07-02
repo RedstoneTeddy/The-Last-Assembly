@@ -37,7 +37,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.12.2"
+version : str = "0.12.3"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -109,6 +109,8 @@ import menu.main_menu
 main_menu_obj : menu.main_menu.Main_menu = menu.main_menu.Main_menu(data, tower_info_renderer, tile_renderer)
 import menu.settings
 settings_menu : menu.settings.Settings = menu.settings.Settings(data, tower_info_renderer)
+import menu.lose_screen
+lose_menu : menu.lose_screen.Lose_screen = menu.lose_screen.Lose_screen(data)
 
 # Storage handler
 import towers.storage_handler
@@ -142,6 +144,10 @@ try:
                 specialist_renderer.Draw() 
 
                 if not data.is_paused:
+                    if data.start_next_wave:
+                        data.physical_multiplier = 1
+                        data.electrical_multiplier = 1
+
                     for tower in data.towers:
                         tower.Tick()    
                     for specialist in data.specialists:
@@ -191,6 +197,9 @@ try:
                     del data.bought_specialists[specialist_delete_id]
                     for tower in data.towers: # Update tower's values
                         tower.Wave_start_calculations()
+
+                if data.health <= 0:
+                    lose_menu.Show_lose_screen()
 
 
             if not data.is_paused:    

@@ -24,6 +24,7 @@ import specialists.base.collection
 
 
 import shop.packs
+import menu.win_screen
 
 class Shop:
     def __init__(self, data : data_class.Data_class, tower_info_renderer : renderer.tower_info.Tower_info, zone_building : zones.building.Zone_building, mod_building : mods.building.Mod_building, event_building : events.building.Event_building) -> None:
@@ -37,6 +38,7 @@ class Shop:
         self.shop_animation : int = 0
         self._max_shop_animation : int = 25
         self._show_reward_screen : bool = False
+        self._show_win_screen : bool = False
         self._rerolled_shop : int = 0  
         self._rewards_total_cash : int = -1
         self._rewards_lines : list[str] = []      
@@ -54,6 +56,7 @@ class Shop:
         self._selected_shop_element : int = -1  
 
         self.pack_obj : shop.packs.Packs = shop.packs.Packs(data, tower_info_renderer, self)
+        self.win_obj : menu.win_screen.Win_screen = menu.win_screen.Win_screen(data, self)
         
 
 
@@ -165,6 +168,11 @@ class Shop:
                         self.data.towers.append(new_tower)
                         self.data.world[y][x] = "floor_1"
 
+        # Call the win-Screen
+        if self.data.wave == 30:
+            if not self.data.shop_minimized and self.shop_animation == 2 and self._show_reward_screen:
+                self._show_win_screen = True
+
         self.Resize()
         if self.data.shop_minimized:
             if self.shop_animation > 0:
@@ -175,7 +183,9 @@ class Shop:
                 self.shop_animation += 1  
                 self._button_pressed = True      
 
-        if self._show_reward_screen:
+        if self._show_win_screen:
+            self.win_obj.Show_win_screen()
+        elif self._show_reward_screen:
             self.Show_reward()
         else: # Show shop
             self.Show_shop()

@@ -42,14 +42,14 @@ class Wave_gen:
         # Config changes based on difficulty
         if self.data.difficulty in ["operational", "overclocked"]:
             self.config.config.base_time = 60*45
-            self.config.config.time_increase_fix[0] -= 20
-            self.config.config.time_increase_fix[1] -= 16
+            self.config.config.time_increase_fix[0] -= 22
+            self.config.config.time_increase_fix[1] -= 17
             self.config.config.time_increase_fix[2] -= 12
         if self.data.difficulty in ["critical"]:
-            self.config.config.base_time = 60*40
-            self.config.config.time_increase_fix[0] -= 35
-            self.config.config.time_increase_fix[1] -= 28
-            self.config.config.time_increase_fix[2] -= 21
+            self.config.config.base_time = 60*30
+            self.config.config.time_increase_fix[0] -= int(22*2.0)
+            self.config.config.time_increase_fix[1] -= int(17*2.0)
+            self.config.config.time_increase_fix[2] -= int(12*2.0)
 
 
 

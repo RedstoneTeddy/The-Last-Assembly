@@ -62,6 +62,10 @@ class Main_menu:
         if not self.menu_initialized:
             self.Menu_init()
 
+        if self.data.world_name != "main_menu":
+            self.menu_initialized = False
+
+
         self.tile_renderer.Draw()
 
         # Draw title
