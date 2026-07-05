@@ -60,7 +60,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["critical_core"] = [
         data_class.TextLine(text="Critical Core", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="20% for critical", color=chance_color, icon="", is_small=False),
+        data_class.TextLine(text="+20% for critical", color=chance_color, icon="", is_small=False),
         data_class.TextLine(text="hits (x4 damage)", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
