@@ -104,6 +104,8 @@ class Shop:
         self.original_images["outline_permanent"] = pg.image.load("assets/shop/buttons/outline_permanent.png").convert_alpha()
         self.original_images["outline_selected"] = pg.image.load("assets/shop/buttons/outline_selected.png").convert_alpha()
         self.original_images["gray_out"] = pg.image.load("assets/shop/buttons/gray_out.png").convert_alpha()
+        self.original_images["trash_field"] = pg.transform.scale(pg.image.load("assets/tile/sidebar/trash_field.png").convert_alpha(), (32, 32))
+        self.original_images["trash_field_selected"] = pg.transform.scale(pg.image.load("assets/tile/sidebar/trash_field_selected.png").convert_alpha(), (32, 32))
 
         self.images : dict[str, pg.Surface] = {}
         self.current_zoom : int = -1
@@ -195,8 +197,6 @@ class Shop:
             self.__Kill_building_process()
 
 
-
-
         if not pg.mouse.get_pressed()[0]:
             self._button_pressed = False
             
@@ -231,6 +231,8 @@ class Shop:
 
         if not self.data.shop_minimized:
             self.data.Draw_text("- $ - Shop - $ -", (shop_rect[0] + shop_rect[2]//2 - 52 * self.data.tile_zoom, shop_rect[1] + 5 * self.data.tile_zoom), self.data.tile_zoom * 10, (238, 168, 25))
+
+        
 
         # Shop buttons
         minimize_rect : tuple[int, int, int, int] = (
@@ -293,6 +295,25 @@ class Shop:
             if len(self.shop_elements) < self.data.shop_elements:
                 self.Generate_shop()
 
+
+            # Show available storage space
+            if self.data.wave >= 1:
+                pg.draw.rect(self.data.screen, (48, 44, 46), 
+                             (shop_rect[0], shop_rect[1], 13*6*self.data.tile_zoom, 12*1*self.data.tile_zoom), 
+                             width=1*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
+                storage_total_size : int = 0
+                storage_empty_space : int = 0
+                for tower in self.data.towers:
+                    if tower.internal_name == "storage":
+                        storage_total_size += 1
+                        if tower._storage == ("", ""):
+                            storage_empty_space += 1
+                storage_color : tuple[int, int, int] = (255, 255, 255) if storage_empty_space > 0 else (255, 150, 150)
+                self.data.Draw_text(f"Free Storage Space : {storage_empty_space} / {storage_total_size}", 
+                                    (shop_rect[0] + 4*self.data.tile_zoom, shop_rect[1] + 4*self.data.tile_zoom),
+                                    4*self.data.tile_zoom, storage_color)
+
+            # Show shop elements
             info_text : list[data_class.TextLine] = []
             
             for i in range(self.data.shop_elements):
@@ -337,7 +358,18 @@ class Shop:
         # If minimized, option to maximize again
         if self.data.shop_minimized:
             if self.data.is_building != "":
-                self.data.Draw_text("Minimized - Click to maximize and abort building", (shop_rect[0] + shop_rect[2]//2 - 95 * self.data.tile_zoom, shop_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 6, (255, 50, 50))
+                self.data.Draw_text("Minimized - Left-Click to build", (shop_rect[0] + shop_rect[2]//2 - 65 * self.data.tile_zoom, shop_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 6, (255, 255, 255))
+                trash_field_rect : tuple[int, int, int, int] = (
+                    self.data.Get_World_to_Screen((14/12,14.5))[0],
+                    self.data.Get_World_to_Screen((14/12,14.5))[1],
+                    32 * self.data.tile_zoom,
+                    32 * self.data.tile_zoom
+                )
+                if (mouse_pos[0] >= trash_field_rect[0] and mouse_pos[0] <= trash_field_rect[0] + trash_field_rect[2] and
+                    mouse_pos[1] >= trash_field_rect[1] and mouse_pos[1] <= trash_field_rect[1] + trash_field_rect[3]):
+                    self.data.screen.blit(self.images["trash_field_selected"], (trash_field_rect[0], trash_field_rect[1]))
+                else:
+                    self.data.screen.blit(self.images["trash_field"], (trash_field_rect[0], trash_field_rect[1]))
             else:
                 self.data.Draw_text("Minimized - Click to maximize", (shop_rect[0] + shop_rect[2]//2 - 60 * self.data.tile_zoom, shop_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 6, (255, 255, 255))
             if (mouse_pos[0] >= shop_rect[0] and mouse_pos[0] <= shop_rect[0] + shop_rect[2] and
@@ -514,7 +546,7 @@ class Shop:
             if i == len(lines) - 1:
                 line_color = (238, 168, 25)
             self.data.Draw_text(lines[i], (
-                shop_rect[0] + shop_rect[2]//2  - int(len(lines[i]) * self.data.tile_zoom * 2.7),
+                shop_rect[0] + shop_rect[2]//2  - int(len(lines[i]) * self.data.tile_zoom * 2.65),
                 shop_rect[1] + 40 * self.data.tile_zoom + i * 18 * self.data.tile_zoom
             ), self.data.tile_zoom * 8, line_color)
 
@@ -551,7 +583,7 @@ class Shop:
         # Interest
         interest_cash : int = min(self.data.interest_cap, (self.data.money // 100) * self.data.interest_per_100)
         total_cash += interest_cash
-        lines.append(f"Interest (max {self.data.interest_cap}$) : +{interest_cash}$")
+        lines.append(f"Interest (max {self.data.interest_cap}$, {self.data.interest_per_100}$ per 100$) : +{interest_cash}$")
 
         # Gold-zones
         gold_zone_count : int = 0

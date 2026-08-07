@@ -57,7 +57,10 @@ class Event_building:
             current_offset : int = self.event_offset * self.current_zoom
 
             can_build : Literal["True", "False", "Store"] = "True"
-            if grid_pos[0] < 5 or grid_pos[1] < 0 or grid_pos[1] >= len(self.data.world) or grid_pos[0] >= len(self.data.world[0]):
+            
+            sell_item : bool = False
+
+            if grid_pos[0] < 0 or grid_pos[1] < 0 or grid_pos[1] >= len(self.data.world) or grid_pos[0] >= len(self.data.world[0]):
                 can_build = "False"
             
             found_tower : None | Base_tower = None
@@ -73,6 +76,13 @@ class Event_building:
                         can_build = "Store"
                     else:
                         can_build = "False"
+
+                        
+            # Check if player wants to sell the tower
+            if grid_pos[0] < 5:
+                can_build = "False"
+                if grid_pos[0] >= 1 and grid_pos[1] >= 14 and grid_pos[0] <= 4 and grid_pos[1] <= 17:
+                    sell_item = True
 
             # Render build hologram
             draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(grid_pos)
@@ -103,7 +113,7 @@ class Event_building:
                 self.data.is_building = ""
                 self.data.shop_minimized = False
 
-            elif pg.mouse.get_pressed()[2]:
+            elif pg.mouse.get_pressed()[0] and sell_item:
                 self.build_event = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False

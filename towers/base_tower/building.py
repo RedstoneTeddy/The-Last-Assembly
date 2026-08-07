@@ -11,8 +11,10 @@ def Tick_building(tower : "base.Base_tower") -> None:
     """
     mouse_pos : tuple[int, int] = pg.mouse.get_pos()
     world_mouse_pos : tuple[int, int] = tower.data.Get_Screen_to_World(mouse_pos)
+    
+    sell_item : bool = False
 
-    if world_mouse_pos[0] >= 5 and world_mouse_pos[1] >= 0 and world_mouse_pos[0] <= 31-1 and world_mouse_pos[1] <= 17-1:
+    if world_mouse_pos[0] >= 0 and world_mouse_pos[1] >= 0 and world_mouse_pos[0] <= 31-1 and world_mouse_pos[1] <= 17-1:
         tower._pos = world_mouse_pos
 
         # Check if the tower can be placed at the current position
@@ -42,6 +44,13 @@ def Tick_building(tower : "base.Base_tower") -> None:
                 if not can_place:
                     break
 
+        # Check if player wants to sell the tower
+        if world_mouse_pos[0] < 5:
+            can_place = False
+            if world_mouse_pos[0] >= 1 and world_mouse_pos[1] >= 14 and world_mouse_pos[0] <= 4 and world_mouse_pos[1] <= 17:
+                sell_item = True
+                
+
         if can_place:
             tower._build_hologram_allowed = True
             if pg.mouse.get_pressed()[0] and not tower._selected_clicked:
@@ -61,7 +70,7 @@ def Tick_building(tower : "base.Base_tower") -> None:
     else:
         tower._pos = (-1, -1)
 
-    if pg.mouse.get_pressed()[2]:
+    if pg.mouse.get_pressed()[0] and sell_item:
         tower.data.shop_minimized = False
         tower._marked_for_removal = True
         tower.data.is_building = ""

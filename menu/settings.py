@@ -202,6 +202,7 @@ class Settings:
 
         # Show settings
         if (self.animation == self._max_animation):
+
             
             # Handle Scrolling
             MAX_SCROLL : int = 16
@@ -264,6 +265,12 @@ class Settings:
                     self.scroll_y += 1
                     if self.scroll_y > MAX_SCROLL:
                         self.scroll_y = MAX_SCROLL
+
+
+            # ESC to exit settings
+            if pg.key.get_pressed()[pg.K_ESCAPE]:
+                self.animation_direction = -1
+
 
 
 

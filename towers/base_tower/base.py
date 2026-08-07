@@ -67,6 +67,8 @@ class Base_tower:
         self._mods : dict[data_class.ModTypes, int] = {}
         self._permanent : bool = False # Whether the tower is permanent => not sellable / removable
         self._storage : tuple[Literal["mod", "zone", "event", ""], str] = ("", "") # Only used for storage tower
+        self._info_tick : int = 0
+        self._show_info_box : bool = False
 
         # Shot / Shooting variables
         self._cooldown_timer : int = 0
@@ -187,9 +189,6 @@ class Base_tower:
         self._is_hovered = False
 
         if self._is_placed:
-            if self.data.in_shop and not self.data.shop_minimized:
-                self._is_selected = False
-                return
             
             if self.data.start_next_wave:
                 self.Wave_start_calculations()
@@ -216,6 +215,16 @@ class Base_tower:
                     self._is_selected = not self._is_selected
                     self._selected_clicked = True
 
+            if self._is_hovered:
+                self._info_tick += 1
+                if self._is_selected:
+                    self._info_tick += 1
+                if self._info_tick >= self.data.tower_info_needed_time:
+                    self._show_info_box = True
+            else:
+                self._info_tick = 0
+                self._show_info_box = False
+
             if (self.data.display_tower_range == "always" or self.data.display_tower_range == "selected" and self._is_selected) and self._actual_range > 0:
                 center_pos : tuple[int, int] = self.data.Get_World_to_Screen((self._pos[0]+1, self._pos[1]+1))
                 pg.draw.circle(self.data.screen, (255, 255, 255), center_pos, self._actual_range*self.data.tile_zoom, self.data.tile_zoom)
@@ -224,6 +233,7 @@ class Base_tower:
 
                 
             if self.data.in_shop:
+                self._is_selected = False
                 return
 
             for _ in range(2 if self.data.double_speed else 1):

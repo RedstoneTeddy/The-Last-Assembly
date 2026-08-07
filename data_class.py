@@ -146,6 +146,7 @@ class Data_class():
         self.display_shots : bool = True
         self.display_enemy_effects : bool = True
         self.display_tower_range : Literal["always", "selected", "never"] = "selected"
+        self.tower_info_needed_time : int = 30 # In frames, how long the mouse has to hover over a tower before the info-box appears
 
         # Statistics
         self.statistic : statistic.statistic.Statistic = statistic.statistic.Statistic(self)

@@ -59,8 +59,10 @@ class Zone_building:
             current_offset : int = self.zone_offset * self.current_zoom
 
             can_build : Literal["True", "False", "Partial", "Store"] = "True"
+            
+            sell_item : bool = False
 
-            if grid_pos[0] < 5 or grid_pos[1] < 0 or grid_pos[1] >= len(self.data.world) or grid_pos[0] >= len(self.data.world[0]):
+            if grid_pos[0] < 0 or grid_pos[1] < 0 or grid_pos[1] >= len(self.data.world) or grid_pos[0] >= len(self.data.world[0]):
                 can_build = "False"
 
             # Check if zone can be built on the current position
@@ -84,6 +86,13 @@ class Zone_building:
                         if tower.internal_name == "storage":
                             if tower._storage == ("", ""):
                                 can_build = "Store"
+
+            
+            # Check if player wants to sell the tower
+            if grid_pos[0] < 5:
+                can_build = "False"
+                if grid_pos[0] >= 1 and grid_pos[1] >= 14 and grid_pos[0] <= 4 and grid_pos[1] <= 17:
+                    sell_item = True
 
             # Render build hologram
             draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(grid_pos)
@@ -111,7 +120,7 @@ class Zone_building:
                 self.data.is_building = ""
                 self.data.shop_minimized = False
 
-            elif pg.mouse.get_pressed()[2]:
+            elif pg.mouse.get_pressed()[0] and sell_item:
                 self.build_zone = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False

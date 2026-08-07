@@ -74,17 +74,16 @@ class Tower_info():
 
         for tower in self.data.towers:
             i += 1
+            mouse_pos : tuple[int, int] = pg.mouse.get_pos()
+            tower_rect : tuple[int, int, int, int] = (
+                self.data.Get_World_to_Screen(tower._pos)[0],
+                self.data.Get_World_to_Screen(tower._pos)[1],
+                2*12*self.data.tile_zoom,
+                2*12*self.data.tile_zoom
+            )
             if tower._is_selected and tower._is_placed:
                 if tower.internal_name == "storage":
                     continue # Gets handled in storage_handler
-                texts : list[data_class.TextLine] = tower.Get_info_texts()
-                mouse_pos : tuple[int, int] = pg.mouse.get_pos()
-                tower_rect : tuple[int, int, int, int] = (
-                    self.data.Get_World_to_Screen(tower._pos)[0],
-                    self.data.Get_World_to_Screen(tower._pos)[1],
-                    2*12*self.data.tile_zoom,
-                    2*12*self.data.tile_zoom
-                )
 
                 
                 # Sell button rect
@@ -97,7 +96,7 @@ class Tower_info():
                 )
 
                 # Draw sell button
-                if not tower._permanent:
+                if not tower._permanent and not tower._selected_clicked:
                     sell_button_hover : bool = False
                     if sell_button_rect[0] <= mouse_pos[0] <= sell_button_rect[0] + sell_button_rect[2] and sell_button_rect[1] <= mouse_pos[1] <= sell_button_rect[1] + sell_button_rect[3]:
                         sell_button_hover = True
@@ -116,8 +115,9 @@ class Tower_info():
                     self.data.Draw_text("Sell", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 3*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
                     self.data.Draw_text(str(tower._sell_value)+" $", (sell_button_rect[0] + 16*self.data.tile_zoom, sell_button_rect[1] + 11*self.data.tile_zoom), 5*self.data.tile_zoom, (0, 0, 0))
 
-
+            if tower._is_placed and tower._show_info_box:
                 # Show info-box
+                texts : list[data_class.TextLine] = tower.Get_info_texts()
                 if len(texts) > 0:
                     # Check if user hovers over the tower
                     if tower_rect[0] <= mouse_pos[0] <= tower_rect[0] + tower_rect[2] and tower_rect[1] <= mouse_pos[1] <= tower_rect[1] + tower_rect[3]:

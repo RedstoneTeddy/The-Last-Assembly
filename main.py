@@ -12,25 +12,17 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 # Add more keys
-# Like ESC (in Settings)
-# Interest write how many Dollar per 100$
-# Right-Click to sell tower while building a tower unintuitive.
-# Sell button Bug -> Left Click hold then hover over the sell button -> Automatically sells
-# Storage info -> Each storage can store one item
-# Event "Gives free ..." -> Display if you have room
-# Fatal bug (see Log on Discord) 
-# For effects -> Collection Menu Info
-# Incompatible mods -> Not yellow, make orange color (and maybe a small warning sign)
-# For chests -> Setting like "Show chest item overlay" (maybe a small icon ?)
-# Better Projectiles
-# More Visual Effects
-# Legendary Mod (takes 2 slots) -> Gives non-blast-towers a blast range
-# Challenge : Inflation
-# When first see a tower -> Show a small pop-up (collection menu )
-# Arcade Music
-# Shock Zone -> 2 damage
-# When opening a box -> Minimize Shop
-# When placing something -> Can't select something
+#? Fatal bug (see Log on Discord) 
+#? For effects -> Collection Menu Info
+#? Incompatible mods -> Not yellow, make orange color (and maybe a small warning sign) => Warning sign missing
+#? For chests -> Setting like "Show chest item overlay" (maybe a small icon ?)
+#? Better Projectiles
+#? More Visual Effects
+#? Legendary Mod (takes 2 slots) -> Gives non-blast-towers a blast range
+#? Challenge : Inflation
+#? When first see a tower -> Show a small pop-up (collection menu )
+#? Arcade Music
+#? When opening a box -> Minimize Shop
 # 
 
 
@@ -66,7 +58,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.12.3"
+version : str = "0.12.4"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
