@@ -27,6 +27,8 @@ class Hud:
         self.original_images["normal_speed_selected"] = pg.image.load("assets/icons/buttons/normal_speed_selected.png").convert_alpha()
         self.original_images["fast_speed"] = pg.image.load("assets/icons/buttons/fast_speed.png").convert_alpha()
         self.original_images["fast_speed_selected"] = pg.image.load("assets/icons/buttons/fast_speed_selected.png").convert_alpha()
+        self.original_images["double_speed"] = pg.image.load("assets/icons/buttons/double_speed.png").convert_alpha()
+        self.original_images["double_speed_selected"] = pg.image.load("assets/icons/buttons/double_speed_selected.png").convert_alpha()
 
     def Resize(self):
         """
@@ -157,10 +159,16 @@ class Hud:
         
         if self.data.wave_in_progress:
             if self.data.fast_forward:
-                if is_hovered:
-                    self.data.screen.blit(self.images["fast_speed_selected"], self.data.Get_World_to_Screen((0, 16)))
+                if self.data.double_speed:
+                    if is_hovered:
+                        self.data.screen.blit(self.images["double_speed_selected"], self.data.Get_World_to_Screen((0, 16)))
+                    else:
+                        self.data.screen.blit(self.images["double_speed"], self.data.Get_World_to_Screen((0, 16)))
                 else:
-                    self.data.screen.blit(self.images["fast_speed"], self.data.Get_World_to_Screen((0, 16)))
+                    if is_hovered:
+                        self.data.screen.blit(self.images["fast_speed_selected"], self.data.Get_World_to_Screen((0, 16)))
+                    else:
+                        self.data.screen.blit(self.images["fast_speed"], self.data.Get_World_to_Screen((0, 16)))
             else:
                 if is_hovered:
                     self.data.screen.blit(self.images["normal_speed_selected"], self.data.Get_World_to_Screen((0, 16)))
@@ -169,7 +177,14 @@ class Hud:
             
             if pg.mouse.get_pressed()[0]:
                 if is_hovered and self._speed_btn_pressed == False:
-                    self.data.fast_forward = not self.data.fast_forward
+                    if not self.data.fast_forward:
+                        self.data.fast_forward = True
+                    else:
+                        if not self.data.double_speed:
+                            self.data.double_speed = True
+                        else:
+                            self.data.fast_forward = False
+                            self.data.double_speed = False
                     self._speed_btn_pressed = True
             else:
                 self._speed_btn_pressed = False

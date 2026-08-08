@@ -46,6 +46,7 @@ class Zone_handler:
                                 if enemies.special_type.get(enemy_id, "") == "ironclad":
                                     continue
                                 enemies.health[enemy_id] -= 4
+                                self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 4, "physical")
                                 self.data.statistic.stat_raw["damage_dealt"] += 4
                                 if enemies.health[enemy_id] <= 0:
                                     if enemies.health[enemy_id] < 0:
@@ -53,12 +54,14 @@ class Zone_handler:
                                     enemies.Remove_enemy(enemy_id)
                             if self.data.path_random.random() < 0.01:
                                 self.data.money += 10
+                                self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 10, "money")
                                 self.data.statistic.stat_raw["gold_earned"] += 10
 
                         case "shock":
                             if enemies.special_type.get(enemy_id, "") == "faraday":
                                 continue
                             enemies.health[enemy_id] -= 1
+                            self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 1, "electrical")
                             self.data.statistic.stat_raw["damage_dealt"] += 1
                             if enemies.health[enemy_id] <= 0:
                                 enemies.Remove_enemy(enemy_id)
@@ -71,5 +74,6 @@ class Zone_handler:
                             if self.data.path_random.random() < 0.15:
                                 self.data.money += 1
                                 self.data.statistic.stat_raw["gold_earned"] += 1
+                                self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 1, "money")
 
 

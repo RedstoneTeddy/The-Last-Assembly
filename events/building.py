@@ -117,7 +117,6 @@ class Event_building:
                 self.build_event = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False
-                self.data.money += self.data.mod_cost
         
         if not pg.mouse.get_pressed()[0]:
             self._clicked = False

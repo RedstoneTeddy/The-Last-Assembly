@@ -9,7 +9,6 @@ class More_stock(base.Base_specialist):
         self.name : str = "More Stock"
 
         self.description : list[data_class.TextLine] = [
-            data_class.TextLine(text="More Stock", color=(0,0,0), icon="", is_small=False),
             data_class.TextLine(text="One additional", color=(0,0,0), icon="", is_small=False),
             data_class.TextLine(text="shop slot", color=(0,0,0), icon="", is_small=False)
         ]

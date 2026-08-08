@@ -20,6 +20,7 @@ class Event_handler:
             case "bombing":
                 dead_enemies : list[int] = []
                 for id in self.data.enemies.health.keys():
+                    self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((self.data.enemies.exact_pos[id][0]+0.5, self.data.enemies.exact_pos[id][1]+0.5)), self.data.enemies.health[id] // 2, "physical")
                     self.data.statistic.stat_raw["damage_dealt"] += self.data.enemies.health[id] // 2
                     self.data.enemies.health[id] //= 2
                     if self.data.enemies.health[id] <= 0:

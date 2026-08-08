@@ -6,6 +6,8 @@ import enemy.enemy_data_class as enemy_data_class
 import map.save_load as save_load
 import pickle
 
+import renderer.vfx
+
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import towers.base_tower.base as base_tower
@@ -147,9 +149,13 @@ class Data_class():
         self.display_enemy_effects : bool = True
         self.display_tower_range : Literal["always", "selected", "never"] = "selected"
         self.tower_info_needed_time : int = 30 # In frames, how long the mouse has to hover over a tower before the info-box appears
+        self.vfx_size : int = 4 # 0 = none, 2 = small, 4 = normal
 
         # Statistics
         self.statistic : statistic.statistic.Statistic = statistic.statistic.Statistic(self)
+
+        # Visual Effects
+        self.VFX : renderer.vfx.VFX = renderer.vfx.VFX(self)    
 
         # Random generators
         self.path_random  : random.Random
@@ -362,10 +368,10 @@ class Data_class():
                     logging.warning("Permanent data file does not contain completed_maps, resetting to empty")
                 
                 # Load settings
-                if "double_speed" in loaded_data:
-                    self.double_speed = loaded_data["double_speed"]
+                if "tower_info_needed_time" in loaded_data:
+                    self.tower_info_needed_time = loaded_data["tower_info_needed_time"]
                 else:
-                    logging.warning("Permanent data file does not contain double_speed, using default")
+                    logging.warning("Permanent data file does not contain tower_info_needed_time, using default")
                 if "screen_shake" in loaded_data:
                     self.screen_shake = loaded_data["screen_shake"]
                 else:
@@ -399,11 +405,11 @@ class Data_class():
         data_to_save : dict[str, Any] = {
             "completed_maps": self.completed_maps,
             "stats" : self.statistic.stat_raw,
-            "double_speed" : self.double_speed,
             "screen_shake" : self.screen_shake,
             "display_shots" : self.display_shots,
             "display_enemy_effects" : self.display_enemy_effects,
-            "display_tower_range" : self.display_tower_range
+            "display_tower_range" : self.display_tower_range,
+            "tower_info_needed_time" : self.tower_info_needed_time
         }
         try:
             with open("data.pkl", "wb") as f:

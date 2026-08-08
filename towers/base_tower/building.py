@@ -74,4 +74,3 @@ def Tick_building(tower : "base.Base_tower") -> None:
         tower.data.shop_minimized = False
         tower._marked_for_removal = True
         tower.data.is_building = ""
-        tower.data.money += tower.build_cost

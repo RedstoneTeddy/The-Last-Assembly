@@ -167,20 +167,22 @@ class Packs:
 
             # Animation is done
             mouse_pos : tuple[int, int] = pg.mouse.get_pos()
-            if animation_image > 32:
+            if animation_image > 32 and self.shop_main._max_shop_animation == self.shop_main.shop_animation:
+                
+                # Skip Button
                 skip_rect : tuple[int, int, int, int] = (
-                    shop_rect[0] + shop_rect[2]//2 - 16*self.data.tile_zoom,
+                    shop_rect[0] + shop_rect[2]//2 + (3+10)*self.data.tile_zoom,
                     shop_rect[1] + shop_rect[3] - 20*self.data.tile_zoom,
                     32*self.data.tile_zoom,
                     16*self.data.tile_zoom
                 )
                 skip_button_hovered : bool = (mouse_pos[0] >= skip_rect[0] and mouse_pos[0] <= skip_rect[0] + skip_rect[2] and
                                     mouse_pos[1] >= skip_rect[1] and mouse_pos[1] <= skip_rect[1] + skip_rect[3])
-                pg.draw.rect(self.data.screen, (200, 0, 0), skip_rect, border_radius=self.data.tile_zoom)
+                pg.draw.rect(self.data.screen, (230, 72, 46), skip_rect, border_radius=self.data.tile_zoom)
                 if skip_button_hovered:
                     pg.draw.rect(self.data.screen, (255, 255, 255), skip_rect, border_radius=self.data.tile_zoom, width=self.data.tile_zoom)
                 else:
-                    pg.draw.rect(self.data.screen, (255, 0, 0), skip_rect, border_radius=self.data.tile_zoom, width=self.data.tile_zoom)
+                    pg.draw.rect(self.data.screen, (169, 59, 59), skip_rect, border_radius=self.data.tile_zoom, width=self.data.tile_zoom)
 
                 self.data.Draw_text("Skip", (skip_rect[0] + 5*self.data.tile_zoom, skip_rect[1] + 2*self.data.tile_zoom), self.data.tile_zoom*8, (255, 255, 255))
                 if skip_button_hovered and pg.mouse.get_pressed()[0]:
@@ -191,9 +193,30 @@ class Packs:
                     return
 
 
+                # Minimize Shop Button
+                minimize_rect : tuple[int, int, int, int] = (
+                    shop_rect[0] + shop_rect[2]//2 - (3+56-10)*self.data.tile_zoom,
+                    shop_rect[1] + shop_rect[3] - 20*self.data.tile_zoom,
+                    56*self.data.tile_zoom,
+                    16*self.data.tile_zoom
+                )
+                minimize_button_hovered : bool = (mouse_pos[0] >= minimize_rect[0] and mouse_pos[0] <= minimize_rect[0] + minimize_rect[2] and
+                                    mouse_pos[1] >= minimize_rect[1] and mouse_pos[1] <= minimize_rect[1] + minimize_rect[3])
+                pg.draw.rect(self.data.screen, (113, 170, 52), minimize_rect, border_radius=self.data.tile_zoom)
+                if minimize_button_hovered:
+                    pg.draw.rect(self.data.screen, (255, 255, 255), minimize_rect, border_radius=self.data.tile_zoom, width=self.data.tile_zoom)
+                else:
+                    pg.draw.rect(self.data.screen, (57, 123, 68), minimize_rect, border_radius=self.data.tile_zoom, width=self.data.tile_zoom)
+
+                self.data.Draw_text("Minimize", (minimize_rect[0] + 5*self.data.tile_zoom, minimize_rect[1] + 2*self.data.tile_zoom), self.data.tile_zoom*8, (255, 255, 255))
+                if minimize_button_hovered and pg.mouse.get_pressed()[0]:
+                    self.data.shop_minimized = True
+
+
+
 
             # Draw the pack content
-            if self.animation_progress > 6*18 + 4*9:
+            if self.animation_progress > 6*18 + 4*9 and self.shop_main._max_shop_animation == self.shop_main.shop_animation:
                 self.data.Draw_text("Choose one Element :", (shop_rect[0] + shop_rect[2]//2 - 55*self.data.tile_zoom, shop_rect[1] + shop_rect[3] - 120*self.data.tile_zoom), self.data.tile_zoom*8, (255, 255, 255))
                 info_text : list[data_class.TextLine] = []
                 for i in range(contained_elements):

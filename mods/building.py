@@ -34,6 +34,9 @@ class Mod_building:
         blue_overlay.fill((0, 0, 255, 150))
         self.original_images["blue_overlay"] = blue_overlay
 
+        self.original_images["warning"] = pg.image.load("assets/mods/warning.png").convert_alpha()
+        self.warning_hover_tick : int = 0
+
         self.Resize(force=True)
 
     def Resize(self, force: bool = False) -> None:
@@ -103,6 +106,11 @@ class Mod_building:
                 self.data.screen.blit(self.images["green_overlay"], draw_pos)
             elif can_build == "Partial":
                 self.data.screen.blit(self.images["orange_overlay"], draw_pos)
+                self.warning_hover_tick += 1
+                if self.warning_hover_tick >= 120:
+                    self.warning_hover_tick = 0
+                warning_draw_pos : tuple[int, int] = (draw_pos[0], draw_pos[1] - int(self.current_zoom * abs(self.warning_hover_tick-60)/12))
+                self.data.screen.blit(self.images["warning"], warning_draw_pos)
             elif can_build == "Store":
                 self.data.screen.blit(self.images["blue_overlay"], draw_pos)
             else:
@@ -131,7 +139,6 @@ class Mod_building:
                 self.build_mod = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False
-                self.data.money += self.data.mod_cost
         
         if not pg.mouse.get_pressed()[0]:
             self._clicked = False

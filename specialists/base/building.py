@@ -60,7 +60,7 @@ def Tick_building(specialist : "base.Base_specialist") -> None:
                 specialist._sell_value = specialist.cost // 2
                 specialist.data.is_building = ""
                 specialist.data.shop_minimized = False
-                specialist.data.bought_specialists.append(specialist.internal_name)
+                # specialist.data.bought_specialists.append(specialist.internal_name) # Handled by the shop
                 for tower in specialist.data.towers: # Update their values
                     tower.Wave_start_calculations()
                 specialists.base.buy_effect.Specialist_buy_effect(specialist)
@@ -78,4 +78,3 @@ def Tick_building(specialist : "base.Base_specialist") -> None:
         specialist.data.shop_minimized = False
         specialist._marked_for_removal = True
         specialist.data.is_building = ""
-        specialist.data.money += specialist.cost

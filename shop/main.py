@@ -450,6 +450,7 @@ class Shop:
                         new_specialist._is_placed = False
                         new_specialist._selected_clicked = True
                         self.data.specialists.append(new_specialist)
+                        self.data.bought_specialists.append(self.shop_elements[i])
                         element_bought = True
 
                 # Build zone if element is a zone

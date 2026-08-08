@@ -44,15 +44,19 @@ def _Button_display_shots(settings : 'Settings', data : data_class.Data_class, c
         if clicked:
             data.display_shots = True
 
-def _Button_double_speed(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
-    if data.double_speed:
-        data.Draw_text("On", text_pos, data.tile_zoom*6, (255, 150, 0))
+def _Button_info_delay(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    if data.tower_info_needed_time == 30:
+        data.Draw_text("Normal", text_pos, data.tile_zoom*6, (255, 255, 255))
         if clicked:
-            data.double_speed = False
-    else:
-        data.Draw_text("Off", text_pos, data.tile_zoom*6, (255, 200, 200))
+            data.tower_info_needed_time = 15
+    elif data.tower_info_needed_time == 15:
+        data.Draw_text("Fast", text_pos, data.tile_zoom*6, (255, 255, 255))
         if clicked:
-            data.double_speed = True
+            data.tower_info_needed_time = 60
+    else: # data.tower_info_needed_time == 60
+        data.Draw_text("Slow", text_pos, data.tile_zoom*6, (255, 255, 255))
+        if clicked:
+            data.tower_info_needed_time = 30
 
 def _Button_enemy_effects(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
     if data.display_enemy_effects:
@@ -325,12 +329,11 @@ class Settings:
                 info_text = new_text
 
             new_text = self.__Settings_line(
-                "Double Speed",
-                [data_class.TextLine(text="Enable / Disable", color=info_text_color, icon="", is_small=False),
-                 data_class.TextLine(text="double Game-Speed", color=info_text_color, icon="", is_small=False),
-                 data_class.TextLine(text="Could have unwanted;Side-effects", color=(255, 0, 0), icon="", is_small=True),
-                 data_class.TextLine(text="Default : Off;", color=info_text_color, icon="", is_small=True)],
-                button_funct = _Button_double_speed
+                "Info Delay",
+                [data_class.TextLine(text="Changes the delay", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="before showing tower", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="information", color=info_text_color, icon="", is_small=False)],
+                button_funct = _Button_info_delay
             )
             if new_text != []:
                 info_text = new_text

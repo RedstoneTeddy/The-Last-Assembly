@@ -216,7 +216,11 @@ class Base_tower:
                     self._selected_clicked = True
 
             if self._is_hovered:
-                self._info_tick += 1
+                if self.data.in_shop:
+                    if self.data.other_random.random() > 0.33:
+                        self._info_tick += 1
+                else:
+                    self._info_tick += 1
                 if self._is_selected:
                     self._info_tick += 1
                 if self._info_tick >= self.data.tower_info_needed_time:

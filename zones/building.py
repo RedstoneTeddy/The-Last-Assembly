@@ -124,7 +124,6 @@ class Zone_building:
                 self.build_zone = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False
-                self.data.money += self.data.zone_cost
 
         if not pg.mouse.get_pressed()[0]:
             self._clicked = False

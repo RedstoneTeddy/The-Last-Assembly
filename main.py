@@ -12,18 +12,12 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 # Add more keys
-#? Fatal bug (see Log on Discord) 
 #? For effects -> Collection Menu Info
-#? Incompatible mods -> Not yellow, make orange color (and maybe a small warning sign) => Warning sign missing
 #? For chests -> Setting like "Show chest item overlay" (maybe a small icon ?)
 #? Better Projectiles
-#? More Visual Effects
-#? Legendary Mod (takes 2 slots) -> Gives non-blast-towers a blast range
 #? Challenge : Inflation
 #? When first see a tower -> Show a small pop-up (collection menu )
 #? Arcade Music
-#? When opening a box -> Minimize Shop
-# 
 
 
 
@@ -58,7 +52,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.12.4"
+version : str = "0.12.5"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -183,6 +177,8 @@ try:
                                 zone_handler.Main()
 
                 enemy_renderer.Draw()
+
+                data.VFX.Main() # Update and draw the visual effects
 
                 if not data.is_paused:
                     zone_building.Main()

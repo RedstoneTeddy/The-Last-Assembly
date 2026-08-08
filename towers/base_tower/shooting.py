@@ -167,18 +167,30 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
             damage_to_deal = 0
 
         # Deal the damage to the enemy
+        damage_effect : int = int(damage_to_deal)
         tower.data.enemies.health[tower._shoot_at_id] -= int(damage_to_deal)
         tower.data.statistic.stat_raw["damage_dealt"] += int(damage_to_deal)
         damage_to_deal -= int(damage_to_deal)
         if damage_to_deal > 0:
             if tower.data.path_random.random() < damage_to_deal:
                 tower.data.enemies.health[tower._shoot_at_id] -= 1
+                damage_effect += 1
                 tower.data.statistic.stat_raw["damage_dealt"] += 1
 
         # Check if enemy loses special-status
         if tower.data.enemies.special_type.get(tower._shoot_at_id, "") in ["faraday", "ironclad"]:
             if tower.data.enemies.health[tower._shoot_at_id] <= 10:
                 tower.data.enemies.special_type[tower._shoot_at_id] = ""
+
+        # Add damage indicator
+        effect_pos : tuple[float, float] = (tower.data.enemies.exact_pos[tower._shoot_at_id][0] + 0.4, tower.data.enemies.exact_pos[tower._shoot_at_id][1] + 0.5)
+        if tower.damage_type == "Physical":
+            tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), damage_effect, "physical")
+        elif tower.damage_type == "Electrical":
+            tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), damage_effect, "electrical")
+
+        # For gold / money indicator
+        effect_pos = (tower.data.enemies.exact_pos[tower._shoot_at_id][0] + 0.6, tower.data.enemies.exact_pos[tower._shoot_at_id][1] + 0.5)
 
         # Economist special effect
         if tower.internal_name == "economist":
@@ -191,9 +203,11 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
             if tower.data.enemies.golden.get(tower._shoot_at_id, 0) > 0:
                 if tower.data.path_random.random() < 0.4:
                     tower.data.money += 1
+                    tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
                     tower.data.statistic.stat_raw["gold_earned"] += 1
                 if "investor" in tower.data.bought_specialists and tower.data.path_random.random() < 0.3:
                     tower.data.money += 1
+                    tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
                     tower.data.statistic.stat_raw["gold_earned"] += 1
             # Kill enemy
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
@@ -201,6 +215,7 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
             if tower._bounty_chance > 0:
                 if tower.data.path_random.random() < tower._bounty_chance:
                     tower.data.money += 1
+                    tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
                     tower.data.statistic.stat_raw["gold_earned"] += 1
             # Bloodthirst
             if tower._bloodthirst_chance > 0:
