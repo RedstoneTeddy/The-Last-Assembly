@@ -388,6 +388,10 @@ class Data_class():
                     self.display_tower_range = loaded_data["display_tower_range"]
                 else:
                     logging.warning("Permanent data file does not contain display_tower_range, using default")
+                if "vfx_size" in loaded_data:
+                    self.vfx_size = loaded_data["vfx_size"]
+                else:
+                    logging.warning("Permanent data file does not contain vfx_size, using default")
 
                 # Load statistics
                 if "stats" in loaded_data:
@@ -409,7 +413,8 @@ class Data_class():
             "display_shots" : self.display_shots,
             "display_enemy_effects" : self.display_enemy_effects,
             "display_tower_range" : self.display_tower_range,
-            "tower_info_needed_time" : self.tower_info_needed_time
+            "tower_info_needed_time" : self.tower_info_needed_time,
+            "vfx_size" : self.vfx_size
         }
         try:
             with open("data.pkl", "wb") as f:

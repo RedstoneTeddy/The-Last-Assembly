@@ -52,7 +52,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.12.5"
+version : str = "0.12.6"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -65,8 +65,6 @@ sleep(1)
 # Renderer
 import renderer.tiles
 tile_renderer : renderer.tiles.Tiles = renderer.tiles.Tiles(data)
-import renderer.hud
-hud_obj : renderer.hud.Hud = renderer.hud.Hud(data)
 import renderer.enemy
 enemy_renderer : renderer.enemy.Enemy = renderer.enemy.Enemy(data)
 import renderer.towers
@@ -75,6 +73,8 @@ import renderer.specialists
 specialist_renderer : renderer.specialists.Specialists = renderer.specialists.Specialists(data)
 import renderer.tower_info
 tower_info_renderer : renderer.tower_info.Tower_info = renderer.tower_info.Tower_info(data)
+import renderer.hud
+hud_obj : renderer.hud.Hud = renderer.hud.Hud(data, tower_info_renderer)
 import renderer.specialist_info
 specialist_info_renderer : renderer.specialist_info.Specialist_info = renderer.specialist_info.Specialist_info(data, tower_info_renderer)
 import renderer.zones

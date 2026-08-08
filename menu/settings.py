@@ -82,6 +82,20 @@ def _Button_tower_range(settings : 'Settings', data : data_class.Data_class, cli
         if clicked:
             data.display_tower_range = "always"
 
+def _Button_vfx_size(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    if data.vfx_size == 0:
+        data.Draw_text("None", text_pos, data.tile_zoom*6, (255, 200, 200))
+        if clicked:
+            data.vfx_size = 2
+    elif data.vfx_size == 2:
+        data.Draw_text("Small", text_pos, data.tile_zoom*6, (255, 255, 200))
+        if clicked:
+            data.vfx_size = 4
+    elif data.vfx_size == 4:
+        data.Draw_text("Normal", text_pos, data.tile_zoom*6, (200, 255, 200))
+        if clicked:
+            data.vfx_size = 0
+
 def _Button_toggle_fullscreen(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
     if data.is_fullscreen:
         data.Draw_text("On", text_pos, data.tile_zoom*6, (200, 255, 200))
@@ -209,7 +223,7 @@ class Settings:
 
             
             # Handle Scrolling
-            MAX_SCROLL : int = 16
+            MAX_SCROLL : int = 17
             if self.data.mouse_wheel_down or pg.key.get_pressed()[pg.K_DOWN]:
                 if not self.__scroll_pressed:
                     self.__scroll_pressed = True
@@ -357,6 +371,17 @@ class Settings:
                  data_class.TextLine(text="Only show selected;Never show it", color=info_text_color, icon="", is_small=True),
                  data_class.TextLine(text="Default : Selected;", color=info_text_color, icon="", is_small=True)],
                 button_funct = _Button_tower_range
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "VFX Size",
+                [data_class.TextLine(text="Change the size;of the", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Visual Effects;Options:", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="None, Small, Normal;Default : Normal", color=info_text_color, icon="", is_small=True)
+                ],
+                button_funct = _Button_vfx_size
             )
             if new_text != []:
                 info_text = new_text
