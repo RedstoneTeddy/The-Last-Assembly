@@ -73,7 +73,7 @@ class VFX:
             # Calculate the position and alpha based on the tick
             alpha : int = max(0, 255 - int((tick / self.__max_dmg_tick) * 255))
             if dmg_type == "money":
-                alpha = max(0, 255 - int((tick / self.__max_dmg_tick) * 255))
+                alpha = min(max(0, 350 - int((tick / self.__max_dmg_tick) * 320)), 255)
             pos_offset : int = int((tick / self.__max_dmg_tick) * 12*self.data.tile_zoom)
 
             text_color = (255,255,255)
@@ -116,6 +116,8 @@ class VFX:
             
         Note: Money is not actual a damage type, but handled by the same code. It is used for displaying money gained from enemies.
         """
+        if amount == 0:
+            return
         actual_pos : tuple[int, int]
         random_offset : int = 1
         if len(self.__dmg_amount) > 5:
@@ -127,8 +129,8 @@ class VFX:
         if len(self.__dmg_amount) > 50:
             random_offset = 5
         actual_pos = (
-            pos[0] + int((self.data.tile_zoom*self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom),
-            pos[1] + int((self.data.tile_zoom*self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom)
+            pos[0] + int((self.data.tile_zoom*self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom*(self.data.vfx_size/2)),
+            pos[1] + int((self.data.tile_zoom*self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom*(self.data.vfx_size/2))
         )
         self.__dmg_pos.append(actual_pos)
         self.__dmg_amount.append(amount)

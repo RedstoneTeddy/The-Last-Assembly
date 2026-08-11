@@ -56,6 +56,7 @@ class Zone_handler:
                                 self.data.money += 10
                                 self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 10, "money")
                                 self.data.statistic.stat_raw["gold_earned"] += 10
+                                self.data.SFX.Play_Effect_SFX("coin")
 
                         case "shock":
                             if enemies.special_type.get(enemy_id, "") == "faraday":
@@ -73,6 +74,7 @@ class Zone_handler:
                         case "tax":
                             if self.data.path_random.random() < 0.15:
                                 self.data.money += 1
+                                self.data.SFX.Play_Effect_SFX("coin")
                                 self.data.statistic.stat_raw["gold_earned"] += 1
                                 self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 1, "money")
 

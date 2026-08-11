@@ -18,6 +18,7 @@ class Observer(base.Base_tower):
 
         self.range : int = 2*12
         self.damage : float = 0
+        self.shot_sound_name : str = ""
         self.cooldown : float = -1.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Physical"

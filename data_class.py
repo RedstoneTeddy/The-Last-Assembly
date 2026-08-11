@@ -7,6 +7,7 @@ import map.save_load as save_load
 import pickle
 
 import renderer.vfx
+import sound.sfx
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -149,13 +150,20 @@ class Data_class():
         self.display_enemy_effects : bool = True
         self.display_tower_range : Literal["always", "selected", "never"] = "selected"
         self.tower_info_needed_time : int = 30 # In frames, how long the mouse has to hover over a tower before the info-box appears
-        self.vfx_size : int = 4 # 0 = none, 2 = small, 4 = normal
+        self.vfx_size : int = 4 # 0 = none, 2 = small, 4 = normal, 6 = large
+        self.volume_general : int = 4 # 0-4
+        self.volume_music : int = 3 # 0-4
+        self.volume_player : int = 4 # 0-4
+        self.volume_shooting : int = 3 # 0-4
+        self.volume_other : int = 4 # 0-4
+ 
 
         # Statistics
         self.statistic : statistic.statistic.Statistic = statistic.statistic.Statistic(self)
 
-        # Visual Effects
+        # Visual / Sound Effects
         self.VFX : renderer.vfx.VFX = renderer.vfx.VFX(self)    
+        self.SFX : sound.sfx.SFX = sound.sfx.SFX(self)
 
         # Random generators
         self.path_random  : random.Random
@@ -392,6 +400,27 @@ class Data_class():
                     self.vfx_size = loaded_data["vfx_size"]
                 else:
                     logging.warning("Permanent data file does not contain vfx_size, using default")
+                if "volume_general" in loaded_data:
+                    self.volume_general = loaded_data["volume_general"]
+                else:
+                    logging.warning("Permanent data file does not contain volume_general, using default")
+                if "volume_music" in loaded_data:
+                    self.volume_music = loaded_data["volume_music"]
+                else:
+                    logging.warning("Permanent data file does not contain volume_music, using default")
+                if "volume_player" in loaded_data:
+                    self.volume_player = loaded_data["volume_player"]
+                else:
+                    logging.warning("Permanent data file does not contain volume_player, using default")
+                if "volume_shooting" in loaded_data:
+                    self.volume_shooting = loaded_data["volume_shooting"]
+                else:
+                    logging.warning("Permanent data file does not contain volume_shooting, using default")
+                if "volume_other" in loaded_data:
+                    self.volume_other = loaded_data["volume_other"]
+                else:
+                    logging.warning("Permanent data file does not contain volume_other, using default")
+
 
                 # Load statistics
                 if "stats" in loaded_data:
@@ -414,7 +443,12 @@ class Data_class():
             "display_enemy_effects" : self.display_enemy_effects,
             "display_tower_range" : self.display_tower_range,
             "tower_info_needed_time" : self.tower_info_needed_time,
-            "vfx_size" : self.vfx_size
+            "vfx_size" : self.vfx_size,
+            "volume_general" : self.volume_general,
+            "volume_music" : self.volume_music,
+            "volume_player" : self.volume_player,
+            "volume_shooting" : self.volume_shooting,
+            "volume_other" : self.volume_other
         }
         try:
             with open("data.pkl", "wb") as f:

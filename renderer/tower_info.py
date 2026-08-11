@@ -106,7 +106,8 @@ class Tower_info():
                     if sell_button_hover:
                         pg.draw.rect(self.data.screen, (255, 255, 255), sell_button_rect, 2*self.data.tile_zoom, border_radius=2*self.data.tile_zoom)
                         for other_tower in self.data.towers:
-                            other_tower._selected_clicked = True
+                            if other_tower != tower:
+                                other_tower._selected_clicked = True
                         for other_specialist in self.data.specialists:
                             other_specialist._selected_clicked = True
                     else:

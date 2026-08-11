@@ -14,6 +14,11 @@ class Win_screen:
         self.shop : "Shop" = shop
         self._button_pressed = False
 
+        self._win_sound_played : bool = False
+
+        self._freeplay_hovered : bool = False
+        self._back_hovered : bool = False
+
     def Show_win_screen(self) -> None:
         shop_rect : tuple[int, int, int, int] = (
             self.data.Get_World_to_Screen((5.5, 0.5))[0],
@@ -52,16 +57,21 @@ class Win_screen:
         pg.draw.rect(self.data.screen, (182,213,60), freeplay_rect, border_radius=2*self.data.tile_zoom)
         freeplay_hovered : bool = False
         if freeplay_rect[0] <= mouse_pos[0] <= freeplay_rect[0] + freeplay_rect[2] and freeplay_rect[1] <= mouse_pos[1] <= freeplay_rect[1] + freeplay_rect[3]:
+            if self._freeplay_hovered == False:
+                self.data.SFX.Play_Player_SFX("hover")
+                self._freeplay_hovered = True
             freeplay_hovered = True
             pg.draw.rect(self.data.screen, (255,255,255), freeplay_rect, border_radius=2*self.data.tile_zoom, width=2*self.data.tile_zoom)
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), freeplay_rect, border_radius=2*self.data.tile_zoom,  width=2*self.data.tile_zoom)
+            self._freeplay_hovered = False
         self.data.Draw_text("Freeplay", (freeplay_rect[0] + 28 * self.data.tile_zoom, freeplay_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 8, (48, 44, 46))
         if freeplay_hovered and pg.mouse.get_pressed()[0] and not self._button_pressed:
             self._button_pressed = True
             logging.info("Freeplay button pressed")
             self.shop._show_win_screen = False
             self.shop._button_pressed = True
+            self.data.SFX.Play_Player_SFX("click")
 
         
         # Back to Menu button
@@ -74,11 +84,21 @@ class Win_screen:
         pg.draw.rect(self.data.screen, (244, 126, 27), back_rect, border_radius=2*self.data.tile_zoom)
         back_hovered : bool = False
         if back_rect[0] <= mouse_pos[0] <= back_rect[0] + back_rect[2] and back_rect[1] <= mouse_pos[1] <= back_rect[1] + back_rect[3]:
+            if self._back_hovered == False:
+                self.data.SFX.Play_Player_SFX("hover")
+                self._back_hovered = True
             back_hovered = True
             pg.draw.rect(self.data.screen, (255,255,255), back_rect, border_radius=2*self.data.tile_zoom, width=2*self.data.tile_zoom)
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), back_rect, border_radius=2*self.data.tile_zoom,  width=2*self.data.tile_zoom)
+            self._back_hovered = False
+
         self.data.Draw_text("Back to Menu", (back_rect[0] + 15 * self.data.tile_zoom, back_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 8, (48, 44, 46))
+
+        if not self._win_sound_played:
+            self.data.SFX.Play_Player_SFX("win")
+            self._win_sound_played = True
+
         
         if back_hovered and pg.mouse.get_pressed()[0] and not self._button_pressed:
             self._button_pressed = True
@@ -87,6 +107,9 @@ class Win_screen:
             self.data.in_main_menu = True
             self.shop._button_pressed = True
             self.shop.Close_shop()
+            self.data.SFX.Kill_all_sounds()
+            self.data.SFX.Play_Player_SFX("click")
+            self._win_sound_played = False
 
 
 

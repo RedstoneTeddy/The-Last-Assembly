@@ -18,6 +18,7 @@ class Zapper(base.Base_tower):
 
         self.range : int = 5*12
         self.damage : float = 8
+        self.shot_sound_name : str = "laser_shot"
         self.cooldown : float = 60.0
         self.shot_speed : int = 2
         self.damage_type : base.DAMAGE_TYPES = "Electrical"

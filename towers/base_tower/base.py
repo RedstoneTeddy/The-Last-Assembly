@@ -45,6 +45,7 @@ class Base_tower:
         self.shot_speed : int = 0                       # Max distance a shot can travel in one tick in tiles
         self.damage_type : DAMAGE_TYPES = "Physical"    # The towers damage type
         self.blast_radius : int = 0                     # The radius of the towers blast damage in pixels * tile_zoom, 0 means no blast damage
+        self.shot_sound_name : str = ""                 # The name of the sound to play when the tower shoots, should be in the 'shooting' category of the SFX class
 
         self.delta_mod_limit : int = 0                  # Local adjustment to the mod-limit of a tower
 

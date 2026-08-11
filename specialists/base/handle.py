@@ -189,6 +189,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             tower.damage = 0
             tower._actual_range = 0
             tower._actual_cooldown = -1.0
+            tower.shot_sound_name = ""
         else:
             right_tower.Wave_start_calculations()
             tower._actual_damage = right_tower._actual_damage
@@ -198,6 +199,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             tower._extra_dmg_for_low_health = right_tower._extra_dmg_for_low_health
             tower._extra_dmg_for_slowed = right_tower._extra_dmg_for_slowed
             tower._roulette_multiplier = right_tower._roulette_multiplier
+            tower.shot_sound_name = right_tower.shot_sound_name
 
             tower._actual_range = right_tower._actual_range
             tower.range = right_tower.range

@@ -11,7 +11,11 @@ from typing import Literal, get_args, Callable
 
 
 
-# Settings Buttons    
+
+##########################
+#### Settings Buttons ####
+##########################
+
 def _Button_placeholder(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
     pass
 
@@ -88,13 +92,19 @@ def _Button_vfx_size(settings : 'Settings', data : data_class.Data_class, clicke
         if clicked:
             data.vfx_size = 2
     elif data.vfx_size == 2:
-        data.Draw_text("Small", text_pos, data.tile_zoom*6, (255, 255, 200))
+        data.Draw_text("Small", text_pos, data.tile_zoom*6, (255, 255, 255))
         if clicked:
             data.vfx_size = 4
     elif data.vfx_size == 4:
-        data.Draw_text("Normal", text_pos, data.tile_zoom*6, (200, 255, 200))
+        data.Draw_text("Normal", text_pos, data.tile_zoom*6, (255, 255, 255))
+        if clicked:
+            data.vfx_size = 6
+    elif data.vfx_size == 6:
+        data.Draw_text("Large", text_pos, data.tile_zoom*6, (255, 255, 255))
         if clicked:
             data.vfx_size = 0
+    else:
+        data.vfx_size = 4
 
 def _Button_toggle_fullscreen(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
     if data.is_fullscreen:
@@ -105,6 +115,55 @@ def _Button_toggle_fullscreen(settings : 'Settings', data : data_class.Data_clas
         data.Draw_text("Off", text_pos, data.tile_zoom*6, (255, 200, 200))
         if clicked:
             data.Toggle_fullscreen()
+
+def _Button_volume_base(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int], current_volume : int) -> int:
+    if current_volume == 0:
+        data.Draw_text("0%", text_pos, data.tile_zoom*6, (255, 200, 200))
+        if clicked:
+            return 1
+    elif current_volume == 1:
+        data.Draw_text("25%", text_pos, data.tile_zoom*6, (255, 255, 200))
+        if clicked:
+            return 2
+    elif current_volume == 2:
+        data.Draw_text("50%", text_pos, data.tile_zoom*6, (255, 255, 255))
+        if clicked:
+            return 3
+    elif current_volume == 3:
+        data.Draw_text("75%", text_pos, data.tile_zoom*6, (255, 255, 255))
+        if clicked:
+            return 4
+    elif current_volume == 4:
+        data.Draw_text("100%", text_pos, data.tile_zoom*6, (255, 255, 255))
+        if clicked:
+            return 0
+    return -1
+
+def _Button_volume_general(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    new_volume : int = _Button_volume_base(settings, data, clicked, text_pos, data.volume_general)
+    if new_volume != -1:
+        data.volume_general = new_volume
+        
+
+def _Button_volume_music(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    new_volume : int = _Button_volume_base(settings, data, clicked, text_pos, data.volume_music)
+    if new_volume != -1:
+        data.volume_music = new_volume
+
+def _Button_volume_player(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    new_volume : int = _Button_volume_base(settings, data, clicked, text_pos, data.volume_player)
+    if new_volume != -1:
+        data.volume_player = new_volume
+
+def _Button_volume_shooting(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    new_volume : int = _Button_volume_base(settings, data, clicked, text_pos, data.volume_shooting)
+    if new_volume != -1:
+        data.volume_shooting = new_volume
+
+def _Button_volume_other(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    new_volume : int = _Button_volume_base(settings, data, clicked, text_pos, data.volume_other)
+    if new_volume != -1:
+        data.volume_other = new_volume
 
 def _Button_Github(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
     data.Draw_text("Github", text_pos, data.tile_zoom*6, (255, 255, 255))
@@ -132,7 +191,10 @@ def _Reset_statistics(settings : 'Settings', data : data_class.Data_class, click
         data.statistic = statistic.statistic.Statistic(data)
 
 
-# Settings Class
+
+########################
+#### Settings Class ####
+########################
 
 
 class Settings:
@@ -159,6 +221,10 @@ class Settings:
         
         self.original_images["background_gray_out"] = pg.Surface((32*12, 18*12), pg.SRCALPHA)
         self.original_images["background_gray_out"].fill((100, 100, 100, 150))
+
+        self._button_hovered : str = ""
+
+        self.scroll_bar_pressed : bool = False
 
         self.Resize(force=True)
 
@@ -223,7 +289,7 @@ class Settings:
 
             
             # Handle Scrolling
-            MAX_SCROLL : int = 17
+            MAX_SCROLL : int = 26
             if self.data.mouse_wheel_down or pg.key.get_pressed()[pg.K_DOWN]:
                 if not self.__scroll_pressed:
                     self.__scroll_pressed = True
@@ -257,32 +323,37 @@ class Settings:
                 bar_height
             ), border_radius = self.data.tile_zoom*2)
 
-            # Click below / above scroll bar to scroll
-            bar_upper_y : float = bar_y
-            bar_lower_y : float = bar_y+bar_height
-            above_rect : tuple[int, int, int, int] = (
-                settings_rect[0]+settings_rect[2]-self.data.tile_zoom*6-self.data.tile_zoom*4,
-                settings_rect[1]+self.data.tile_zoom*20,
-                self.data.tile_zoom*10,
-                int(bar_upper_y-(settings_rect[1]+self.data.tile_zoom*20))
-            )
-            below_rect : tuple[int, int, int, int] = (
-                settings_rect[0]+settings_rect[2]-self.data.tile_zoom*6-self.data.tile_zoom*4,
-                int(bar_lower_y),
-                self.data.tile_zoom*10,
-                int(settings_rect[1]+settings_rect[3]-self.data.tile_zoom*20-bar_lower_y)
-            )
             mouse_pos : tuple[int, int] = pg.mouse.get_pos()
-            if above_rect[0] <= mouse_pos[0] <= above_rect[0]+above_rect[2] and above_rect[1] <= mouse_pos[1] <= above_rect[1]+above_rect[3]:
-                if pg.mouse.get_pressed()[0]:
+            scroll_bar_rect : tuple[int, int, int, int] = (
+                settings_rect[0]+settings_rect[2]-self.data.tile_zoom*6 - 4*self.data.tile_zoom,
+                settings_rect[1]+self.data.tile_zoom*20,
+                10*self.data.tile_zoom,
+                settings_rect[3]-self.data.tile_zoom*20
+            )
+            if (mouse_pos[0] > scroll_bar_rect[0] and mouse_pos[0] < scroll_bar_rect[0]+scroll_bar_rect[2] and
+                mouse_pos[1] > scroll_bar_rect[1] and mouse_pos[1] < scroll_bar_rect[1]+scroll_bar_rect[3]) and pg.mouse.get_pressed()[0]:
+                self.scroll_bar_pressed = True
+            elif not pg.mouse.get_pressed()[0]:
+                self.scroll_bar_pressed = False
+
+            if self.scroll_bar_pressed:
+                mouse_y : int = pg.mouse.get_pos()[1]
+                upper_limit : int = scroll_bar_rect[1]+self.data.tile_zoom*20 # From middle of the scroll-bar-moving-thingy
+                lower_limit : int = scroll_bar_rect[1]+scroll_bar_rect[3]-self.data.tile_zoom*20 
+                y_per_scroll : float = (lower_limit-upper_limit)/(MAX_SCROLL+1) # +1 because max_scroll is included
+                current_scroll : int = self.scroll_y
+                desired_scroll : int = round((mouse_y-upper_limit)/y_per_scroll)
+
+                if current_scroll > desired_scroll:
                     self.scroll_y -= 1
                     if self.scroll_y < 0:
                         self.scroll_y = 0
-            elif below_rect[0] <= mouse_pos[0] <= below_rect[0]+below_rect[2] and below_rect[1] <= mouse_pos[1] <= below_rect[1]+below_rect[3]:
-                if pg.mouse.get_pressed()[0]:
+                elif current_scroll < desired_scroll:
                     self.scroll_y += 1
                     if self.scroll_y > MAX_SCROLL:
                         self.scroll_y = MAX_SCROLL
+
+
 
 
             # ESC to exit settings
@@ -319,6 +390,54 @@ class Settings:
                 info_text = new_text
 
             new_text = self.__Settings_line(
+                "Info Delay",
+                [data_class.TextLine(text="Changes the delay", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="before showing tower", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="information", color=info_text_color, icon="", is_small=False)],
+                button_funct = _Button_info_delay
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "Tower Range",
+                [data_class.TextLine(text="Change when the;Tower Range Indicator", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="is displayed;or not", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Options:;Always show it", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Only show selected;Never show it", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Default : Selected;", color=info_text_color, icon="", is_small=True)],
+                button_funct = _Button_tower_range
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "Fullscreen",
+                [data_class.TextLine(text="Enable / Disable", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Fullscreen Mode", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Default : Off;", color=info_text_color, icon="", is_small=True)],
+                button_funct = _Button_toggle_fullscreen
+            )
+            if new_text != []:
+                info_text = new_text
+
+
+            #### Graphics ####
+            # Spacing
+            _ = self.__Settings_line( 
+                "",
+                [],
+                adjust_x = 1
+            )
+
+            _ = self.__Settings_line(
+                "Graphics",
+                [],
+                adjust_x = 50,
+                color=(0, 0, 255)
+            )
+
+            new_text = self.__Settings_line(
                 "Screen Shake",
                 [data_class.TextLine(text="Changes the", color=info_text_color, icon="", is_small=False),
                  data_class.TextLine(text="Screen-Shake", color=info_text_color, icon="", is_small=False),
@@ -343,16 +462,6 @@ class Settings:
                 info_text = new_text
 
             new_text = self.__Settings_line(
-                "Info Delay",
-                [data_class.TextLine(text="Changes the delay", color=info_text_color, icon="", is_small=False),
-                 data_class.TextLine(text="before showing tower", color=info_text_color, icon="", is_small=False),
-                 data_class.TextLine(text="information", color=info_text_color, icon="", is_small=False)],
-                button_funct = _Button_info_delay
-            )
-            if new_text != []:
-                info_text = new_text
-
-            new_text = self.__Settings_line(
                 "Enemy Effects",
                 [data_class.TextLine(text="Enable / Disable", color=info_text_color, icon="", is_small=False),
                  data_class.TextLine(text="Rendering of", color=info_text_color, icon="", is_small=False),
@@ -364,37 +473,85 @@ class Settings:
                 info_text = new_text
 
             new_text = self.__Settings_line(
-                "Tower Range",
-                [data_class.TextLine(text="Change when the;Tower Range Indicator", color=info_text_color, icon="", is_small=True),
-                 data_class.TextLine(text="is displayed;or not", color=info_text_color, icon="", is_small=True),
-                 data_class.TextLine(text="Options:;Always show it", color=info_text_color, icon="", is_small=True),
-                 data_class.TextLine(text="Only show selected;Never show it", color=info_text_color, icon="", is_small=True),
-                 data_class.TextLine(text="Default : Selected;", color=info_text_color, icon="", is_small=True)],
-                button_funct = _Button_tower_range
-            )
-            if new_text != []:
-                info_text = new_text
-
-            new_text = self.__Settings_line(
                 "VFX Size",
                 [data_class.TextLine(text="Change the size;of the", color=info_text_color, icon="", is_small=True),
-                 data_class.TextLine(text="Visual Effects;Options:", color=info_text_color, icon="", is_small=True),
-                 data_class.TextLine(text="None, Small, Normal;Default : Normal", color=info_text_color, icon="", is_small=True)
+                 data_class.TextLine(text="Visual Effects;Options: None,", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Small, Normal, Large;Default : Normal", color=info_text_color, icon="", is_small=True)
                 ],
                 button_funct = _Button_vfx_size
             )
             if new_text != []:
                 info_text = new_text
 
+                
+
+            #### Sounds ####
+            # Spacing
+            _ = self.__Settings_line(
+                "",
+                [],
+                adjust_x = 1
+            )
+
+            _ = self.__Settings_line(
+                "Sounds",
+                [],
+                adjust_x = 50,
+                color=(255, 255, 0)
+            )
+
             new_text = self.__Settings_line(
-                "Fullscreen",
-                [data_class.TextLine(text="Enable / Disable", color=info_text_color, icon="", is_small=False),
-                 data_class.TextLine(text="Fullscreen Mode", color=info_text_color, icon="", is_small=False),
-                 data_class.TextLine(text="Default : Off;", color=info_text_color, icon="", is_small=True)],
-                button_funct = _Button_toggle_fullscreen
+                "Master Volume",
+                [data_class.TextLine(text="Master Volume", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="This affects;all sounds", color=info_text_color, icon="", is_small=True),
+                 data_class.TextLine(text="Default : 100%", color=info_text_color, icon="", is_small=False)
+                ],
+                button_funct = _Button_volume_general
             )
             if new_text != []:
                 info_text = new_text
+
+            new_text = self.__Settings_line(
+                "Music Volume",
+                [data_class.TextLine(text="Music Volume", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Default : 75%", color=info_text_color, icon="", is_small=False)
+                ],
+                button_funct = _Button_volume_music
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "Shooting Volume",
+                [data_class.TextLine(text="Shooting Volume", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Default : 75%", color=info_text_color, icon="", is_small=False)
+                ],
+                button_funct = _Button_volume_shooting
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "Player / UI Volume",
+                [data_class.TextLine(text="Player / UI Volume", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Default : 100%", color=info_text_color, icon="", is_small=False)
+                ],
+                button_funct = _Button_volume_player
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "Other Volume",
+                [data_class.TextLine(text="Other Volume", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="Default : 100%", color=info_text_color, icon="", is_small=False)
+                ],
+                button_funct = _Button_volume_other
+            )
+            if new_text != []:
+                info_text = new_text
+
+
 
 
             #### Statistics ####
@@ -450,6 +607,7 @@ class Settings:
 
 
 
+
             #### Game Info ####
             # Spacing
             _ = self.__Settings_line(
@@ -462,7 +620,7 @@ class Settings:
                 "Game Info",
                 [],
                 adjust_x = 40,
-                color=(0, 0, 255)
+                color=(0, 255, 0)
             )
 
             _ = self.__Settings_line(
@@ -576,10 +734,16 @@ class Settings:
 
             is_hovered : bool = False
             mouse_pos : tuple[int, int] = pg.mouse.get_pos()
-            if line_rect[0] <= mouse_pos[0] <= line_rect[0]+line_rect[2] and line_rect[1] <= mouse_pos[1] <= line_rect[1]+line_rect[3]:
+            if line_rect[0] <= mouse_pos[0] <= line_rect[0]+line_rect[2] and line_rect[1] <= mouse_pos[1] <= line_rect[1]+line_rect[3] and not self.scroll_bar_pressed:
                 if info != []:
                     output = info
                 is_hovered = True
+                if self._button_hovered != text and adjust_x == 0:
+                    self._button_hovered = text
+                    self.data.SFX.Play_Player_SFX("hover")
+            else:
+                if self._button_hovered == text:
+                    self._button_hovered = ""
 
             # Show button
             if adjust_x == 0:
@@ -597,9 +761,10 @@ class Settings:
                     pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width=2*self.data.tile_zoom, border_radius = self.data.tile_zoom*2)
                 
                 got_clicked : bool = False
-                if is_hovered and pg.mouse.get_pressed()[0] and not self._button_pressed:
+                if is_hovered and pg.mouse.get_pressed()[0] and not self._button_pressed and not self.scroll_bar_pressed:
                     got_clicked = True
                     self._button_pressed = True
+                    self.data.SFX.Play_Player_SFX("click")
                 button_funct(self, self.data, got_clicked, (button_rect[0]+self.data.tile_zoom*3, button_rect[1]+4*self.data.tile_zoom))
 
             # Display button

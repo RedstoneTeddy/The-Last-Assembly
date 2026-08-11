@@ -44,6 +44,8 @@ class Main_menu:
 
         self.Resize(force=True) 
 
+        self.current_hover_id : int = -1
+
 
     def Resize(self, force: bool = False) -> None:
         """
@@ -65,6 +67,7 @@ class Main_menu:
         if self.data.world_name != "main_menu":
             self.menu_initialized = False
 
+        menu_open : bool = self.data.in_map_selection or self.data.in_collection or self.data.in_settings
 
         self.tile_renderer.Draw()
 
@@ -104,11 +107,17 @@ class Main_menu:
         if new_game_button_rect[0] <= mouse_pos[0] <= new_game_button_rect[0] + new_game_button_rect[2] and new_game_button_rect[1] <= mouse_pos[1] <= new_game_button_rect[1] + new_game_button_rect[3]:
             self.data.screen.blit(self.images["button1_selected"], (new_game_button_rect[0], new_game_button_rect[1]))
             button_hovered = True
+            if self.current_hover_id != 1 and not menu_open:
+                self.current_hover_id = 1
+                self.data.SFX.Play_Player_SFX("title_hover")
         else:
             self.data.screen.blit(self.images["button1"], (new_game_button_rect[0], new_game_button_rect[1]))
+            if self.current_hover_id == 1:
+                self.current_hover_id = -1
         if button_hovered and pg.mouse.get_pressed()[0] and not self.button_pressed:
             self.button_pressed = True
             self.data.in_map_selection = True
+            self.data.SFX.Play_Player_SFX("title_click")
 
 
         collection_button_rect : tuple[int, int, int, int] = (
@@ -121,11 +130,17 @@ class Main_menu:
         if collection_button_rect[0] <= mouse_pos[0] <= collection_button_rect[0] + collection_button_rect[2] and collection_button_rect[1] <= mouse_pos[1] <= collection_button_rect[1] + collection_button_rect[3]:
             self.data.screen.blit(self.images["button2_selected"], (collection_button_rect[0], collection_button_rect[1]))
             button_hovered = True
+            if self.current_hover_id != 2 and not menu_open:
+                self.current_hover_id = 2
+                self.data.SFX.Play_Player_SFX("title_hover")
         else:
             self.data.screen.blit(self.images["button2"], (collection_button_rect[0], collection_button_rect[1]))
+            if self.current_hover_id == 2:
+                self.current_hover_id = -1
         if button_hovered and pg.mouse.get_pressed()[0] and not self.button_pressed:
             self.button_pressed = True
             self.data.in_collection = True
+            self.data.SFX.Play_Player_SFX("title_click")
 
 
         settings_button_rect : tuple[int, int, int, int] = (
@@ -138,11 +153,17 @@ class Main_menu:
         if settings_button_rect[0] <= mouse_pos[0] <= settings_button_rect[0] + settings_button_rect[2] and settings_button_rect[1] <= mouse_pos[1] <= settings_button_rect[1] + settings_button_rect[3]:
             self.data.screen.blit(self.images["button3_selected"], (settings_button_rect[0], settings_button_rect[1]))
             button_hovered = True
+            if self.current_hover_id != 3 and not menu_open:
+                self.current_hover_id = 3
+                self.data.SFX.Play_Player_SFX("title_hover")
         else:
             self.data.screen.blit(self.images["button3"], (settings_button_rect[0], settings_button_rect[1]))
+            if self.current_hover_id == 3:
+                self.current_hover_id = -1
         if button_hovered and pg.mouse.get_pressed()[0] and not self.button_pressed:
             self.button_pressed = True
             self.data.in_settings = True
+            self.data.SFX.Play_Player_SFX("title_click")
 
 
         exit_button_rect : tuple[int, int, int, int] = (
@@ -155,11 +176,17 @@ class Main_menu:
         if exit_button_rect[0] <= mouse_pos[0] <= exit_button_rect[0] + exit_button_rect[2] and exit_button_rect[1] <= mouse_pos[1] <= exit_button_rect[1] + exit_button_rect[3]:
             self.data.screen.blit(self.images["button4_selected"], (exit_button_rect[0], exit_button_rect[1]))
             button_hovered = True
+            if self.current_hover_id != 4 and not menu_open:
+                self.current_hover_id = 4
+                self.data.SFX.Play_Player_SFX("title_hover")
         else:
             self.data.screen.blit(self.images["button4"], (exit_button_rect[0], exit_button_rect[1]))
+            if self.current_hover_id == 4:
+                self.current_hover_id = -1
         if button_hovered and pg.mouse.get_pressed()[0] and not self.button_pressed:
             self.button_pressed = True
             self.data.run = False
+            self.data.SFX.Play_Player_SFX("title_click")
 
 
         if not pg.mouse.get_pressed()[0]:

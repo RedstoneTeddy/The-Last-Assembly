@@ -18,6 +18,7 @@ class Economist(base.Base_tower):
 
         self.range : int = 3*12
         self.damage : float = 0
+        self.shot_sound_name : str = "" # TODO: Add coin-sound-effect
         self.cooldown : float = 75.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Physical"

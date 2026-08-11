@@ -18,6 +18,7 @@ class Gear_thrower(base.Base_tower):
 
         self.range : int = 5*12
         self.damage : float = 3
+        self.shot_sound_name : str = "gear_throw"
         self.cooldown : float = 27.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Physical"

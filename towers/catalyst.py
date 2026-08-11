@@ -18,6 +18,7 @@ class Catalyst(base.Base_tower):
 
         self.range : int = 4*12
         self.damage : float = 4
+        self.shot_sound_name : str = "crystal_shot"
         self.cooldown : float = 40.0
         self.shot_speed : int = 1
         self.damage_type : base.DAMAGE_TYPES = "Electrical"

@@ -92,6 +92,8 @@ class Shop:
         self._specialist_info_box : list[list[data_class.TextLine]] = [] # List of info box lines for each specialist.
         self.__Load_specialist_data()
 
+        self.hover_id : int = -1
+
 
         # Images
         self.original_images["close_btn"] = pg.image.load("assets/shop/buttons/close.png").convert_alpha()
@@ -144,6 +146,7 @@ class Shop:
         self._selected_shop_element = -1
         self._rewards_total_cash = -1
         self._rewards_lines = []
+        self.hover_id = -1
 
         for tower in self.data.towers:
             tower._selected_clicked = True
@@ -251,11 +254,17 @@ class Shop:
                 mouse_pos[1] >= minimize_rect[1] and mouse_pos[1] <= minimize_rect[1] + minimize_rect[3] and
                 self.data.shop_minimized == False):
                 self.data.screen.blit(self.images["minimize_btn_selected"], (minimize_rect[0], minimize_rect[1]))
+                if self.hover_id == -1:
+                    self.hover_id = -2
+                    self.data.SFX.Play_Player_SFX("hover")
                 if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run minimize-function
                     self._button_pressed = True
                     self.data.shop_minimized = not self.data.shop_minimized
+                    self.data.SFX.Play_Player_SFX("click")
             else:
                 self.data.screen.blit(self.images["minimize_btn"], (minimize_rect[0], minimize_rect[1]))
+                if self.hover_id == -2:
+                    self.hover_id = -1
 
             # Reroll button
             needed_money_for_reroll : int = 100 + self._rerolled_shop * 50
@@ -264,14 +273,20 @@ class Shop:
                     mouse_pos[1] >= reroll_rect[1] and mouse_pos[1] <= reroll_rect[1] + reroll_rect[3] and
                     self.data.money >= needed_money_for_reroll and self.data.shop_minimized == False):
                     self.data.screen.blit(self.images["reroll_btn_selected"], (reroll_rect[0], reroll_rect[1]))
+                    if self.hover_id == -1:
+                        self.hover_id = -3
+                        self.data.SFX.Play_Player_SFX("hover")
                     if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run reroll-function
                         self._button_pressed = True
                         self._rerolled_shop += 1
                         self.data.money -= needed_money_for_reroll
                         self.Generate_shop()
                         self.data.statistic.stat_raw["times_rerolled_in_shop"] += 1
+                        self.data.SFX.Play_Player_SFX("click")
                 else:
                     self.data.screen.blit(self.images["reroll_btn"], (reroll_rect[0], reroll_rect[1]))
+                    if self.hover_id == -3:
+                        self.hover_id = -1
                 reroll_color : tuple[int, int, int] = (238, 168, 25) if self.data.money >= needed_money_for_reroll else (255, 100, 100)
                 if len(str(needed_money_for_reroll)) > 999:
                     self.data.Draw_text(str(needed_money_for_reroll), (reroll_rect[0] + 13*self.data.tile_zoom, reroll_rect[1] + 17*self.data.tile_zoom), self.data.tile_zoom * 4, reroll_color)
@@ -283,11 +298,17 @@ class Shop:
                 mouse_pos[1] >= close_rect[1] and mouse_pos[1] <= close_rect[1] + close_rect[3] and
                 self.data.shop_minimized == False):
                 self.data.screen.blit(self.images["close_btn_selected"], (close_rect[0], close_rect[1]))
+                if self.hover_id == -1:
+                    self.hover_id = -4
+                    self.data.SFX.Play_Player_SFX("hover")
                 if pg.mouse.get_pressed()[0] and not self._button_pressed: # Run close-function
                     self._button_pressed = True
+                    self.data.SFX.Play_Player_SFX("click")
                     self.Close_shop()
             else:
                 self.data.screen.blit(self.images["close_btn"], (close_rect[0], close_rect[1]))
+                if self.hover_id == -4:
+                    self.hover_id = -1
 
 
         # Display shop elements
@@ -315,6 +336,10 @@ class Shop:
 
             # Show shop elements
             info_text : list[data_class.TextLine] = []
+
+            if self.hover_id >= len(self.shop_element_bought) or self.shop_element_bought[self.hover_id]:
+                if self.hover_id >= 0:
+                    self.hover_id = -1
             
             for i in range(self.data.shop_elements):
                 if self.shop_element_bought[i]:
@@ -339,6 +364,13 @@ class Shop:
                 element_is_hovered : bool = (mouse_pos[0] >= element_rect[0] and mouse_pos[0] <= element_rect[0] + element_rect[2] and
                                             mouse_pos[1] >= element_rect[1] and mouse_pos[1] <= element_rect[1] + element_rect[3] and 
                                             self.data.shop_minimized == False and self.pack_obj.pack_type == "")
+                if element_is_hovered:
+                    if self.hover_id != i:
+                        self.data.SFX.Play_Player_SFX("hover")
+                        self.hover_id = i
+                else:
+                    if self.hover_id == i:
+                        self.hover_id = -1
                 new_info_text = self._Shop_element(i, element_rect, element_is_hovered)
                 if new_info_text != []:
                     info_text = new_info_text
@@ -377,6 +409,7 @@ class Shop:
                 if pg.mouse.get_pressed()[0] and not self._button_pressed:
                     self._button_pressed = True
                     self.data.shop_minimized = False
+                    self.data.SFX.Play_Player_SFX("click")
 
     def _Shop_element(self, i, element_rect, element_is_hovered) -> list[data_class.TextLine]:
         info_text : list[data_class.TextLine] = []
@@ -415,6 +448,8 @@ class Shop:
                 self._button_pressed = True
                 self.shop_element_bought[i] = True
                 self.data.money -= cost
+
+                self.data.SFX.Play_Player_SFX("shop_buy")
                         
                 # Build tower if element is a tower
                 if self.shop_element_types[i] == "tower":
@@ -537,6 +572,7 @@ class Shop:
             total_cash, lines = self._Calculate_reward()
             self._rewards_total_cash = total_cash
             self._rewards_lines = lines
+            self.data.SFX.Play_Player_SFX("reward")
         else:
             total_cash = self._rewards_total_cash
             lines = self._rewards_lines       
@@ -562,14 +598,19 @@ class Shop:
         if (mouse_pos[0] >= close_button_rect[0] and mouse_pos[0] <= close_button_rect[0] + close_button_rect[2] and
             mouse_pos[1] >= close_button_rect[1] and mouse_pos[1] <= close_button_rect[1] + close_button_rect[3]):
             self.data.screen.blit(self.images["close_btn_selected"], (close_button_rect[0], close_button_rect[1]))
+            if self.hover_id != -2:
+                self.hover_id = -2
+                self.data.SFX.Play_Player_SFX("hover")
             if pg.mouse.get_pressed()[0] and not self._button_pressed:
                 self._button_pressed = True
                 self._show_reward_screen = False
                 self.data.money += total_cash
                 self.data.statistic.stat_raw["gold_earned"] += total_cash
+                self.data.SFX.Play_Player_SFX("click")
         else:
             self.data.screen.blit(self.images["close_btn"], (close_button_rect[0], close_button_rect[1]))
-
+            if self.hover_id == -2:
+                self.hover_id = -1
 
 
     def _Calculate_reward(self) -> tuple[int, list[str]]:

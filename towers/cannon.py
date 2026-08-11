@@ -18,6 +18,7 @@ class Cannon(base.Base_tower):
 
         self.range : int = 4*12
         self.damage : float = 5
+        self.shot_sound_name : str = "heavy_cannon"
         self.cooldown : float = 50.0
         self.shot_speed : int = 1
         self.blast_radius : int = 12

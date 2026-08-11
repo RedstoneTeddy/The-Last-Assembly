@@ -64,6 +64,8 @@ class Collection_menu:
 
         self.original_images["unknown"] = pg.image.load("assets/shop/buttons/unknown.png").convert_alpha()
 
+        self.hover_name : str = ""
+
         self.Resize(True)
         
     def Resize(self, force : bool = False) -> None:
@@ -187,11 +189,17 @@ class Collection_menu:
             is_hovered : bool = mouse_pos[0] >= button_rect[0] and mouse_pos[0] <= button_rect[0] + button_rect[2] and mouse_pos[1] >= button_rect[1] and mouse_pos[1] <= button_rect[1] + button_rect[3]
             if is_hovered:
                 self.data.screen.blit(self.images["close_btn_selected"], (button_rect[0], button_rect[1]))
+                if self.hover_name != "close":
+                    self.hover_name = "close"
+                    self.data.SFX.Play_Player_SFX("hover")
             else:
                 self.data.screen.blit(self.images["close_btn"], (button_rect[0], button_rect[1]))
+                if self.hover_name == "close":
+                    self.hover_name = ""
             if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed:
                 self._button_pressed = True
                 self.animation_direction = -1
+                self.data.SFX.Play_Player_SFX("click")
 
             # Load elements
             elements : list[str] = []
@@ -253,6 +261,9 @@ class Collection_menu:
                         element_texts[i] = statistic.unlock_info.Get_specialist_unlock(element)
             
 
+            if self.hover_name not in elements and self.hover_name != "close":
+                self.hover_name = ""
+
             # Display elements
             info_text : list[data_class.TextLine] = []
             for i in range(len(elements)):
@@ -270,8 +281,13 @@ class Collection_menu:
                 if is_hovered:
                     self.data.screen.blit(self.images["outline_selected"], (element_rect[0], element_rect[1]))
                     info_text = element_text
+                    if self.hover_name != element:
+                        self.hover_name = element
+                        self.data.SFX.Play_Player_SFX("hover")
                 else:
                     self.data.screen.blit(self.images["outline"], (element_rect[0], element_rect[1]))
+                    if self.hover_name == element:
+                        self.hover_name = ""
                 # Display element image
                 if self.current_menu == "towers":
                     if unlocked[element]:
@@ -308,6 +324,7 @@ class Collection_menu:
                         self._button_pressed = True
                         self.current_menu = element.lower() # type: ignore
                         self.animation_direction = 1
+                        self.data.SFX.Play_Player_SFX("click")
                         break
 
 

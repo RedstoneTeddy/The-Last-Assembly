@@ -15,7 +15,7 @@ class Top_handler:
     def __init__(self, data : data_class.Data_class) -> None:
         self.data : data_class.Data_class = data
 
-        self.selected_debug_menu : Literal["None", "FPS", "SortedWorld"] = "None"
+        self.selected_debug_menu : Literal["None", "FPS", "SortedWorld", "Sound"] = "None"
         self.debug_pressed : bool = False
 
         self.mspf_list : list[float] = []
@@ -45,7 +45,10 @@ class Top_handler:
         elif keys[pg.K_F5]:
             if not self.debug_pressed:
                 self.debug_pressed = True
-                self.data.double_speed = not self.data.double_speed
+                if self.selected_debug_menu == "Sound":
+                    self.selected_debug_menu = "None"
+                else:
+                    self.selected_debug_menu = "Sound"
         elif keys[pg.K_F6]:
             if not self.debug_pressed:
                 self.debug_pressed = True
@@ -60,6 +63,8 @@ class Top_handler:
             self.__Show_FPS()
         elif self.selected_debug_menu == "SortedWorld":
             debug.sorted_world.Debug_show(self.data)
+        elif self.selected_debug_menu == "Sound":
+            self.__Show_Sound()
 
         # Update the mspf list
         if self.last_mspf == -1.0:
@@ -69,6 +74,24 @@ class Top_handler:
             self.mspf_list.append(new_mspf)
             if len(self.mspf_list) > 100:
                 self.mspf_list.pop(0)
+
+
+
+    def __Show_Sound(self) -> None:
+        """
+        Sound info overlay.
+        """
+        lines : list[str] = [
+            "Available Sound Channels: ",
+            f"Music : {len(self.data.SFX.available_channels['music'])} / {self.data.SFX.channel_reservation['music']}",
+            f"Player : {len(self.data.SFX.available_channels['player_sfx'])} / {self.data.SFX.channel_reservation['player_sfx']}",
+            f"Shooting : {len(self.data.SFX.available_channels['shooting'])} / {self.data.SFX.channel_reservation['shooting']}",
+            f"Enemy : {len(self.data.SFX.available_channels['enemy_sfx'])} / {self.data.SFX.channel_reservation['enemy_sfx']}",
+            f"Effect : {len(self.data.SFX.available_channels['effect_sfx'])} / {self.data.SFX.channel_reservation['effect_sfx']}"
+        ]
+        pg.draw.rect(self.data.screen, (255, 255, 255), (0, 0, 100*self.data.tile_zoom, len(lines)*6*self.data.tile_zoom+10))
+        for i, line in enumerate(lines):
+            self.data.Draw_text(line, (5, 5 + i*6*self.data.tile_zoom), 4*self.data.tile_zoom, (0, 0, 0))
 
 
     def __Show_FPS(self) -> None:
@@ -86,7 +109,7 @@ class Top_handler:
             "F2 - Sorted World", 
             "F3 - No Clock",
             "F4 - Slow Clock",
-            "F5 - Double Speed",
+            "F5 - Sound Info",
             "F6 - Print Raw Stats",
             "F11 - Fullscreen"
         ]

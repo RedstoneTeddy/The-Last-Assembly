@@ -12,9 +12,14 @@ class Lose_screen:
         self.animation : int = 0
         self._max_animation : int = 30
 
+        self._back_hovered : bool = False
+
     def Show_lose_screen(self) -> None:
         if self.animation < self._max_animation:
             self.animation += 1
+
+        if self.animation == self._max_animation-1:
+            self.data.SFX.Play_Player_SFX("lose")
 
         self.data.wave_in_progress = False
 
@@ -57,10 +62,14 @@ class Lose_screen:
         pg.draw.rect(self.data.screen, (244, 126, 27), back_rect, border_radius=2*self.data.tile_zoom)
         back_hovered : bool = False
         if back_rect[0] <= mouse_pos[0] <= back_rect[0] + back_rect[2] and back_rect[1] <= mouse_pos[1] <= back_rect[1] + back_rect[3]:
+            if self._back_hovered == False:
+                self.data.SFX.Play_Player_SFX("hover")
+                self._back_hovered = True
             back_hovered = True
             pg.draw.rect(self.data.screen, (255,255,255), back_rect, border_radius=2*self.data.tile_zoom, width=2*self.data.tile_zoom)
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), back_rect, border_radius=2*self.data.tile_zoom,  width=2*self.data.tile_zoom)
+            self._back_hovered = False
         self.data.Draw_text("Back to Menu", (back_rect[0] + 15 * self.data.tile_zoom, back_rect[1] + 4 * self.data.tile_zoom), self.data.tile_zoom * 8, (48, 44, 46))
         
         if back_hovered and pg.mouse.get_pressed()[0] and not self._button_pressed:
@@ -72,6 +81,8 @@ class Lose_screen:
             self.data.statistic.stat_raw["games_played"] += 1
             print("Game Over")
             logging.info("Player has lost the game.")
+            self.data.SFX.Kill_all_sounds()
+            self.data.SFX.Play_Player_SFX("click")
             # self.shop._button_pressed = True
             # self.shop.Close_shop()
 

@@ -18,6 +18,7 @@ class Combat_robot(base.Base_tower):
 
         self.range : int = 5*12
         self.damage : float = 5
+        self.shot_sound_name : str = "flare_gun"
         self.cooldown : float = 37.0
         self.shot_speed : int = 2
         self.damage_type : base.DAMAGE_TYPES = "Physical"

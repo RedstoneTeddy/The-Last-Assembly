@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_args
 if TYPE_CHECKING:   
     import data_class
     import towers.base_tower.base as base_tower
+import sound.sfx
 
 def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
     """
@@ -24,6 +25,8 @@ def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
             tower._shoot_at_pos = tower.data.enemies.exact_pos[shoot_at_id]
             tower._shoot_at_pos = (tower._shoot_at_pos[0] + 0.5, tower._shoot_at_pos[1] + 0.5) # Aim at the center of the enemy
             tower._cooldown_timer = 0
+            if tower.shot_sound_name in get_args(sound.sfx.AllShootingSounds):
+                tower.data.SFX.Play_Shooting_SFX(tower.shot_sound_name) # type: ignore
 
             # Set the shot_direction
             if not tower.dont_rotate:
@@ -205,10 +208,12 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
                     tower.data.money += 1
                     tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
                     tower.data.statistic.stat_raw["gold_earned"] += 1
+                    tower.data.SFX.Play_Effect_SFX("coin")
                 if "investor" in tower.data.bought_specialists and tower.data.path_random.random() < 0.3:
                     tower.data.money += 1
                     tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
                     tower.data.statistic.stat_raw["gold_earned"] += 1
+                    tower.data.SFX.Play_Effect_SFX("coin")
             # Kill enemy
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
             # Bounty_hunter
@@ -217,6 +222,7 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
                     tower.data.money += 1
                     tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
                     tower.data.statistic.stat_raw["gold_earned"] += 1
+                    tower.data.SFX.Play_Effect_SFX("coin")
             # Bloodthirst
             if tower._bloodthirst_chance > 0:
                 if tower.data.path_random.random() < tower._bloodthirst_chance:

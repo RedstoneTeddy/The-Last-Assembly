@@ -2,6 +2,7 @@ import pygame as pg
 from data_class import Data_class
 from pathlib import Path
 
+pg.mixer.pre_init(44100, -16, 2, 512)
 pg.init()
 
 pg.event.set_allowed([pg.QUIT, pg.MOUSEWHEEL])
@@ -18,6 +19,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 #? Challenge : Inflation
 #? When first see a tower -> Show a small pop-up (collection menu )
 #? Arcade Music
+
+# Audio  want to change:
+# player/shop_buy.ogg
+
 
 
 
@@ -52,7 +57,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.12.6"
+version : str = "0.13.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -178,7 +183,6 @@ try:
 
                 enemy_renderer.Draw()
 
-                data.VFX.Main() # Update and draw the visual effects
 
                 if not data.is_paused:
                     zone_building.Main()
@@ -226,6 +230,10 @@ try:
                     if data.keys[pg.K_ESCAPE]:
                         data.is_paused = True
 
+            # Update and draw the visual and sound effects
+            data.VFX.Main() # Update and draw the visual effects
+
+
         # Other Menus
         if data.in_main_menu:
             main_menu_obj.Main_menu()
@@ -248,6 +256,7 @@ try:
 
 
 
+        data.SFX.Main() # Update the sound effects
         pg.display.flip()
         
         data.mouse_wheel_up = False

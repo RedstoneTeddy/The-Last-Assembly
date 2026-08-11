@@ -44,6 +44,9 @@ class Map_selection:
         self.original_images["close_btn"] = pg.image.load("assets/shop/buttons/close.png").convert_alpha()
         self.original_images["close_btn_selected"] = pg.image.load("assets/shop/buttons/close_selected.png").convert_alpha()
 
+        self.hover_map : str = ""
+        self.hover_difficulty : str = ""
+
         self.Resize(force=True)
 
     def Resize(self, force : bool = False) -> None:
@@ -76,6 +79,8 @@ class Map_selection:
             18*12*self.data.tile_zoom
         )
 
+        difficulty_shown : bool = self._difficulty_animation > 0
+
         pg.draw.rect(self.data.screen, (140, 126, 127), window_rect, border_radius=4*self.data.tile_zoom)
         pg.draw.rect(self.data.screen, (48, 44, 46), window_rect, width=4*self.data.tile_zoom, border_radius=4*self.data.tile_zoom)
 
@@ -98,8 +103,13 @@ class Map_selection:
             if is_hovered:
                 pg.draw.rect(self.data.screen, (255,255,255), (x, y, 29*2*self.data.tile_zoom, 20*2*self.data.tile_zoom),)
                 show_info_text = text_lines
+                if self.hover_map != map_name and not difficulty_shown:
+                    self.hover_map = map_name
+                    self.data.SFX.Play_Player_SFX("title_hover")
             else:
                 pg.draw.rect(self.data.screen, (48,44,46), (x, y, 29*2*self.data.tile_zoom, 20*2*self.data.tile_zoom),)
+                if self.hover_map == map_name:
+                    self.hover_map = ""
             
             self.map_info.Draw_map_preview(map_name, (x+2*self.data.tile_zoom, y+2*self.data.tile_zoom), 2*self.data.tile_zoom)
             if is_hovered and pg.mouse.get_pressed()[0] and not self._clicked and self._difficulty_animation != self._max_difficulty_animation:
@@ -109,6 +119,7 @@ class Map_selection:
                 self._difficulty_animation = 1
                 self._difficulty_animation_x = x_i
                 self._difficulty_animation_y = y_i
+                self.data.SFX.Play_Player_SFX("title_click")
             
             map_difficulty : data_class.DifficultyLevels = self.data.completed_maps.get(map_name, "")
             if map_difficulty != "":
@@ -134,6 +145,7 @@ class Map_selection:
             self._difficulty_animation += 1
         elif self._difficulty_animation_direction == -1 and self._difficulty_animation > 0:
             self._difficulty_animation -= 1
+
 
         # Basic Window
         window_rect : tuple[int, int, int, int] = (
@@ -203,14 +215,22 @@ class Map_selection:
                 if is_hovered:
                     self.data.screen.blit(self.images["outline_selected"], (diff_rect[0]-4*self.data.tile_zoom, diff_rect[1]-4*self.data.tile_zoom))
                     show_info_text = difficulty_texts[difficulty]
+                    if self.hover_difficulty != difficulty:
+                        self.hover_difficulty = difficulty
+                        self.data.SFX.Play_Player_SFX("title_hover")
                 else:
                     self.data.screen.blit(self.images["outline"], (diff_rect[0]-4*self.data.tile_zoom, diff_rect[1]-4*self.data.tile_zoom))
+                    if self.hover_difficulty == difficulty:
+                        self.hover_difficulty = ""
+                
                 self.data.screen.blit(self.images[difficulty+"_big"], (diff_rect[0], diff_rect[1]))
                 if is_hovered and pg.mouse.get_pressed()[0] and not self._clicked:
                     self._clicked = True
                     self.selected_difficulty = difficulty
                     self._difficulty_animation_direction = -1
                     self._animation += 1
+                    self.data.SFX.Kill_all_sounds()
+                    self.data.SFX.Play_Player_SFX("dramatic_reveal")
 
             # Show close button
             close_rect : tuple[int, int, int, int] = (
@@ -224,13 +244,19 @@ class Map_selection:
                                  mouse_pos[1] >= close_rect[1] and mouse_pos[1] < close_rect[1]+close_rect[3])
             if is_hovered:
                 self.data.screen.blit(self.images["close_btn_selected"], (close_rect[0]-4*self.data.tile_zoom, close_rect[1]-4*self.data.tile_zoom))
+                if self.hover_difficulty != "close":
+                    self.hover_difficulty = "close"
+                    self.data.SFX.Play_Player_SFX("title_hover")
             else:
                 self.data.screen.blit(self.images["close_btn"], (close_rect[0]-4*self.data.tile_zoom, close_rect[1]-4*self.data.tile_zoom))
+                if self.hover_difficulty == "close":
+                    self.hover_difficulty = ""
             if is_hovered and pg.mouse.get_pressed()[0] and not self._clicked:
                 self._clicked = True
                 self._difficulty_animation_direction = -1
                 self.selected_map = ""
-            
+                self.data.SFX.Play_Player_SFX("title_click")
+
             if show_info_text != []:
                 self.tower_info_renderer.Draw_box_at_mouse(show_info_text)
             

@@ -29,6 +29,8 @@ class Pause_menu:
         self.original_images["background_gray_out"] = pg.Surface((32*12, 18*12), pg.SRCALPHA)
         self.original_images["background_gray_out"].fill((100, 100, 100, 150))
 
+        self._button_hovered : str = ""
+
         self.Resize(True)
 
 
@@ -79,6 +81,8 @@ class Pause_menu:
             height*12*self.data.tile_zoom
         )
 
+        other_menu_open : bool = self.data.in_collection or self.data.in_settings
+
         # Draw background
         self.data.screen.blit(self.images["background_gray_out"], self.data.Get_World_to_Screen((0, 0)))
         pg.draw.rect(self.data.screen, (140, 126, 127), pause_rect, border_radius = 2*self.data.tile_zoom)
@@ -99,12 +103,18 @@ class Pause_menu:
         pg.draw.rect(self.data.screen, (244, 126, 27), button_rect, border_radius = self.data.tile_zoom)
         if is_hovered:
             pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+            if self._button_hovered != "resume" and not other_menu_open:
+                self.data.SFX.Play_Player_SFX("hover")
+                self._button_hovered = "resume"
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+            if self._button_hovered == "resume":
+                self._button_hovered = ""
         self.data.Draw_text("RESUME", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*16, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
         if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection and not self.data.in_settings:
             self._button_pressed = True
             self.animation_direction = -1
+            self.data.SFX.Play_Player_SFX("click")
 
         # New Run
         button_rect = (
@@ -117,13 +127,20 @@ class Pause_menu:
         pg.draw.rect(self.data.screen, (230, 72, 46), button_rect, border_radius = self.data.tile_zoom)
         if is_hovered:
             pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+            if self._button_hovered != "new_run" and not other_menu_open:
+                self.data.SFX.Play_Player_SFX("hover")
+                self._button_hovered = "new_run"
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+            if self._button_hovered == "new_run":
+                self._button_hovered = ""
         self.data.Draw_text("NEW RUN", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*16, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
         if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection and not self.data.in_settings:
             self._button_pressed = True
             self.animation_direction = -1
             self.data.in_map_selection = True
+            self.data.SFX.Kill_all_sounds()
+            self.data.SFX.Play_Player_SFX("click")
 
             
         # Collection
@@ -137,13 +154,19 @@ class Pause_menu:
         pg.draw.rect(self.data.screen, (57, 120, 168), button_rect, border_radius = self.data.tile_zoom)
         if is_hovered:
             pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+            if self._button_hovered != "collection" and not other_menu_open:
+                self.data.SFX.Play_Player_SFX("hover")
+                self._button_hovered = "collection"
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+            if self._button_hovered == "collection":
+                self._button_hovered = ""
         self.data.Draw_text("COLLECTION", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*23, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
         if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection and not self.data.in_settings:
             self._button_pressed = True
             self.data.in_collection = True
             self.collection_menu.current_menu = "menu"
+            self.data.SFX.Play_Player_SFX("click")
 
         # Settings
         button_rect = (
@@ -156,12 +179,18 @@ class Pause_menu:
         pg.draw.rect(self.data.screen, (113, 170, 52), button_rect, border_radius = self.data.tile_zoom)
         if is_hovered:
             pg.draw.rect(self.data.screen, (255, 255, 255), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)    
+            if self._button_hovered != "settings" and not other_menu_open:
+                self.data.SFX.Play_Player_SFX("hover")
+                self._button_hovered = "settings"
         else:
             pg.draw.rect(self.data.screen, (48, 44, 46), button_rect, width = self.data.tile_zoom*1, border_radius = self.data.tile_zoom)
+            if self._button_hovered == "settings":
+                self._button_hovered = ""
         self.data.Draw_text("SETTINGS", (button_rect[0] + button_rect[2] // 2 - self.data.tile_zoom*21, button_rect[1] + 3*self.data.tile_zoom), self.data.tile_zoom*6, (255, 255, 255))
         if pg.mouse.get_pressed()[0] and is_hovered and not self._button_pressed and not self.data.in_collection and not self.data.in_settings:
             self._button_pressed = True
             self.data.in_settings = True
+            self.data.SFX.Play_Player_SFX("click")
 
         # # Collection : Specialists
         # button_rect = (

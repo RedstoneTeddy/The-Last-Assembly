@@ -35,6 +35,8 @@ class Hud:
         self.info_box_tick : int = 0
         self.info_hover_over : str = ""
 
+        self._button_hovered : str = ""
+
     def Resize(self):
         """
         Resize the original images based on the current tile zoom level. 
@@ -108,8 +110,8 @@ class Hud:
             if self.info_box_tick > self.data.tower_info_needed_time:
                 show_text = [
                     data_class.TextLine(text=f"You have;{self.data.money}$ Money", color=(255,255,255), icon="", is_small=True),
-                    data_class.TextLine(text=f"Income per Wave:Base Income : +{self.data.money_per_round}$", color=(255,255,255), icon="", is_small=True),
-                    data_class.TextLine(text=f";Interest : +{self.data.interest_per_100}$;(per 100$, max 150$)", color=(255,255,255), icon="", is_small=True)
+                    data_class.TextLine(text=f"Income per Wave:;Base Income : +{self.data.money_per_round}$", color=(255,255,255), icon="", is_small=True),
+                    data_class.TextLine(text=f"Interest : +{self.data.interest_per_100}$;(per 100$, max 150$)", color=(255,255,255), icon="", is_small=True)
                 ]
         else:
             if self.info_hover_over == "money":
@@ -216,6 +218,14 @@ class Hud:
         mouse_pos : tuple[int, int] = pg.mouse.get_pos()
         is_hovered : bool = (mouse_pos[0] >= speed_btn_rected[0] and mouse_pos[0] <= speed_btn_rected[0] + speed_btn_rected[2] and 
                              mouse_pos[1] >= speed_btn_rected[1] and mouse_pos[1] <= speed_btn_rected[1] + speed_btn_rected[3])
+
+        if is_hovered:
+            if self._button_hovered != "speed":
+                self._button_hovered = "speed"
+                self.data.SFX.Play_Player_SFX("hover")
+        else:
+            if self._button_hovered == "speed":
+                self._button_hovered = ""
         
         if self.data.wave_in_progress:
             if self.data.fast_forward:
@@ -237,6 +247,7 @@ class Hud:
             
             if pg.mouse.get_pressed()[0]:
                 if is_hovered and self._speed_btn_pressed == False:
+                    self.data.SFX.Play_Player_SFX("click")
                     if not self.data.fast_forward:
                         self.data.fast_forward = True
                     else:
@@ -292,13 +303,19 @@ class Hud:
             pg.draw.rect(self.data.screen, (160, 147, 142), pause_btn_rected, border_radius=1*self.data.tile_zoom)
             if is_hovered:
                 pg.draw.rect(self.data.screen, (223, 246, 245), pause_btn_rected, width=1*self.data.tile_zoom, border_radius=1*self.data.tile_zoom)
+                if self._button_hovered != "pause":
+                    self._button_hovered = "pause"
+                    self.data.SFX.Play_Player_SFX("hover")
             else:
                 pg.draw.rect(self.data.screen, (48, 44, 46), pause_btn_rected, width=1*self.data.tile_zoom, border_radius=1*self.data.tile_zoom)
+                if self._button_hovered == "pause":
+                    self._button_hovered = ""
             self.data.Draw_text("Pause", (pause_btn_rected[0]+12*self.data.tile_zoom, pause_btn_rected[1]+4*self.data.tile_zoom), 8*self.data.tile_zoom, (255, 255, 255))
             if pg.mouse.get_pressed()[0]:
                 if is_hovered and not self.data.in_shop and not self._button_pressed:
                     self._button_pressed = True
                     self.data.is_paused = True
+                    self.data.SFX.Play_Player_SFX("click")
 
         if show_text != []:
             self.tower_info.Draw_box_at_mouse(show_text)
