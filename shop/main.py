@@ -634,8 +634,8 @@ class Shop:
                 if tile == "gold":
                     gold_zone_count += 1
         if gold_zone_count > 0:
-            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 30}$")
-            total_cash += gold_zone_count * 30
+            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 25}$")
+            total_cash += gold_zone_count * 25
 
         # Specialist wages
         total_wages : int = 0

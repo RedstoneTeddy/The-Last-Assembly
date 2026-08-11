@@ -41,7 +41,7 @@ class WaveGenConfig:
             150, # Wave 1-10
             135, # Wave 11-20
             120, # Wave 21-30
-            60  # Wave 31+
+            30  # Wave 31+
         ]
         self.time_random_factor : float = 0.1
 

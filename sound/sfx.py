@@ -103,8 +103,8 @@ class SFX:
             self.current_volume_player = self.data.volume_player
             self.current_volume_other = self.data.volume_other
             
-            music_volume : float = (self.current_volume_general/4) * (self.current_volume_music/4)*0.66
-            shot_volume : float = (self.current_volume_general/4) * (self.current_volume_shot/4)*0.66
+            music_volume : float = (self.current_volume_general/4) * (self.current_volume_music/4)*0.5
+            shot_volume : float = (self.current_volume_general/4) * (self.current_volume_shot/4)*0.5
             player_volume : float = (self.current_volume_general/4) * (self.current_volume_player/4)
             other_volume : float = (self.current_volume_general/4) * (self.current_volume_other/4) # Effect and Enemy SFX are "other" sounds
 

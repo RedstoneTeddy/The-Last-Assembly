@@ -25,7 +25,7 @@ class Lieutenant(base.Base_tower):
 
         self.dont_rotate : bool = True
 
-        self.delta_mod_limit : int = -7
+        self.delta_mod_limit : int = -5
         
 
 
@@ -33,5 +33,5 @@ class Lieutenant(base.Base_tower):
         return [
             data_class.TextLine(text="Does not shoot!;Support-Tower", color=(255, 0, 0), icon="", is_small=True),
             data_class.TextLine(text="Towers in;range gain", color=(255, 255, 255), icon="", is_small=True),
-            data_class.TextLine(text="+35% damage;", color=(255, 255, 255), icon="", is_small=True)
+            data_class.TextLine(text="+30% damage;", color=(255, 255, 255), icon="", is_small=True)
         ]

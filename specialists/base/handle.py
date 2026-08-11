@@ -138,7 +138,7 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             tower._actual_range = int(tower._actual_range * 1.3)
             tower._actual_cooldown *= 0.85
         for _ in range(lieutenant_count):
-            tower._actual_damage *= 1.35
+            tower._actual_damage *= 1.30
 
 
     # Nearby-Buff enabled by the specialist "Conductor" and "Gunsmith"

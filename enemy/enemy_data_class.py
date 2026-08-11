@@ -7,7 +7,8 @@ if TYPE_CHECKING:
 
 
 class Enemy_data_class:
-    def __init__(self) -> None:
+    def __init__(self, data : 'data_class.Data_class') -> None:
+        self.data : 'data_class.Data_class' = data
 
         self.health : dict[int, int] = {}
         self.position : dict[int, tuple[int, int]] = {} # Only the last int-position
@@ -31,6 +32,19 @@ class Enemy_data_class:
         """
         Handles the removing of an enemy from the game.
         """
+        # Golden effect
+        if self.golden.get(enemy_id, 0) > 0:
+            effect_pos = (self.exact_pos[enemy_id][0] + 0.6, self.exact_pos[enemy_id][1] + 0.5)
+            if self.data.path_random.random() < 0.4:
+                self.data.money += 1
+                self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen(effect_pos), 1, "money")
+                self.data.statistic.stat_raw["gold_earned"] += 1
+                self.data.SFX.Play_Effect_SFX("coin")
+            if "investor" in self.data.bought_specialists and self.data.path_random.random() < 0.3:
+                self.data.money += 1
+                self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen(effect_pos), 1, "money")
+                self.data.statistic.stat_raw["gold_earned"] += 1
+                self.data.SFX.Play_Effect_SFX("coin")
         self.health.pop(enemy_id, None)
         self.position.pop(enemy_id, None)
         self.special_type.pop(enemy_id, None)

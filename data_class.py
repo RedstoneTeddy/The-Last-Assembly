@@ -106,7 +106,7 @@ class Data_class():
         self.physical_multiplier : float = 1.0
         self.electrical_multiplier : float = 1.0
 
-        self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class()
+        self.enemies : enemy_data_class.Enemy_data_class = enemy_data_class.Enemy_data_class(self)
         self.towers : list[base_tower.Base_tower] = []
         self.specialists : list[base_specialist.Base_specialist] = []
         self.bought_specialists : list[SpecialistNames] = []        # Just a list of all internal names of the currently placed specialists
@@ -114,7 +114,7 @@ class Data_class():
 
 
         # Game parameters
-        self.max_mods_per_tower : int = 8
+        self.max_mods_per_tower : int = 6
         self.money_per_round : int = 150
         self.interest_per_100 : int = 30
         self.interest_cap : int = 150
@@ -122,7 +122,7 @@ class Data_class():
         self.mod_cost : int = 80
         self.specialist_cost : int = 150
         self.shop_elements : int = 6
-        self.tower_weights : tuple[int, int, int] = (10, 8, 6) # Common-Weight, Uncommon-Weight, Rare-Weight for the shop
+        self.tower_weights : tuple[int, int, int] = (10, 8, 5) # Common-Weight, Uncommon-Weight, Rare-Weight for the shop
         self.permanent_chance : float = 0.3
         self.event_chance : float = 0.15
         
@@ -212,8 +212,10 @@ class Data_class():
         self.money = 400
         self.health = 200
         self.fast_forward = False
+        self.shop_elements = 6
+        self.max_mods_per_tower = 6
 
-        self.enemies = enemy_data_class.Enemy_data_class()
+        self.enemies = enemy_data_class.Enemy_data_class(self)
         self.towers = []
         self.specialists = []
         self.bought_specialists = []

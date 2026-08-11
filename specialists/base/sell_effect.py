@@ -16,7 +16,7 @@ def Specialist_sell_effect(specialist : "base.Base_specialist") -> None:
             data.shop_elements -= 1
 
         case "modder":
-            data.max_mods_per_tower -= 2
+            data.max_mods_per_tower -= 1
 
         case "vampire":
             for tower in data.towers:

@@ -53,9 +53,9 @@ class Zone_handler:
                                         self.data.statistic.stat_raw["damage_dealt"] -= abs(enemies.health[enemy_id])
                                     enemies.Remove_enemy(enemy_id)
                             if self.data.path_random.random() < 0.01:
-                                self.data.money += 10
-                                self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 10, "money")
-                                self.data.statistic.stat_raw["gold_earned"] += 10
+                                self.data.money += 5
+                                self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen((pos[0] + 0.5, pos[1] + 0.5)), 5, "money")
+                                self.data.statistic.stat_raw["gold_earned"] += 5
                                 self.data.SFX.Play_Effect_SFX("coin")
 
                         case "shock":

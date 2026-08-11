@@ -56,7 +56,7 @@ def Handle_stats(stat : 'statistic.statistic.Statistic', data : 'data_class.Data
             stat.stat_raw["unlocked"]["specialists"]["vampire"] = True
 
     if not stat.stat_raw["unlocked"]["specialists"]["back_in_time"]:
-        if stat.data.wave >= 30 and stat.data.difficulty in ["Operational", "Overclocked", "Critical"]:
+        if stat.data.wave >= 30 and stat.data.difficulty in ["operational", "overclocked", "critical"]:
             stat.stat_raw["unlocked"]["specialists"]["back_in_time"] = True
 
     if not stat.stat_raw["unlocked"]["specialists"]["investor"]:

@@ -202,18 +202,6 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
         if tower.data.enemies.health[tower._shoot_at_id] <= 0:
             if tower.data.enemies.health[tower._shoot_at_id] < 0:
                 tower.data.statistic.stat_raw["damage_dealt"] -= abs(tower.data.enemies.health[tower._shoot_at_id])
-            # Golden effect
-            if tower.data.enemies.golden.get(tower._shoot_at_id, 0) > 0:
-                if tower.data.path_random.random() < 0.4:
-                    tower.data.money += 1
-                    tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
-                    tower.data.statistic.stat_raw["gold_earned"] += 1
-                    tower.data.SFX.Play_Effect_SFX("coin")
-                if "investor" in tower.data.bought_specialists and tower.data.path_random.random() < 0.3:
-                    tower.data.money += 1
-                    tower.data.VFX.Add_dmg_indicator(tower.data.Get_World_to_Screen(effect_pos), 1, "money")
-                    tower.data.statistic.stat_raw["gold_earned"] += 1
-                    tower.data.SFX.Play_Effect_SFX("coin")
             # Kill enemy
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
             # Bounty_hunter
@@ -249,7 +237,7 @@ def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
     enemy_pos : tuple[int, int] = tower.data.enemies.position[tower._shoot_at_id]
     if enemy_pos[0] >= 0 and enemy_pos[1] >= 0 and enemy_pos[1] < len(tower.data.zones) and enemy_pos[0] < len(tower.data.zones[0]):
         if tower.data.zones[enemy_pos[1]][enemy_pos[0]] == "focus":
-            damage_to_deal *= 1.75
+            damage_to_deal *= 1.65
     
 
     # Critical hit

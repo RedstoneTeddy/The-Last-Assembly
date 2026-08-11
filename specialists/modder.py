@@ -10,7 +10,7 @@ class Modder(base.Base_specialist):
 
         self.description : list[data_class.TextLine] = [
             data_class.TextLine(text="Mod-Limit", color=(0,0,0), icon="", is_small=False),
-            data_class.TextLine(text="increases +2", color=(0,0,0), icon="", is_small=False)
+            data_class.TextLine(text="increases +1", color=(0,0,0), icon="", is_small=False)
         ]
 
         self.number_of_frames : int = 1
