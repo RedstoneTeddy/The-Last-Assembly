@@ -18,7 +18,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 #? Better Projectiles
 #? Challenge : Inflation
 #? When first see a tower -> Show a small pop-up (collection menu )
-#? Arcade Music
 
 # Audio  want to change:
 # player/shop_buy.ogg
@@ -57,7 +56,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.13.1"
+version : str = "0.13.2"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))
@@ -94,6 +93,7 @@ enemy_wave : enemy.wave_handler.Wave_handler = enemy.wave_handler.Wave_handler(d
 # Debug Handler
 import debug.top_handler
 debug_handler : debug.top_handler.Top_handler = debug.top_handler.Top_handler(data)
+import statistic.usage_stat
 
 # Zones
 import zones.building
@@ -165,6 +165,7 @@ try:
 
                 if not data.is_paused:
                     if data.start_next_wave:
+                        statistic.usage_stat.Next_wave(data)
                         data.physical_multiplier = 1
                         data.electrical_multiplier = 1
 
@@ -194,6 +195,7 @@ try:
 
                     if data.start_next_wave:
                         data.start_next_wave = False
+
                         enemy_wave.New_wave()
                 
                 # Delete unwanted towers

@@ -106,6 +106,8 @@ class Event_building:
                 self._clicked = True
                 if can_build != "Store":
                     self.event_handler.Handle_event(self.build_event)
+                    self.data.statistic.stat_raw["usage_stat"]["events_used"] += 1
+                    self.data.statistic.stat_raw["usage_stat"]["events"][self.build_event] += 1
                 else:
                     if found_tower is not None:
                         found_tower._storage = ("event", self.build_event)

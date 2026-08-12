@@ -111,6 +111,8 @@ class Zone_building:
                 self._clicked = True
                 if can_build == "True" or can_build == "Partial":
                     self.data.zones[grid_pos[1]][grid_pos[0]] = self.build_zone
+                    self.data.statistic.stat_raw["usage_stat"]["zones_built"] += 1
+                    self.data.statistic.stat_raw["usage_stat"]["zones"][self.build_zone] += 1
                 elif can_build == "Store":
                     for tower in self.data.towers:
                         if tower._pos == grid_pos and tower.internal_name == "storage":

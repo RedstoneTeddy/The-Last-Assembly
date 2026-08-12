@@ -61,6 +61,8 @@ def Tick_building(tower : "base.Base_tower") -> None:
                 tower.data.shop_minimized = False
                 for other_tower in tower.data.towers:
                     other_tower.Wave_start_calculations()
+                tower.data.statistic.stat_raw["usage_stat"]["towers_built"] += 1
+                tower.data.statistic.stat_raw["usage_stat"]["towers"][tower.internal_name] += 1
 
         else:
             tower._build_hologram_allowed = False

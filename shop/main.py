@@ -282,6 +282,7 @@ class Shop:
                         self.data.money -= needed_money_for_reroll
                         self.Generate_shop()
                         self.data.statistic.stat_raw["times_rerolled_in_shop"] += 1
+                        self.data.statistic.stat_raw["usage_stat"]["times_rerolled_in_shop"] += 1
                         self.data.SFX.Play_Player_SFX("click")
                 else:
                     self.data.screen.blit(self.images["reroll_btn"], (reroll_rect[0], reroll_rect[1]))
@@ -621,11 +622,13 @@ class Shop:
         lines: list[str] = []
         # Base reward
         lines.append(f"Wave cleared : +{total_cash}$")
+        self.data.statistic.stat_raw["usage_stat"]["income_base"][self.data.wave-1] += self.data.money_per_round
 
         # Interest
         interest_cash : int = min(self.data.interest_cap, (self.data.money // 100) * self.data.interest_per_100)
         total_cash += interest_cash
         lines.append(f"Interest (max {self.data.interest_cap}$, {self.data.interest_per_100}$ per 100$) : +{interest_cash}$")
+        self.data.statistic.stat_raw["usage_stat"]["income_interest"][self.data.wave-1] += interest_cash
 
         # Gold-zones
         gold_zone_count : int = 0
@@ -635,6 +638,7 @@ class Shop:
                     gold_zone_count += 1
         if gold_zone_count > 0:
             lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 25}$")
+            self.data.statistic.stat_raw["usage_stat"]["income_golden_zone"][self.data.wave-1] += gold_zone_count * 25
             total_cash += gold_zone_count * 25
 
         # Specialist wages
@@ -644,6 +648,7 @@ class Shop:
         if total_wages > 0:
             lines.append(f"Specialist wages: -{total_wages}$")
             total_cash -= total_wages
+            self.data.statistic.stat_raw["usage_stat"]["expense_specialist_wages"][self.data.wave-1] += total_wages
 
         # Add total line
         lines.append(f"Total reward: {total_cash}$")

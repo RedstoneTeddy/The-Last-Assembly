@@ -40,11 +40,13 @@ class Enemy_data_class:
                 self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen(effect_pos), 1, "money")
                 self.data.statistic.stat_raw["gold_earned"] += 1
                 self.data.SFX.Play_Effect_SFX("coin")
+                self.data.statistic.stat_raw["usage_stat"]["income_golden"][self.data.wave-1] += 1
             if "investor" in self.data.bought_specialists and self.data.path_random.random() < 0.3:
                 self.data.money += 1
                 self.data.VFX.Add_dmg_indicator(self.data.Get_World_to_Screen(effect_pos), 1, "money")
                 self.data.statistic.stat_raw["gold_earned"] += 1
                 self.data.SFX.Play_Effect_SFX("coin")
+                self.data.statistic.stat_raw["usage_stat"]["income_golden"][self.data.wave-1] += 1
         self.health.pop(enemy_id, None)
         self.position.pop(enemy_id, None)
         self.special_type.pop(enemy_id, None)

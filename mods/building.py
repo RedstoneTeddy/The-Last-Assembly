@@ -131,6 +131,8 @@ class Mod_building:
                 if can_build != "Store":
                     found_tower._mods[self.build_mod] = found_tower._mods.get(self.build_mod, 0) + 1
                     found_tower._sell_value += self.data.mod_cost // 2
+                    self.data.statistic.stat_raw["usage_stat"]["mods_built"] += 1
+                    self.data.statistic.stat_raw["usage_stat"]["mods"][self.build_mod] += 1
                 self.build_mod = ""
                 self.data.is_building = ""
                 self.data.shop_minimized = False

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, TypedDict, Literal
 if TYPE_CHECKING:
     import data_class
 import statistic.handler
+import statistic.usage_stat
 
 
 class StatRaw(TypedDict):
@@ -23,6 +24,8 @@ class StatRaw(TypedDict):
     # Tower / Specialist Unlocks
     unlocked : dict[Literal["towers", "specialists"], dict[str, bool]]  # A dictionary to track unlocked towers and specialists.
 
+    # Usage Statistics
+    usage_stat : statistic.usage_stat.UsageStat  # A dictionary to track usage statistics
 
 
 class Statistic:
@@ -86,7 +89,8 @@ class Statistic:
             "games_played": 0,
             "games_won": 0,
             "gold_earned": 0,
-            "damage_dealt": 0
+            "damage_dealt": 0,
+            "usage_stat" : statistic.usage_stat.New_usage_stat()
         }
 
     def Tick_stats_updater(self) -> None:
@@ -103,4 +107,6 @@ class Statistic:
         Reset the statistics for a new game.
         """
         statistic.handler.Reset_new_game(self)
+
+    
 

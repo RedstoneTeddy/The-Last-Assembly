@@ -113,3 +113,13 @@ def Handle_stats(stat : 'statistic.statistic.Statistic', data : 'data_class.Data
         if unlocked:
             stat.stat_raw["unlocked"]["specialists"]["collector"] = True
 
+
+    
+    #### Handle some usage stats
+    if data.in_game:
+        if data.wave > stat.stat_raw["usage_stat"]["max_wave"]:
+            stat.stat_raw["usage_stat"]["max_wave"] = data.wave
+        
+        if data.money > stat.stat_raw["usage_stat"]["max_money"]:
+            stat.stat_raw["usage_stat"]["max_money"] = data.money
+
