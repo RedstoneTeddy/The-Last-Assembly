@@ -8,7 +8,8 @@ import specialists.zapper_researcher
 import specialists.combat_robot_researcher
 import specialists.economist_researcher
 import specialists.sniper_researcher
-import specialists.catalyst_researcher  
+import specialists.catalyst_researcher 
+import specialists.sludge_pump_researcher 
 
 # Deal Hunters (Bachelor-Specialists)
 import specialists.zone_deal_hunter
@@ -39,6 +40,7 @@ all_specialists : list[type] = [
     specialists.zapper_researcher.Zapper_researcher,
     specialists.sniper_researcher.Sniper_researcher,
     specialists.catalyst_researcher.Catalyst_researcher,
+    specialists.sludge_pump_researcher.Sludge_pump_researcher,
     
     specialists.zone_deal_hunter.Zone_deal_hunter,
     specialists.mod_deal_hunter.Mod_deal_hunter,

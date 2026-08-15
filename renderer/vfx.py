@@ -17,7 +17,7 @@ class VFX:
         self.__dmg_pos : list[tuple[int, int]] = []
         self.__dmg_amount : list[int] = []
         self.__dmg_tick : list[int] = []
-        self.__dmg_type : list[Literal["physical", "electrical", "money"]] = []
+        self.__dmg_type : list[Literal["physical", "electrical", "money", "poison"]] = []
         self.__max_dmg_tick : int = 40 # How long the damage indicator is displayed, in frames
 
     def Resize(self, force: bool = False) -> None:
@@ -90,6 +90,14 @@ class VFX:
                 else:
                     text_color = (195,93,9)
 
+            elif dmg_type == "poison":
+                if amount > self.data.wave:
+                    text_color = (57,123,68)
+                else:
+                    text_color = (113,170,52)
+                if amount < 0:
+                    text = "-"
+
             # Money is not actual a damage type, but handled by the same code
             elif dmg_type == "money":
                 if amount == 1:
@@ -105,7 +113,7 @@ class VFX:
 
 
 
-    def Add_dmg_indicator(self, pos: tuple[int, int], amount: int, dmg_type: Literal["physical", "electrical", "money"]) -> None:
+    def Add_dmg_indicator(self, pos: tuple[int, int], amount: int, dmg_type: Literal["physical", "electrical", "money", "poison"]) -> None:
         """
         Add a damage indicator to the VFX.
 
@@ -129,8 +137,8 @@ class VFX:
         if len(self.__dmg_amount) > 50:
             random_offset = 5
         actual_pos = (
-            pos[0] + int((self.data.tile_zoom*self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom*(self.data.vfx_size/2)),
-            pos[1] + int((self.data.tile_zoom*self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom*(self.data.vfx_size/2))
+            pos[0] + int((self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom*(self.data.vfx_size/2)),
+            pos[1] + int((self.data.path_random.random()-0.5)*random_offset*self.data.tile_zoom*(self.data.vfx_size/2))
         )
         self.__dmg_pos.append(actual_pos)
         self.__dmg_amount.append(amount)

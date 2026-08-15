@@ -88,6 +88,12 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
                     tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
                     tower._buffed_type.append("specialist")  
 
+            case "sludge_pump":
+                if specialist.internal_name == "sludge_pump_researcher":
+                    tower._actual_damage *= 1.4
+                    tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
+                    tower._buffed_type.append("specialist")
+
 
     # Apply fund_raiser buff  
     fund_buff : int = tower.data.money // 100
@@ -104,9 +110,9 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
     if "collector" in tower.data.bought_specialists:
         towers : list[str] = []
         for other_tower in tower.data.towers:
-            if other_tower.internal_name not in towers:
+            if other_tower.internal_name not in towers and other_tower.internal_name != "storage":
                 towers.append(other_tower.internal_name)
-        tower._actual_damage *= 1 + 0.05 * len(towers)
+        tower._actual_damage *= 1 + 0.03 * len(towers)
         for specialist in tower.data.specialists:
             if specialist.internal_name == "collector":
                 tower._buffed_by_pos.append((specialist._pos[0]+1, specialist._pos[1]+1))
@@ -214,6 +220,10 @@ def Tower_wave_start_calculations(tower : "base.Base_tower") -> None:
             tower._buffed_by_pos.insert(0, (right_tower._pos[0]+1, right_tower._pos[1]+1))
             tower._buffed_type = []
             tower._buffed_type.insert(0, "repeater")
+
+
+    # Tower_statistic
+    tower._dps = tower._actual_damage / tower._actual_cooldown*60 if tower._actual_cooldown > 0 else 0.0
 
 
 

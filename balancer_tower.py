@@ -19,7 +19,7 @@ console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.6.1"
+version : str = "0.14.0"
 data : Data_class = Data_class(version)
 
 

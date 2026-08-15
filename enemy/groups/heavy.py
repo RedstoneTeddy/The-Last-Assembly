@@ -9,7 +9,7 @@ def Guarded(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
     Wave-Group: A wave with a multiple weaker enemies and one strongest enemy in the middle
     Returns: Needed budget and time.
     """
-    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 5)
+    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 7)
     strongest_enemy : tuple[int, data_class.SpecialEnemyTypes] = top_n_enemies[0]
     strongest_cost : int = config.config.enemy_cost[strongest_enemy] // 2 + 1
 
@@ -32,7 +32,7 @@ def Guarded(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
         if top_n_enemies[i] == strongest_enemy:
             weights.append(0)
         else:
-            weights.append((len(top_n_enemies)-i-1)*50)
+            weights.append((len(top_n_enemies)-i-1)*38)
             weights[-1] += max(0, penalty_time_budget - (abs(budget - strongest_cost - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
             weights[-1] += max(0, penalty_time_budget - (abs(time - (enemy_amounts[i]+3) * time_between_enemies[i]) ))
             if weights[-1] <= 0:

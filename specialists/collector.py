@@ -9,7 +9,7 @@ class Collector(base.Base_specialist):
         self.name : str = "Collector"
 
         self.description : list[data_class.TextLine] = [
-            data_class.TextLine(text="For each tower:;+5% damage per", color=(0,0,0), icon="", is_small=True),
+            data_class.TextLine(text="For each tower:;+3% damage per", color=(0,0,0), icon="", is_small=True),
             data_class.TextLine(text="different tower;type built", color=(0,0,0), icon="", is_small=True)
         ]
 

@@ -42,14 +42,24 @@ class Wave_gen:
         # Config changes based on difficulty
         if self.data.difficulty in ["operational", "overclocked"]:
             self.config.config.base_time = 60*45
-            self.config.config.time_increase_fix[0] -= 22
-            self.config.config.time_increase_fix[1] -= 17
-            self.config.config.time_increase_fix[2] -= 12
+            self.config.config.time_increase_fix[0] -= 10
+            self.config.config.time_increase_fix[1] -= 7
+            self.config.config.time_increase_fix[2] -= 5
+
+            self.config.config.budget_formula[0] = 5.3
+            self.config.config.budget_formula[1] = 1.25
+            self.config.config.budget_formula[2] = 4.1
+            self.config.config.budget_formula[3] = 60.0
         if self.data.difficulty in ["critical"]:
             self.config.config.base_time = 60*30
-            self.config.config.time_increase_fix[0] -= int(22*2.0)
-            self.config.config.time_increase_fix[1] -= int(17*2.0)
-            self.config.config.time_increase_fix[2] -= int(12*2.0)
+            self.config.config.time_increase_fix[0] -= int(10*2.0)
+            self.config.config.time_increase_fix[1] -= int(7*2.0)
+            self.config.config.time_increase_fix[2] -= int(5*2.0)
+            
+            self.config.config.budget_formula[0] = 5.7
+            self.config.config.budget_formula[1] = 1.26
+            self.config.config.budget_formula[2] = 4.1
+            self.config.config.budget_formula[3] = 80.0
 
 
 
@@ -69,7 +79,7 @@ class Wave_gen:
 
 
         # Choose base parameters for the current wave
-        budget : int = int(self.config.config.budget_formula[0] * wave_number ** 4 + self.config.config.budget_formula[1] * wave_number**2 + self.config.config.budget_formula[2])
+        budget : int = int(self.config.config.budget_formula[0] * self.config.config.budget_formula[1] ** wave_number + self.config.config.budget_formula[2] * wave_number ** 2 + self.config.config.budget_formula[3])
         budget = int(budget * (1 + self.config.config.budget_random_factor * (self.config.rng.random() - 0.5) * 2))
         # if wave_number == 30:
         #     print(f"Wave 30 budget before: {budget}")
@@ -106,7 +116,7 @@ class Wave_gen:
             try:
                 used_budget, used_time = group(self.config, assign_budget, assign_time)
             except Exception as e:
-                logging.error(f"Error occurred while generating group {i+1}: {e}")
+                logging.exception(f"Error occurred while generating group {i+1}: {e}")
                 continue
             groups.append((group, used_budget, used_time))
             left_budget -= used_budget

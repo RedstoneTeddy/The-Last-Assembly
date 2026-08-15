@@ -56,7 +56,7 @@ logging.info("Logging started")
 
 
 
-version : str = "0.13.2"
+version : str = "0.14.0"
 data : Data_class = Data_class(version)
 data.screen.fill((0, 0, 0))
 data.Draw_text("Warming up the Assembly Line...", (10*data.tile_zoom, 10*data.tile_zoom), 10*data.tile_zoom, (255, 255, 255))

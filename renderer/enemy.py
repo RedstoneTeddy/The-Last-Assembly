@@ -24,6 +24,10 @@ class Enemy:
         })
         self.original_images["faraday"] = pg.image.load("assets/enemy/faraday.png").convert_alpha()
         self.original_images["ironclad"] = pg.image.load("assets/enemy/ironclad.png").convert_alpha()
+        self.original_images["faraday+"] = pg.image.load("assets/enemy/faraday+.png").convert_alpha()
+        self.original_images["ironclad+"] = pg.image.load("assets/enemy/ironclad+.png").convert_alpha()
+        self.original_images["stack"] = pg.image.load("assets/enemy/stack.png").convert_alpha()
+        self.original_images["stack+"] = pg.image.load("assets/enemy/stack+.png").convert_alpha()
 
         self.__Load_effect_images("golden", self.effect_max_frame["golden"], 180)
         self.__Load_effect_images("frozen", self.effect_max_frame["frozen"], 150)
@@ -57,6 +61,8 @@ class Enemy:
         for id, health in self.data.enemies.health.items():
             if health <= 0:
                 continue
+            if self.data.enemies.invulnerable.get(id, 0) > 0:
+                continue
 
             draw_pos : tuple[int, int] = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
             
@@ -68,6 +74,8 @@ class Enemy:
             effect_img : str = f"golden_{effect_frame}"
             effect_big_img : str = f"golden_big_{effect_frame}"
             for id, _ in self.data.enemies.golden.items():
+                if self.data.enemies.invulnerable.get(id, 0) > 0:
+                    continue
                 if self.data.enemies.golden[id] <= 0:
                     continue
                 draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
@@ -80,6 +88,8 @@ class Enemy:
             effect_img = f"frozen_{effect_frame}"
             effect_big_img = f"frozen_big_{effect_frame}"
             for id, _ in self.data.enemies.frozen.items():
+                if self.data.enemies.invulnerable.get(id, 0) > 0:
+                    continue
                 if self.data.enemies.frozen[id] <= 0:
                     continue
                 draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
@@ -92,6 +102,8 @@ class Enemy:
             effect_img = f"slowness_{effect_frame}"
             effect_big_img = f"slowness_big_{effect_frame}"
             for id, _ in self.data.enemies.slowness.items():
+                if self.data.enemies.invulnerable.get(id, 0) > 0:
+                    continue
                 if self.data.enemies.slowness[id] <= 0:
                     continue
                 draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
@@ -104,6 +116,8 @@ class Enemy:
             effect_img = f"speed_{effect_frame}"
             effect_big_img = f"speed_big_{effect_frame}"
             for id, _ in self.data.enemies.speed.items():
+                if self.data.enemies.invulnerable.get(id, 0) > 0:
+                    continue
                 if self.data.enemies.speed[id] <= 0:
                     continue
                 draw_pos = self.data.Get_World_to_Screen(self.data.enemies.exact_pos[id])
@@ -129,9 +143,16 @@ class Enemy:
 
         if self.data.enemies.special_type.get(enemy_id, "") == "faraday":
             return "faraday"
+        if self.data.enemies.special_type.get(enemy_id, "") == "faraday+":
+            return "faraday+"
         if self.data.enemies.special_type.get(enemy_id, "") == "ironclad":
             return "ironclad"
-
+        if self.data.enemies.special_type.get(enemy_id, "") == "ironclad+":
+            return "ironclad+"
+        if self.data.enemies.special_type.get(enemy_id, "") == "stack":
+            return "stack"
+        if self.data.enemies.special_type.get(enemy_id, "") == "stack+":
+            return "stack+"
         if health > 500:
             return "enemy_16"
         elif health > 400:

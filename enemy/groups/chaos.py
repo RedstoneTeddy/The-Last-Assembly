@@ -1,3 +1,4 @@
+
 import data_class
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -10,7 +11,7 @@ def Chaos(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     Wave-Group: A wave with a lot of different enemies in no particular order, just chaos
     Returns: Needed budget and time.
     """
-    allowed_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 15)
+    allowed_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 19)
 
     left_budget : int = budget
     left_time : int = time

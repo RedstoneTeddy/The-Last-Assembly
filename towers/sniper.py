@@ -17,7 +17,7 @@ class Sniper(base.Base_tower):
         self.build_cost : int = 160
 
         self.range : int = 10*12
-        self.damage : float = 6
+        self.damage : float = 5.5
         self.shot_sound_name : str = "heavy_shot"
         self.cooldown : float = 60.0
         self.shot_speed : int = 2

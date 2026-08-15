@@ -25,7 +25,7 @@ class Repeater(base.Base_tower):
 
         self.dont_rotate : bool = True
 
-        self.delta_mod_limit : int = -3
+        self.delta_mod_limit : int = -2
 
 
     def Get_specific_info_texts(self) -> list[data_class.TextLine]:

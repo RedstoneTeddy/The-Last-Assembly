@@ -54,14 +54,14 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
     # Base stat mods
     output["rapid_loader"] = [
         data_class.TextLine(text="Rapid Loader", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="- 28%", color=default_color, icon="time", is_small=False),
+        data_class.TextLine(text="- 24%", color=default_color, icon="time", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 
     output["critical_core"] = [
         data_class.TextLine(text="Critical Core", color=title_color, icon="", is_small=False),
         data_class.TextLine(text="+20% for critical", color=chance_color, icon="", is_small=False),
-        data_class.TextLine(text="hits (x4 damage)", color=default_color, icon="", is_small=False),
+        data_class.TextLine(text="hits (x3 damage)", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 
@@ -81,13 +81,13 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["sharpshooter"] = [
         data_class.TextLine(text="Sharpshooter", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 40%", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="+ 35%", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 
     output["explosive"] = [
         data_class.TextLine(text="Explosive", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 40% blast radius", color=default_color, icon="", is_small=False),
+        data_class.TextLine(text="+ 45% blast radius", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
         
     ]
@@ -103,8 +103,8 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
     # Special / funny mods
     output["heavy_rounds"] = [
         data_class.TextLine(text="Heavy Rounds", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 77%", color=default_color, icon="physical", is_small=False),
-        data_class.TextLine(text="+ 25%", color=nerf_color, icon="time", is_small=False),
+        data_class.TextLine(text="+ 65%", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="+ 20%", color=nerf_color, icon="time", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
     ]
 
@@ -119,7 +119,7 @@ def Get_mod_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["finisher"] = [
         data_class.TextLine(text="Finisher", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 60%", color=default_color, icon="physical", is_small=False),
+        data_class.TextLine(text="+ 50%", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="to enemies", color=default_color, icon="", is_small=False),
         data_class.TextLine(text="< 11", color=default_color, icon="life", is_small=False),
         data_class.TextLine(text="Modification;for Towers", color=default_color, icon="", is_small=True),
@@ -149,19 +149,19 @@ def Get_useless_towers(mod: data_class.ModTypes) -> list[data_class.TowerNames]:
     output: list[data_class.TowerNames] = []
 
     if mod == "hunter_ai":
-        output = ["lieutenant", "observer"]
+        output = ["lieutenant", "observer", "sludge_pump"]
 
     if mod == "first_one":
-        output = ["lieutenant", "observer"]
+        output = ["lieutenant", "observer", "sludge_pump"]
 
     if mod == "last_one":
-        output = ["lieutenant", "observer"]
+        output = ["lieutenant", "observer", "sludge_pump"]
 
     if mod == "close_sighted":  
-        output = ["lieutenant", "observer"]
+        output = ["lieutenant", "observer", "sludge_pump"]
 
     if mod == "weak_spotter":
-        output = ["lieutenant", "observer"]
+        output = ["lieutenant", "observer", "sludge_pump"]
 
     if mod == "rapid_loader":
         output = ["repeater", "lieutenant", "observer"]
@@ -170,7 +170,7 @@ def Get_useless_towers(mod: data_class.ModTypes) -> list[data_class.TowerNames]:
         output = ["economist", "repeater", "lieutenant", "observer"]
     
     if mod == "cryo_rounds":
-        output = ["lieutenant", "observer"]
+        output = ["lieutenant", "observer", "sludge_pump"]
 
     if mod == "spyglass":
         output = ["repeater"]
@@ -179,22 +179,22 @@ def Get_useless_towers(mod: data_class.ModTypes) -> list[data_class.TowerNames]:
         output = ["economist", "repeater", "lieutenant", "observer"]
 
     if mod == "explosive":
-        output = ["combat_robot", "gear_thrower", "zapper", "economist", "sniper", "catalyst", "repeater", "lieutenant", "observer"]
+        output = ["combat_robot", "gear_thrower", "zapper", "economist", "sniper", "catalyst", "repeater", "lieutenant", "observer", "sludge_pump"]
 
     if mod == "bounty_hunter":
-        output = ["economist", "lieutenant", "observer"]
+        output = ["economist", "lieutenant", "observer", "sludge_pump"]
         
     if mod == "heavy_rounds":
         output = ["economist", "repeater", "lieutenant", "observer"]
         
     if mod == "bloodthirst":
-        output = ["economist", "repeater", "lieutenant", "observer"]
+        output = ["economist", "repeater", "lieutenant", "observer", "sludge_pump"]
 
     if mod == "finisher":
-        output = ["economist", "lieutenant", "observer"]
+        output = ["economist", "lieutenant", "observer", "sludge_pump"]
         
     if mod == "slow_shot":
-        output = ["economist", "lieutenant", "observer"]
+        output = ["economist", "lieutenant", "observer", "sludge_pump"]
         
     if mod == "roulette_round":
         output = ["economist", "lieutenant", "observer"]

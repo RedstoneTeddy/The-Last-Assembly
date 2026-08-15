@@ -190,7 +190,7 @@ class Mod_building:
 
         # Base stat mods
         elif self.build_mod == "rapid_loader":
-            tower.cooldown *= 0.72
+            tower.cooldown *= 0.76
         elif self.build_mod == "critical_core":
             if tower._crit_chance <= 0.1:
                 tower._crit_chance = 0.20
@@ -203,9 +203,9 @@ class Mod_building:
             tower.range = int(tower.range * 1.35)
             tower.cooldown *= 1.05
         elif self.build_mod == "sharpshooter":
-            tower.damage *= 1.40
+            tower.damage *= 1.35
         elif self.build_mod == "explosive":
-            tower.blast_radius = int(tower.blast_radius * 1.40)
+            tower.blast_radius = int(tower.blast_radius * 1.45)
         elif self.build_mod == "bounty_hunter":
             if tower._bounty_chance <= 0.1:
                 tower._bounty_chance = 0.15
@@ -215,8 +215,8 @@ class Mod_building:
 
         # Special / funny mods
         elif self.build_mod == "heavy_rounds":
-            tower.damage *= 1.77
-            tower.cooldown *= 1.25
+            tower.damage *= 1.65
+            tower.cooldown *= 1.20
         elif self.build_mod == "bloodthirst":
             if tower._bloodthirst_chance <= 0.01:
                 if "vampire" in self.data.bought_specialists:
@@ -230,7 +230,7 @@ class Mod_building:
                 else:
                     tower._bloodthirst_chance = 1 - (before * 0.976)
         elif self.build_mod == "finisher":
-            tower._extra_dmg_for_low_health *= 1.6
+            tower._extra_dmg_for_low_health *= 1.5
         elif self.build_mod == "slow_shot":
             tower._extra_dmg_for_slowed *= 1.5
         elif self.build_mod == "roulette_round":

@@ -29,10 +29,12 @@ class WaveGenConfig:
     """
     def __init__(self) -> None:
         #### - General parameters - ####
+        # A*B^x + C*x^2 + D
         self.budget_formula : list[float] = [
-            0.0033, # x^4
-            4,  # x^2
-            50, # Constant
+            4.9, # A
+            1.24, # B
+            4.1, # C
+            40.0 # D
         ]
         self.budget_random_factor : float = 0.1 # Random factor for the budget (e.g. 0.1 means +/- 10% randomization)
 
@@ -62,11 +64,15 @@ class WaveGenConfig:
             (20, "faraday") : 21,
             (20, "ironclad") : 21,
             (50, "") : 45,
+            (20, "stack") : 20 + (19*2 + 9 + 5 + 4 + 3 + 2 + 1)-5, # = 77
             (100, "") : 85,
             (200, "") : 165,
             (300, "") : 245,
             (400, "") : 320,
             (500, "") : 410,
+            (200, "faraday+") : 190,
+            (200, "ironclad+") : 190,
+            (100, "stack+") : 100 + (45 + 19*2 + 9 + 5 + 4 + 3 + 2 + 1) - 10, # = 197
             (1000, "") : 800,
         }
         # The first wave an enemy type can appear in
@@ -77,14 +83,18 @@ class WaveGenConfig:
             (4, "") : 6,
             (5, "") : 7,
             (10, "") : 9,
-            (20, "faraday") : 16,
+            (20, "faraday") : 16, # Faraday and Ironclad can actually spawn before wave 16, but have a specific group for them (Anti_damage)
             (20, "ironclad") : 16,
             (50, "") : 15,
+            (20, "stack") : 18,
             (100, "") : 20,
             (200, "") : 22,
             (300, "") : 24,
             (400, "") : 25,
             (500, "") : 27,
+            (200, "faraday+") : 25,
+            (200, "ironclad+") : 25,
+            (100, "stack+") : 21,
             (1000, "") : 31, # One single 1000-enemy already spawns in wave 30, this is fixed and intended as a boss-level.
         }
 

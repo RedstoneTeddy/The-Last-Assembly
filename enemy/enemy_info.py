@@ -28,14 +28,19 @@ def Get_enemy_info() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="10", color=(0,0,0), icon="life", is_small=False)
     ]
     output["faraday"] = [
-        data_class.TextLine(text="Special Enemy", color=(0,0,0), icon="", is_small=False),
+        data_class.TextLine(text="Faraday", color=(0,0,0), icon="", is_small=False),
         data_class.TextLine(text="20", color=(0,0,0), icon="life", is_small=False),
         data_class.TextLine(text="Can only be damaged;by physical damage", color=(0,0,0), icon="", is_small=True)
     ]
     output["ironclad"] = [
-        data_class.TextLine(text="Special Enemy", color=(0,0,0), icon="", is_small=False),
+        data_class.TextLine(text="Ironclad", color=(0,0,0), icon="", is_small=False),
         data_class.TextLine(text="20", color=(0,0,0), icon="life", is_small=False),
         data_class.TextLine(text="Can only be damaged;by electrical damage", color=(0,0,0), icon="", is_small=True)
+    ]
+    output["stack"] = [
+        data_class.TextLine(text="Stack", color=(0,0,0), icon="", is_small=False),
+        data_class.TextLine(text="20", color=(0,0,0), icon="life", is_small=False),
+        data_class.TextLine(text="On kill: Spawns;multiple smaller ones", color=(0,0,0), icon="", is_small=True)
     ]
     output["enemy_10"] = [
         data_class.TextLine(text="Normal Enemy", color=(0,0,0), icon="", is_small=False),
@@ -60,6 +65,21 @@ def Get_enemy_info() -> dict[str, list[data_class.TextLine]]:
     output["enemy_15"] = [
         data_class.TextLine(text="Strong Enemy", color=(0,0,0), icon="", is_small=False),
         data_class.TextLine(text="500", color=(0,0,0), icon="life", is_small=False)
+    ]
+    output["faraday+"] = [
+        data_class.TextLine(text="Faraday+", color=(0,0,0), icon="", is_small=False),
+        data_class.TextLine(text="100", color=(0,0,0), icon="life", is_small=False),
+        data_class.TextLine(text="Can only be damaged;by physical damage", color=(0,0,0), icon="", is_small=True)
+    ]
+    output["ironclad+"] = [
+        data_class.TextLine(text="Ironclad+", color=(0,0,0), icon="", is_small=False),
+        data_class.TextLine(text="100", color=(0,0,0), icon="life", is_small=False),
+        data_class.TextLine(text="Can only be damaged;by electrical damage", color=(0,0,0), icon="", is_small=True)
+    ]
+    output["stack+"] = [
+        data_class.TextLine(text="Stack+", color=(0,0,0), icon="", is_small=False),
+        data_class.TextLine(text="100", color=(0,0,0), icon="life", is_small=False),
+        data_class.TextLine(text="On kill: Spawns;multiple smaller ones", color=(0,0,0), icon="", is_small=True)
     ]
     output["enemy_16"] = [
         data_class.TextLine(text="Strong Enemy", color=(0,0,0), icon="", is_small=False),

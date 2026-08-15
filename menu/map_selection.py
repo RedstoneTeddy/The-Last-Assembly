@@ -181,7 +181,7 @@ class Map_selection:
                 ],
                 "startup" : [
                     data_class.TextLine(text="Startup", color=(128, 213, 60), icon="", is_small=False),
-                    data_class.TextLine(text="Less starting cash; ", color=(0,0,0), icon="", is_small=True)
+                    data_class.TextLine(text="Less starting cash;Less base income", color=(0,0,0), icon="", is_small=True)
                 ],
                 "operational" : [
                     data_class.TextLine(text="Operational", color=(244, 180, 27), icon="", is_small=False),
@@ -189,7 +189,7 @@ class Map_selection:
                 ],
                 "overclocked" : [
                     data_class.TextLine(text="Overclocked", color=(244, 126, 27), icon="", is_small=False),
-                    data_class.TextLine(text="Earn less interest;Some Towers", color=(0,0,0), icon="", is_small=True),
+                    data_class.TextLine(text="Earn less cash;Some Towers", color=(0,0,0), icon="", is_small=True),
                     data_class.TextLine(text="and Specialists;are permanent", color=(0,0,0), icon="", is_small=True)
                 ],
                 "critical" : [

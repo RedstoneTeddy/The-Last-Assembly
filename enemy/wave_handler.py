@@ -63,6 +63,13 @@ class Wave_handler:
             self.data.wave_in_progress = False
             self.data.shop_minimized = False
             self.data.in_shop = True
+
+            # Kill all acid-puddles
+            for y, row in enumerate(self.data.sludge):
+                for x, tile in enumerate(row):
+                    self.data.sludge[y][x] = None                        
+
+            # Check win-condition
             if self.data.wave == 30:
                 # Player has won the game
                 self.data.statistic.stat_raw["games_played"] += 1

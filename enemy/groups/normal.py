@@ -12,7 +12,7 @@ def Normal(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     Returns: Needed budget and time.
     """
     # Get the top three allowed enemies (without a special type)
-    top_three_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, False, 5)
+    top_three_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, False, 6)
 
 
     # Calculate the total cost & time of the top three enemies
@@ -31,7 +31,7 @@ def Normal(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     weights : list[int] = []
     penalty_time_budget : int = 200
     for i in range(len(top_three_enemies)):
-        weights.append((len(top_three_enemies)-i-1)*30)
+        weights.append((len(top_three_enemies)-i-1)*27)
         weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_three_enemies[i]])))
         weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i] * time_between_enemies[i])))
         if weights[-1] <= 0:

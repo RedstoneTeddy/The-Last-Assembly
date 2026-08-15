@@ -28,6 +28,15 @@ class Event_handler:
                 for id in dead_enemies:
                     self.data.enemies.Remove_enemy(id)
 
+            case "swamp":
+                for y in range(len(self.data.world)):
+                    for x in range(len(self.data.world[0])):
+                        if self.data.world[y][x].startswith("path"):
+                            self.data.sludge[y][x] = {
+                                "damage" : [self.data.wave, self.data.wave, self.data.wave, self.data.wave, self.data.wave],
+                                "timer": [self.data.sludge_time, self.data.sludge_time, self.data.sludge_time, self.data.sludge_time, self.data.sludge_time]
+                            }
+
             case "double_cash":
                 cash_bonus : int = self.data.money
                 if cash_bonus > 500:

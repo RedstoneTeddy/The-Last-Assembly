@@ -13,7 +13,7 @@ def Doubles(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
     Wave-Group: A wave with a lot of doubles (two enemies spawning at the one - four tick(s) apart).
     Returns: Needed budget and time.
     """
-    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 5)
+    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 7)
 
     enemy_amounts : list[int] = []
     time_between_enemies : list[int] = []
@@ -39,7 +39,7 @@ def Doubles(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
     penalty_time_budget : int = 200
     weights : list[int] = []
     for i in range(len(top_n_enemies)):
-        weights.append((len(top_n_enemies)-i-1)*50)
+        weights.append((len(top_n_enemies)-i-1)*39)
         weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
         weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i]//2 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
         if weights[-1] <= 0:
@@ -71,7 +71,7 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     Wave-Group: A wave with a lot of bursts (five enemies spawning with one or two or three ticks apart).
     Returns: Needed budget and time.
     """
-    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 10)
+    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 13)
 
     enemy_amounts : list[int] = []
     time_between_enemies : list[int] = []
@@ -99,7 +99,7 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     weights : list[int] = []
     penalty_time_budget : int = 200
     for i in range(len(top_n_enemies)):
-        weights.append((len(top_n_enemies)-i-1)*40)
+        weights.append((len(top_n_enemies)-i-1)*34)
         if enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]] > budget:
             weights[-1] -= int(penalty_time_budget*0.5)
         weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]])))

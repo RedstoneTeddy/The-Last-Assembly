@@ -58,13 +58,13 @@ class Map_info:
             data_class.TextLine(text="Medium", color=medium_color, icon="", is_small=False),
             data_class.TextLine(text="Path splits into;two directions", color=(0,0,0), icon="", is_small=True),
         ]
-
-        # Hard maps
         output["bridge"] = [
             data_class.TextLine(text="Bridge", color=title_color, icon="", is_small=False),
-            data_class.TextLine(text="Hard", color=hard_color, icon="", is_small=False),
+            data_class.TextLine(text="Medium", color=medium_color, icon="", is_small=False),
             data_class.TextLine(text="A long bridge;connecting two areas", color=(0,0,0), icon="", is_small=True),
         ]
+
+        # Hard maps
         output["binary-tree"] = [
             data_class.TextLine(text="Binary Tree", color=title_color, icon="", is_small=False),
             data_class.TextLine(text="Hard", color=hard_color, icon="", is_small=False),

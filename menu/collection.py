@@ -115,7 +115,7 @@ class Collection_menu:
         specialist_elements : tuple[int, int] = (9, 3) # Total of up to 27 specialists
         mod_elements : tuple[int, int] = (7, 3) # Total of up to 21 mods
         zone_elements : tuple[int, int] = (5, 2) # Total of up to 10 zones
-        enemy_elements : tuple[int, int] = (5, 3) # Total of up to 15 enemies
+        enemy_elements : tuple[int, int] = (7, 3) # Total of up to 21 enemies
         event_elements : tuple[int, int] = (5, 2) # Total of up to 10 events
         menu_elements : tuple[int, int] = (3, 2) # Total of 6 menu options
 

@@ -637,9 +637,9 @@ class Shop:
                 if tile == "gold":
                     gold_zone_count += 1
         if gold_zone_count > 0:
-            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 25}$")
-            self.data.statistic.stat_raw["usage_stat"]["income_golden_zone"][self.data.wave-1] += gold_zone_count * 25
-            total_cash += gold_zone_count * 25
+            lines.append(f"Gold zones ({gold_zone_count}): +{gold_zone_count * 15}$")
+            self.data.statistic.stat_raw["usage_stat"]["income_golden_zone"][self.data.wave-1] += gold_zone_count * 15
+            total_cash += gold_zone_count * 15
 
         # Specialist wages
         total_wages : int = 0

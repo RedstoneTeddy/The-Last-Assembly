@@ -36,6 +36,7 @@ class Statistic:
         self.__update_stats_every_n_frames : int = 60 
 
         # Initialize the internal raw statistics dictionary with default values.
+        temp_usage_stat : statistic.usage_stat.UsageStat = {} # type: ignore
         self.stat_raw : StatRaw = {
             "max_wave": 0,
             "max_money": 0,
@@ -50,6 +51,7 @@ class Statistic:
                     "economist": True,
                     "sniper": True,
                     "catalyst": True,
+                    "sludge_pump": True,
 
                     "repeater": False,
                     "observer": False,
@@ -65,6 +67,7 @@ class Statistic:
                     "economist_researcher": True,
                     "sniper_researcher": True,
                     "catalyst_researcher": True,
+                    "sludge_pump_researcher": True,
 
                     "zone_deal_hunter": True,
                     "specialist_deal_hunter": True,
@@ -90,7 +93,7 @@ class Statistic:
             "games_won": 0,
             "gold_earned": 0,
             "damage_dealt": 0,
-            "usage_stat" : statistic.usage_stat.New_usage_stat()
+            "usage_stat" : temp_usage_stat
         }
 
     def Tick_stats_updater(self) -> None:

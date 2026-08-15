@@ -62,6 +62,16 @@ def _Button_info_delay(settings : 'Settings', data : data_class.Data_class, clic
         if clicked:
             data.tower_info_needed_time = 30
 
+def _Button_tower_more_info(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
+    if data.tower_more_info:
+        data.Draw_text("On", text_pos, data.tile_zoom*6, (200, 255, 200))
+        if clicked:
+            data.tower_more_info = False
+    else:
+        data.Draw_text("Off", text_pos, data.tile_zoom*6, (255, 200, 200))
+        if clicked:
+            data.tower_more_info = True
+
 def _Button_enemy_effects(settings : 'Settings', data : data_class.Data_class, clicked : bool, text_pos : tuple[int, int]) -> None:
     if data.display_enemy_effects:
         data.Draw_text("On", text_pos, data.tile_zoom*6, (200, 255, 200))
@@ -289,7 +299,7 @@ class Settings:
 
             
             # Handle Scrolling
-            MAX_SCROLL : int = 26
+            MAX_SCROLL : int = 27
             if self.data.mouse_wheel_down or pg.key.get_pressed()[pg.K_DOWN]:
                 if not self.__scroll_pressed:
                     self.__scroll_pressed = True
@@ -395,6 +405,17 @@ class Settings:
                  data_class.TextLine(text="before showing tower", color=info_text_color, icon="", is_small=False),
                  data_class.TextLine(text="information", color=info_text_color, icon="", is_small=False)],
                 button_funct = _Button_info_delay
+            )
+            if new_text != []:
+                info_text = new_text
+
+            new_text = self.__Settings_line(
+                "More Tower Info",
+                [data_class.TextLine(text="Changes whether", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="the tower info-box", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="shows more", color=info_text_color, icon="", is_small=False),
+                 data_class.TextLine(text="information or not", color=info_text_color, icon="", is_small=False)],
+                button_funct = _Button_tower_more_info
             )
             if new_text != []:
                 info_text = new_text

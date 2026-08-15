@@ -4,6 +4,7 @@ import enemy.enemy_data_class
 from typing import Literal
 
 import towers.base_tower.shooting
+import towers.sludge_pump_handle
 import towers.base_tower.building
 import towers.base_tower.buffed_by_visual
 import mods.info_data
@@ -13,7 +14,7 @@ import specialists.base.handle
 
 
 RARITIES = Literal["Common", "Uncommon", "Rare", ""]
-DAMAGE_TYPES = Literal["Physical", "Electrical", "Fire"]
+DAMAGE_TYPES = Literal["Physical", "Electrical", "Poison"]
 
 
 
@@ -96,6 +97,12 @@ class Base_tower:
         self._buffed_by_pos : list[tuple[int, int]] = [] # Positions of towers / specialists that buff this tower
         self._buffed_type : list[Literal["specialist", "nearby", "tower", "repeater", "money"]] = []
 
+        # Some personal statistics
+        self._total_damage_done : int = 0
+        self._total_kills : int = 0
+        self._shots_fired : int = 0
+        self._dps : float = 0.0
+
 
 
     def Get_info_texts(self) -> list[data_class.TextLine]:
@@ -156,7 +163,14 @@ class Base_tower:
                 line : str = mod_lines[i] + ";" + mod_lines[i+1]
                 output.append(data_class.TextLine(text=line, color=(0,0,0), icon="", is_small=True))
 
+        # Display more-info if the setting is enabled
+        if self.data.tower_more_info:
+            output.append(data_class.TextLine(text="Dmg done: " + str(self._total_damage_done) + ";Kills: " + str(self._total_kills), color=(100, 100, 100), icon="", is_small=True))
+            output.append(data_class.TextLine(text="Shots fired: " + str(self._shots_fired) + ";DPS: " + str(round(self._dps, 1)), color=(100, 100, 100), icon="", is_small=True))
+
         return output
+
+
     
     def Get_specific_info_texts(self) -> list[data_class.TextLine]:
         """
@@ -243,9 +257,14 @@ class Base_tower:
 
             for _ in range(2 if self.data.double_speed else 1):
                 if self.data.wave_in_progress and self._actual_range > 0 and self.cooldown > 0.0:
-                    if self.data.fast_forward:
+                    if self.internal_name == "sludge_pump":
+                        if self.data.fast_forward:
+                            towers.sludge_pump_handle.Tick_shooting(self)
+                        towers.sludge_pump_handle.Tick_shooting(self)
+                    else:
+                        if self.data.fast_forward:
+                            towers.base_tower.shooting.Tick_shooting(self)
                         towers.base_tower.shooting.Tick_shooting(self)
-                    towers.base_tower.shooting.Tick_shooting(self)
                 else:
                     self._shot_pos = (-1, -1)
 

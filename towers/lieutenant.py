@@ -25,7 +25,7 @@ class Lieutenant(base.Base_tower):
 
         self.dont_rotate : bool = True
 
-        self.delta_mod_limit : int = -5
+        self.delta_mod_limit : int = -4
         
 
 

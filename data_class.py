@@ -1,4 +1,4 @@
-from typing import Any, TypedDict, Literal, get_type_hints
+from typing import Any, TypedDict, Literal, get_args, get_type_hints
 
 import pygame as pg
 import logging
@@ -23,8 +23,8 @@ import statistic.statistic
 
 ZoneTypes = Literal["", "focus", "freeze", "gamble", "tax", "hack", "shock", "slow", "gold"]
 ModTypes = Literal["", "hunter_ai", "first_one", "last_one", "close_sighted", "weak_spotter", "rapid_loader", "critical_core", "cryo_rounds", "spyglass", "sharpshooter", "explosive", "bounty_hunter", "heavy_rounds", "bloodthirst", "finisher", "slow_shot", "roulette_round"]
-EventTypes = Literal["", "bombing", "double_cash", "electrical_boost", "free_mod", "free_zone", "physical_boost", "freeze"]
-SpecialEnemyTypes = Literal["faraday", "ironclad", ""]
+EventTypes = Literal["", "bombing", "double_cash", "electrical_boost", "free_mod", "free_zone", "physical_boost", "freeze", "swamp"]
+SpecialEnemyTypes = Literal["faraday", "faraday+", "ironclad", "ironclad+", "stack", "stack+", ""]
 DifficultyLevels = Literal["", "idle", "startup", "operational", "overclocked", "critical"]
 DifficultyRated : dict[DifficultyLevels, int] = {
     "": 0,
@@ -36,12 +36,18 @@ DifficultyRated : dict[DifficultyLevels, int] = {
 }
 
 TowerNames = Literal["base_tower", "cannon", "gear_thrower", "tesla_coil", "zapper", "combat_robot", "economist", "sniper",
-                     "catalyst", "repeater", "observer", "lieutenant", "storage"]
-SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher",
+                     "catalyst", "sludge_pump", "repeater", "observer", "lieutenant", "storage"]
+SpecialistNames = Literal["base_specialist", "cannon_researcher", "gear_thrower_researcher", "tesla_coil_researcher", "zapper_researcher", "combat_robot_researcher", "economist_researcher", "sniper_researcher", "sludge_pump_researcher",
                           "mod_deal_hunter", "zone_deal_hunter", "tower_deal_hunter", "specialist_deal_hunter", "more_stock", "vampire", "catalyst_researcher", "modder", "back_in_time", "investor",
                           "conductor", "gunsmith", "eventmaster", "fund_raiser", "collector"]
 
-
+class SludgeType(TypedDict):
+    """
+    Represents a type of sludge that can be placed on the path by the Sludge Pump tower.
+    One Sludge-Patch can have up to 5 different sludge-pudles, each with its own damage and timer.
+    """
+    damage : list[int]
+    timer : list[int]
 
 
 
@@ -111,10 +117,11 @@ class Data_class():
         self.specialists : list[base_specialist.Base_specialist] = []
         self.bought_specialists : list[SpecialistNames] = []        # Just a list of all internal names of the currently placed specialists
         self.zones : list[list[ZoneTypes]] = []
+        self.sludge : list[list[SludgeType | None]] = []
 
 
         # Game parameters
-        self.max_mods_per_tower : int = 6
+        self.max_mods_per_tower : int = 5
         self.money_per_round : int = 150
         self.interest_per_100 : int = 30
         self.interest_cap : int = 150
@@ -125,6 +132,7 @@ class Data_class():
         self.tower_weights : tuple[int, int, int] = (10, 8, 5) # Common-Weight, Uncommon-Weight, Rare-Weight for the shop
         self.permanent_chance : float = 0.3
         self.event_chance : float = 0.15
+        self.sludge_time : int = 1
         
         # Permanent game variables
         self.completed_maps : dict[str, DifficultyLevels] = {} # Map name : highest completed difficulty
@@ -150,6 +158,7 @@ class Data_class():
         self.display_enemy_effects : bool = True
         self.display_tower_range : Literal["always", "selected", "never"] = "selected"
         self.tower_info_needed_time : int = 30 # In frames, how long the mouse has to hover over a tower before the info-box appears
+        self.tower_more_info : bool = False # If True, the info-box will show more information about the tower
         self.vfx_size : int = 4 # 0 = none, 2 = small, 4 = normal, 6 = large
         self.volume_general : int = 4 # 0-4
         self.volume_music : int = 3 # 0-4
@@ -189,6 +198,8 @@ class Data_class():
             seed = int(time())
         logging.info(f"Starting new game with world '{world_name}' and seed {seed}")
 
+        self.New_usage_stat() # Reset usage statistics for the new game
+
         # Reset world variables
         self.world = []
         self.path = []
@@ -213,13 +224,15 @@ class Data_class():
         self.health = 200
         self.fast_forward = False
         self.shop_elements = 6
-        self.max_mods_per_tower = 6
+        self.max_mods_per_tower = 5
+        self.sludge_time = 6*150
 
         self.enemies = enemy_data_class.Enemy_data_class(self)
         self.towers = []
         self.specialists = []
         self.bought_specialists = []
         self.zones = []
+        self.sludge = []
 
         # Load world and set random seed
         self.Set_random_seed(seed)
@@ -227,22 +240,34 @@ class Data_class():
         save_load.Load_World(self, world_name)
 
         # Difficulty modifiers
-        if self.difficulty in ["startup", "operational", "overclocked", "critical"]:
-            self.money = 150
-        if self.difficulty in ["overclocked", "critical"]:
-            self.interest_per_100 = 20
-            self.interest_cap = 100
-            self.money_per_round = 100
-        else:
-            self.interest_per_100 = 30
-            self.interest_cap = 150
-            self.money_per_round = 150
         if self.difficulty == "startup":
             self.health = 100
-        elif self.difficulty in ["operational", "overclocked"]:
+            self.money = 200
+            self.money_per_round = 100
+            self.interest_per_100 = 30
+            self.interest_cap = 150
+
+        elif self.difficulty == "operational":
             self.health = 50
+            self.money = 150
+            self.money_per_round = 100
+            self.interest_per_100 = 30
+            self.interest_cap = 150
+
+        elif self.difficulty == "overclocked":
+            self.health = 25
+            self.money = 150
+            self.money_per_round = 75
+            self.interest_per_100 = 15
+            self.interest_cap = 75
+
         elif self.difficulty == "critical":
             self.health = 1
+            self.money = 150
+            self.money_per_round = 75
+            self.interest_per_100 = 15
+            self.interest_cap = 75
+            
 
         self.statistic.New_game_reset()
         
@@ -398,6 +423,10 @@ class Data_class():
                     self.display_tower_range = loaded_data["display_tower_range"]
                 else:
                     logging.warning("Permanent data file does not contain display_tower_range, using default")
+                if "tower_more_info" in loaded_data:
+                    self.tower_more_info = loaded_data["tower_more_info"]
+                else:
+                    logging.warning("Permanent data file does not contain tower_more_info, using default")
                 if "vfx_size" in loaded_data:
                     self.vfx_size = loaded_data["vfx_size"]
                 else:
@@ -445,6 +474,7 @@ class Data_class():
             "display_enemy_effects" : self.display_enemy_effects,
             "display_tower_range" : self.display_tower_range,
             "tower_info_needed_time" : self.tower_info_needed_time,
+            "tower_more_info" : self.tower_more_info,
             "vfx_size" : self.vfx_size,
             "volume_general" : self.volume_general,
             "volume_music" : self.volume_music,
@@ -496,6 +526,32 @@ class Data_class():
                     f"({type(loaded_value).__name__}), "
                     f"expected {type(default_value).__name__}, using default value"
                 )
+
+                
+    def New_usage_stat(self) -> None:
+        """
+        Create a new usage statistics dictionary with default values.
+        """
+        self.statistic.stat_raw["usage_stat"] = {
+            "max_wave": 0,
+            "max_money": 0,
+            "times_rerolled_in_shop": 0,
+            "events_used": 0,
+            "towers_built": 0,
+            "zones_built": 0,
+            "mods_built": 0,
+            "towers": {tower_name: 0 for tower_name in get_args(TowerNames)},
+            "mods": {mod_type: 0 for mod_type in get_args(ModTypes)},
+            "zones": {zone_type: 0 for zone_type in get_args(ZoneTypes)},
+            "events": {event_type: 0 for event_type in get_args(EventTypes)},
+            "income_base": [],
+            "income_interest": [],
+            "income_golden": [],
+            "income_hack_zone": [],
+            "income_golden_zone": [],
+            "income_tax_zone": [],
+            "expense_specialist_wages": []
+        }
 
 
 

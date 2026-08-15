@@ -25,6 +25,7 @@ def Tick_shooting(tower : 'base_tower.Base_tower') -> None:
             tower._shoot_at_pos = tower.data.enemies.exact_pos[shoot_at_id]
             tower._shoot_at_pos = (tower._shoot_at_pos[0] + 0.5, tower._shoot_at_pos[1] + 0.5) # Aim at the center of the enemy
             tower._cooldown_timer = 0
+            tower._shots_fired += 1
             if tower.shot_sound_name in get_args(sound.sfx.AllShootingSounds):
                 tower.data.SFX.Play_Shooting_SFX(tower.shot_sound_name) # type: ignore
 
@@ -56,6 +57,12 @@ def Update_shot(tower : 'base_tower.Base_tower') -> None:
     SHOOT_NEARBY_ENEMY_RADIUS : int = 3 * tower.data.tile_zoom
     ENEMY_HIT_RADIUS : float = 0.5
 
+    if tower._shot_pos == (-1, -1):
+        if tower._shoot_at_id is not None and tower._shoot_at_id in tower.data.enemies.exact_pos:
+            tower._shot_pos = (tower._pos[0] + 1, tower._pos[1] + 1)
+        else:
+            _Kill_shot(tower)
+            return
 
     if tower._shoot_at_id is not None and tower._shoot_at_id in tower.data.enemies.exact_pos: # Enemy is still alive
         tower._shoot_at_pos = tower.data.enemies.exact_pos[tower._shoot_at_id] # Update the shot position to the enemy position (for better accuracy)
@@ -121,6 +128,8 @@ def Update_shot(tower : 'base_tower.Base_tower') -> None:
 
             tower._shoot_at_id = shoot_at_id
             tower._shoot_at_pos = (tower.data.enemies.exact_pos[shoot_at_id][0] + 0.5, tower.data.enemies.exact_pos[shoot_at_id][1] + 0.5)
+            if tower._shot_pos == (-1, -1):
+                tower._shot_pos = tower_center_pos
             Update_shot(tower) # Rerun to shoot nearby enemy
         else:
             _Kill_shot(tower)
@@ -164,9 +173,11 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
     
 
         # Check for enemy resistances
-        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") == "faraday" and tower.damage_type == "Electrical":
+        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") in ["faraday", "faraday+"] and tower.damage_type == "Electrical":
             damage_to_deal = 0
-        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") == "ironclad" and tower.damage_type == "Physical":
+        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") in ["ironclad", "ironclad+"] and tower.damage_type == "Physical":
+            damage_to_deal = 0
+        if tower.data.enemies.invulnerable.get(tower._shoot_at_id, 0) > 0:
             damage_to_deal = 0
 
         # Deal the damage to the enemy
@@ -180,11 +191,19 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
                 damage_effect += 1
                 tower.data.statistic.stat_raw["damage_dealt"] += 1
 
+        # Tower statistic
+        tower._total_damage_done += damage_effect
+        if tower.data.enemies.health[tower._shoot_at_id] < 0:
+            tower._total_damage_done += tower.data.enemies.health[tower._shoot_at_id]
+
+
         # Check if enemy loses special-status
         if tower.data.enemies.special_type.get(tower._shoot_at_id, "") in ["faraday", "ironclad"]:
             if tower.data.enemies.health[tower._shoot_at_id] <= 10:
                 tower.data.enemies.special_type[tower._shoot_at_id] = ""
-
+        if tower.data.enemies.special_type.get(tower._shoot_at_id, "") in ["faraday+", "ironclad+"]:
+            if tower.data.enemies.health[tower._shoot_at_id] <= 100:
+                tower.data.enemies.special_type[tower._shoot_at_id] = ""
         # Add damage indicator
         effect_pos : tuple[float, float] = (tower.data.enemies.exact_pos[tower._shoot_at_id][0] + 0.4, tower.data.enemies.exact_pos[tower._shoot_at_id][1] + 0.5)
         if tower.damage_type == "Physical":
@@ -204,6 +223,7 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
                 tower.data.statistic.stat_raw["damage_dealt"] -= abs(tower.data.enemies.health[tower._shoot_at_id])
             # Kill enemy
             tower.data.enemies.Remove_enemy(tower._shoot_at_id)
+            tower._total_kills += 1
             # Bounty_hunter
             if tower._bounty_chance > 0:
                 if tower.data.path_random.random() < tower._bounty_chance:
@@ -219,9 +239,9 @@ def _Hit_enemy(tower : 'base_tower.Base_tower', left_damage : float) -> float:
         else:
             # Cryo_rounds
             if tower._mods.get("cryo_rounds", 0) > 0:
-                new_slowness : int = 7*tower._mods["cryo_rounds"]
-                if new_slowness > 20:
-                    new_slowness = 20
+                new_slowness : int = 15*tower._mods["cryo_rounds"]
+                if new_slowness > 60:
+                    new_slowness = 60
                 if new_slowness > tower.data.enemies.slowness.get(tower._shoot_at_id, 0):
                     tower.data.enemies.slowness[tower._shoot_at_id] = new_slowness
 
@@ -243,7 +263,7 @@ def _Calculate_damage(tower : 'base_tower.Base_tower') -> float:
     # Critical hit
     if tower._crit_chance > 0:
         if tower.data.path_random.random() < tower._crit_chance:
-            damage_to_deal *= 4
+            damage_to_deal *= 3
 
     # Roulette Round
     if tower._roulette_multiplier > 1:
@@ -274,9 +294,11 @@ def Get_nearby_enemy(tower : 'base_tower.Base_tower', center_pos : tuple[int, in
             continue
         enemy_screen_pos : tuple[int, int] = tower.data.Get_World_to_Screen((enemy_pos[0] + 0.5, enemy_pos[1] + 0.5))
         distance : int = (enemy_screen_pos[0] - center_pos[0]) ** 2 + (enemy_screen_pos[1] - center_pos[1]) ** 2
-        if tower.data.enemies.special_type.get(enemy_id, "") == "faraday" and tower.damage_type == "Electrical":
+        if tower.data.enemies.special_type.get(enemy_id, "") in ["faraday", "faraday+"] and tower.damage_type == "Electrical":
             continue
-        if tower.data.enemies.special_type.get(enemy_id, "") == "ironclad" and tower.damage_type == "Physical":
+        if tower.data.enemies.special_type.get(enemy_id, "") in ["ironclad", "ironclad+"] and tower.damage_type == "Physical":
+            continue
+        if tower.data.enemies.invulnerable.get(enemy_id, 0) > 0:
             continue
         if distance <= radius ** 2:
             possible_enemy_ids.append(enemy_id)

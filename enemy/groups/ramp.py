@@ -3,13 +3,14 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from enemy.wave_gen_config import WaveGenData
 import enemy.groups.helpers as helpers
+import logging
 
 def Flip_flop(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     """
     Wave-Group: A wave with two enemies alternating, one stronger and one weaker.
     Returns: Needed budget and time.
     """
-    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 7)
+    top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 9)
 
     mixes : list[tuple[tuple[int, data_class.SpecialEnemyTypes], tuple[int, data_class.SpecialEnemyTypes]]] = []
     # Generate all possible mixes of two different enemies
@@ -41,8 +42,10 @@ def Flip_flop(config : 'WaveGenData', budget : int, time : int) -> tuple[int, in
             weights[-1] += penalty_time_budget
         weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i]//2 * (config.config.enemy_cost[mixes[i][0]] + config.config.enemy_cost[mixes[i][1]])) ))
         weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i] * time_between_enemies[i]) ))
-        if weights[-1] <= 0:
-            weights[-1] = 1
+        
+    if sum(weights) == 0:
+        logging.warning(f"All weights for the FlipFlop group are zero for wave {config.wave_number}. This should not happen, but to prevent a crash, we will assign equal weights to all enemies.")
+        weights = [1 for _ in weights]
     
     chosen_mix : tuple[tuple[int, data_class.SpecialEnemyTypes], tuple[int, data_class.SpecialEnemyTypes]] = config.rng.choices(mixes, weights=weights)[0]
     chosen_mix_i : int = mixes.index(chosen_mix)
@@ -79,6 +82,10 @@ def Ramp_up(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
         enemy_i : int = len(enemies_sorted) - i - 1
         next_time : int = max(1, int(round(config.config.enemy_cost[enemies_sorted[enemy_i]] / dpt)))
         spawn_time += next_time
+        if (needed_time + next_time) > 1.25*time:
+            break
+        if (needed_budget + config.config.enemy_cost[enemies_sorted[enemy_i]]) > 1.25*budget:
+            break
         needed_time += next_time
         needed_budget += config.config.enemy_cost[enemies_sorted[enemy_i]]
         config.wave[spawn_time] = enemies_sorted[enemy_i]
@@ -102,6 +109,10 @@ def Ramp_down(config : 'WaveGenData', budget : int, time : int) -> tuple[int, in
         enemy_i : int = i
         next_time : int = max(1, int(round(config.config.enemy_cost[enemies_sorted[enemy_i]] / dpt)))
         spawn_time += next_time
+        if (needed_time + next_time) > 1.25*time:
+            break
+        if (needed_budget + config.config.enemy_cost[enemies_sorted[enemy_i]]) > 1.25*budget:
+            break
         needed_time += next_time
         needed_budget += config.config.enemy_cost[enemies_sorted[enemy_i]]
         config.wave[spawn_time] = enemies_sorted[enemy_i]

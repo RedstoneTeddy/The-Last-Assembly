@@ -45,7 +45,7 @@ def Get_zone_info_data() -> dict[str, list[data_class.TextLine]]:
         data_class.TextLine(text="25% for", color=chance_color, icon="", is_small=False),
         data_class.TextLine(text="4 damage", color=default_color, icon="physical", is_small=False),
         data_class.TextLine(text="1% for", color=chance_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 5$", color=default_color, icon="money", is_small=False),
+        data_class.TextLine(text="+ 4$", color=default_color, icon="money", is_small=False),
     ]
 
     output["shock"] = [
@@ -61,8 +61,8 @@ def Get_zone_info_data() -> dict[str, list[data_class.TextLine]]:
 
     output["tax"] = [
         data_class.TextLine(text="Tax Zone", color=title_color, icon="", is_small=False),
-        data_class.TextLine(text="+ 0.15$", color=default_color, icon="money", is_small=False),
-        data_class.TextLine(text="per enemy passed", color=default_color, icon="", is_small=False),
+        data_class.TextLine(text="+ 0.12$ per", color=default_color, icon="money", is_small=False),
+        data_class.TextLine(text="enemy passed", color=default_color, icon="", is_small=False),
     ]
 
     return output

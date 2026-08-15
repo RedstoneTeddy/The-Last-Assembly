@@ -7,6 +7,7 @@ import towers.zapper
 import towers.economist
 import towers.sniper
 import towers.catalyst
+import towers.sludge_pump
 import towers.repeater
 import towers.observer
 import towers.lieutenant
@@ -21,6 +22,7 @@ all_towers : list[type] = [
     towers.economist.Economist,
     towers.sniper.Sniper,
     towers.catalyst.Catalyst,
+    towers.sludge_pump.Sludge_pump,
     towers.repeater.Repeater,
     towers.observer.Observer,
     towers.lieutenant.Lieutenant,

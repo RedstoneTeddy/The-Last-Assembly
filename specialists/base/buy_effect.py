@@ -30,3 +30,6 @@ def Specialist_buy_effect(specialist : "base.Base_specialist") -> None:
                         before = 1 - tower._bloodthirst_chance
                         tower._bloodthirst_chance = 1 - (before * 0.972)
 
+        case "sludge_pump_researcher":
+            specialist.data.sludge_time = int(specialist.data.sludge_time * 1.3)
+

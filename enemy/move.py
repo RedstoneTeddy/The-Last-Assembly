@@ -52,6 +52,14 @@ class EnemyMove:
         pos_exact_frame_offset_max : int = 12
         
         for enemy_id in list(enemies.health.keys()):
+            if enemies.invulnerable.get(enemy_id, 0) > 0:
+                enemies.invulnerable[enemy_id] -= 1
+                if self.data.fast_forward:
+                    enemies.invulnerable[enemy_id] -= 1
+                if enemies.invulnerable[enemy_id] <= 0:
+                    enemies.invulnerable.pop(enemy_id, None)
+                continue
+
             # Advance movement
             if enemies.frozen.get(enemy_id, 0) == 0 or enemies.pos_exact_frame_offset[enemy_id] == 0:
                 # Slowness-effect:

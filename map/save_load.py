@@ -77,10 +77,13 @@ def Load_World(data: 'data_class.Data_class', filename: str) -> None:
                         data.sorted_path.append(pos)
         logging.info("Path sorted")
 
-        # Reset zones
+        # Reset zones & Sludge
         data.zones = []
+        data.sludge = []
         for y in range(len(data.world)):
             data.zones.append([])
+            data.sludge.append([])
             for _ in range(len(data.world[y])):
                 data.zones[y].append("")
+                data.sludge[y].append(None)
 

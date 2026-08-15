@@ -17,7 +17,7 @@ class Catalyst(base.Base_tower):
         self.build_cost : int = 150
 
         self.range : int = 4*12
-        self.damage : float = 4
+        self.damage : float = 3
         self.shot_sound_name : str = "crystal_shot"
         self.cooldown : float = 40.0
         self.shot_speed : int = 1
