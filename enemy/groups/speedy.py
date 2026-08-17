@@ -39,7 +39,7 @@ def Doubles(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
     penalty_time_budget : int = 200
     weights : list[int] = []
     for i in range(len(top_n_enemies)):
-        weights.append((len(top_n_enemies)-i-1)*39)
+        weights.append((len(top_n_enemies)-i-1)*35)
         weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
         weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i]//2 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
         if weights[-1] <= 0:
@@ -73,14 +73,16 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     """
     top_n_enemies : list[tuple[int, data_class.SpecialEnemyTypes]] = helpers.Get_top_n_allowed_enemies(config, True, 13)
 
+
+
     enemy_amounts : list[int] = []
     time_between_enemies : list[int] = []
     quick_time_between_enemies : list[int] = []
     for enemy in top_n_enemies:
-        amount_of_enemies : int = (budget // config.config.enemy_cost[enemy]) //5 * 5 # Round down to the nearest even number
+        amount_of_enemies : int = (budget // config.config.enemy_cost[enemy]) //3 * 3 # Round down to the nearest even number
         if amount_of_enemies == 0:
-            amount_of_enemies = 5
-        time_between_groups : int = (time - (amount_of_enemies)) // (amount_of_enemies//5)
+            amount_of_enemies = 3
+        time_between_groups : int = (time - (amount_of_enemies)) // (amount_of_enemies//3)
         if time_between_groups == 0:
             time_between_groups = 1
         time_between_enemies.append(time_between_groups)
@@ -99,21 +101,25 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     weights : list[int] = []
     penalty_time_budget : int = 200
     for i in range(len(top_n_enemies)):
-        weights.append((len(top_n_enemies)-i-1)*34)
+        weights.append((len(top_n_enemies)-i-1)*30)
         if enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]] > budget:
             weights[-1] -= int(penalty_time_budget*0.5)
         weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]])))
-        if enemy_amounts[i]//5 * (time_between_enemies[i] + quick_time_between_enemies[i]) > time:
+        if enemy_amounts[i]//3 * (time_between_enemies[i] + quick_time_between_enemies[i]) > time:
             weights[-1] -= int(penalty_time_budget*0.5)
-        weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i]//5 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
-        if enemy_amounts[i] == 5:
+        weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i]//3 * (time_between_enemies[i] + quick_time_between_enemies[i])) ))
+        if enemy_amounts[i] == 3:
             weights[-1] -= 100
         if weights[-1] <= 0:
             weights[-1] = 1
+        if top_n_enemies[i][1] in ["faraday+", "ironclad+"]:
+            if config.wave_number < 30:
+                weights[-1] //= 3
+            
 
     if len(top_n_enemies) == 10:
         for i in range(0, len(weights)):
-            weights[i] += i
+            weights[i] += len(weights) - i
             health : int = enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]
             if health > budget*2:
                 weights[i] = 0
@@ -129,12 +135,12 @@ def Bursts(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     needed_time : int = 0
 
     spawn_time : int = helpers.Get_first_spawn_time(config)
-    for _ in range(enemy_amounts[enemy_i]//5):
+    for _ in range(enemy_amounts[enemy_i]//3):
         spawn_time += time_between_enemies[enemy_i]
         needed_time += time_between_enemies[enemy_i]
         needed_budget += config.config.enemy_cost[chosen_enemy]
         config.wave[spawn_time] = chosen_enemy
-        for _ in range(4):
+        for _ in range(3):
             spawn_time += quick_time_between_enemies[enemy_i]
             needed_time += quick_time_between_enemies[enemy_i]
             needed_budget += config.config.enemy_cost[chosen_enemy]

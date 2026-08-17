@@ -31,9 +31,9 @@ class WaveGenConfig:
         #### - General parameters - ####
         # A*B^x + C*x^2 + D
         self.budget_formula : list[float] = [
-            4.9, # A
-            1.24, # B
-            4.1, # C
+            5.0, # A
+            1.23, # B
+            4.05, # C
             40.0 # D
         ]
         self.budget_random_factor : float = 0.1 # Random factor for the budget (e.g. 0.1 means +/- 10% randomization)
@@ -70,8 +70,8 @@ class WaveGenConfig:
             (300, "") : 245,
             (400, "") : 320,
             (500, "") : 410,
-            (200, "faraday+") : 190,
-            (200, "ironclad+") : 190,
+            (200, "faraday+") : 200,
+            (200, "ironclad+") : 200,
             (100, "stack+") : 100 + (45 + 19*2 + 9 + 5 + 4 + 3 + 2 + 1) - 10, # = 197
             (1000, "") : 800,
         }
@@ -92,8 +92,8 @@ class WaveGenConfig:
             (300, "") : 24,
             (400, "") : 25,
             (500, "") : 27,
-            (200, "faraday+") : 25,
-            (200, "ironclad+") : 25,
+            (200, "faraday+") : 26,
+            (200, "ironclad+") : 26,
             (100, "stack+") : 21,
             (1000, "") : 31, # One single 1000-enemy already spawns in wave 30, this is fixed and intended as a boss-level.
         }

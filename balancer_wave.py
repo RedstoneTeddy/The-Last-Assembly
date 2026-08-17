@@ -11,18 +11,21 @@ pg.init()
 # V 0.10.1 (idle) ->        0.001810x^2 - 0.017951x + 0.079398, top-health :  9'100, ratio : 1.2706
 # V 0.12.3 (idle) ->        0.001813x^2 - 0.018001x + 0.079613, top-health :  9'100, ratio : 1.2733
 # V 0.14.0 (idle) ->        0.002083x^2 - 0.024223x + 0.103111, top-health :  9'750, ratio : 1.3742
+# V 0.14.1 (idle) ->        0.001874x^2 - 0.020610x + 0.091343, top-health :  8'900, ratio : 1.2745
 
 # V 0.10.0 (operational) -> 0.003889x^2 - 0.059135x + 0.219334, top-health : 14'000
 # V 0.10.1 (operational) -> 0.002110x^2 - 0.021187x + 0.092332, top-health :  9'100, ratio : 1.4755
 # V 0.10.1 (operational) -> 0.002035x^2 - 0.020082x + 0.088745, top-health :  9'100, ratio : 1.4288
 # V 0.12.3 (operational) -> 0.002044x^2 - 0.020147x + 0.088895, top-health :  9'100, ratio : 1.4409
 # V 0.14.0 (operational) -> 0.002597x^2 - 0.032917x + 0.142592, top-health : 11'050, ratio : 1.6756
+# V 0.14.1 (operational) -> 0.002272x^2 - 0.026868x + 0.117296, top-health :  9'900, ratio : 1.5118
 
 # V 0.10.0 (critical) ->    0.004489x^2 - 0.067201x + 0.248362, top-health : 16'000
 # V 0.10.1 (critical) ->    0.002356x^2 - 0.023428x + 0.102315, top-health :  9'100, ratio : 1.6482
 # V 0.10.1 (critical) ->    0.002264x^2 - 0.022099x + 0.097882, top-health :  9'100, ratio : 1.5923
 # V 0.12.3 (critical) ->    0.002552x^2 - 0.023049x + 0.110183, top-health :  9'100, ratio : 1.8464
 # V 0.14.0 (critical) ->    0.003704x^2 - 0.050485x + 0.229692, top-health : 12'950, ratio : 2.3589
+# V 0.14.1 (critical) ->    0.003044x^2 - 0.037075x + 0.168596, top-health : 11'050, ratio : 2.0194
 
 
 import logging
@@ -39,7 +42,7 @@ console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 logging.info("Logging started")
 
-version : str = "0.14.0"
+version : str = "0.14.1"
 data : Data_class = Data_class(version)
 
 data.difficulty = "critical" # Set difficulty here for testing purposes

@@ -47,19 +47,19 @@ class Wave_gen:
             self.config.config.time_increase_fix[2] -= 5
 
             self.config.config.budget_formula[0] = 5.3
-            self.config.config.budget_formula[1] = 1.25
-            self.config.config.budget_formula[2] = 4.1
-            self.config.config.budget_formula[3] = 60.0
+            self.config.config.budget_formula[1] = 1.24
+            self.config.config.budget_formula[2] = 4.05
+            self.config.config.budget_formula[3] = 45.0
         if self.data.difficulty in ["critical"]:
             self.config.config.base_time = 60*30
             self.config.config.time_increase_fix[0] -= int(10*2.0)
             self.config.config.time_increase_fix[1] -= int(7*2.0)
             self.config.config.time_increase_fix[2] -= int(5*2.0)
             
-            self.config.config.budget_formula[0] = 5.7
-            self.config.config.budget_formula[1] = 1.26
+            self.config.config.budget_formula[0] = 5.4
+            self.config.config.budget_formula[1] = 1.25
             self.config.config.budget_formula[2] = 4.1
-            self.config.config.budget_formula[3] = 80.0
+            self.config.config.budget_formula[3] = 50.0
 
 
 
