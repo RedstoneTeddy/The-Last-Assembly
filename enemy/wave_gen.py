@@ -100,6 +100,8 @@ class Wave_gen:
         left_budget : int = budget
         left_time : int = time
 
+        retry_wave_gen : bool = False
+
         for i in range(num_groups):
             assign_budget : int = int((left_budget / (num_groups - i)) * (1 + self.config.config.group_time_budget_random_factor * (self.config.rng.random() - 0.5) * 2))
             assign_time : int = int((left_time / (num_groups - i)) * (1 + self.config.config.group_time_budget_random_factor * (self.config.rng.random() - 0.5) * 2))
@@ -123,6 +125,12 @@ class Wave_gen:
             left_time -= used_time
             logging_text += f"\n  - Group {i+1}: {group.__name__}, budget = {used_budget}/{assign_budget}, time = {used_time}/{assign_time}"
 
+            # Bug-Catcher
+            if used_budget <= 0 or used_time <= 0:
+                logging.warning(f"Group {group.__name__} generated with non-positive budget or time. Used budget: {used_budget}, Used time: {used_time}, Assign budget: {assign_budget}, Assign time: {assign_time}")
+                retry_wave_gen = True
+                continue
+
         # Wave 30 has a special final boss
         if wave_number == 30:
             budget += 1000
@@ -143,9 +151,12 @@ class Wave_gen:
             logging.warning(f"Wave generation for wave {wave_number} exceeded the budget or time limit! Left budget: {left_budget}, left time: {left_time}")
             logging.warning(logging_text)
             logging.warning(f"Retrying wave generation for wave {wave_number}")
-            self.config.wave = self.Generate_wave(wave_number)
+            retry_wave_gen = True
         elif abs(left_budget) > budget*0.4 or abs(left_time) > time*0.4:
             # Silent (no logging) retry
+            retry_wave_gen = True
+
+        if retry_wave_gen:
             self.config.wave = self.Generate_wave(wave_number)
 
 

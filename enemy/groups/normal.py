@@ -32,10 +32,17 @@ def Normal(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]:
     penalty_time_budget : int = 200
     for i in range(len(top_three_enemies)):
         weights.append((len(top_three_enemies)-i-1)*27)
-        weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i] * config.config.enemy_cost[top_three_enemies[i]])))
-        weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i] * time_between_enemies[i])))
+        budget_cost = enemy_amounts[i] * config.config.enemy_cost[top_three_enemies[i]]
+        time_cost = enemy_amounts[i] * time_between_enemies[i]
+
+        weights[-1] += max(0, penalty_time_budget - (abs(budget - budget_cost) ))
+        weights[-1] += max(0, penalty_time_budget - (abs(time - time_cost) ))
         if weights[-1] <= 0:
             weights[-1] = 1
+        if budget_cost > 1.5*budget:
+            weights[-1] //= 2
+        if time_cost > 1.5*time:
+            weights[-1] //= 2
 
     # Choose one of the top three enemies based on the weights
     chosen_enemy : tuple[int, data_class.SpecialEnemyTypes] = config.rng.choices(top_three_enemies, weights=weights)[0]

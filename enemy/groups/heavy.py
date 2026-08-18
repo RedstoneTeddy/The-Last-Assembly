@@ -17,10 +17,10 @@ def Guarded(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
     time_between_enemies : list[int] = []
     for enemy in top_n_enemies:
         amount_of_enemies : int = ((budget - strongest_cost) // config.config.enemy_cost[enemy]) // 2 * 2 # Round down to the nearest even number
-        if amount_of_enemies == 0:
+        if amount_of_enemies <= 0:
             amount_of_enemies = 2
         time_between_groups : int = (time // (amount_of_enemies + 3))
-        if time_between_groups == 0:
+        if time_between_groups <= 0:
             time_between_groups = 1
         time_between_enemies.append(time_between_groups)
         enemy_amounts.append(amount_of_enemies)
@@ -33,10 +33,16 @@ def Guarded(config : 'WaveGenData', budget : int, time : int) -> tuple[int, int]
             weights.append(0)
         else:
             weights.append((len(top_n_enemies)-i-1)*38)
-            weights[-1] += max(0, penalty_time_budget - (abs(budget - strongest_cost - enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]) ))
-            weights[-1] += max(0, penalty_time_budget - (abs(time - (enemy_amounts[i]+3) * time_between_enemies[i]) ))
+            budget_cost : int = strongest_cost + enemy_amounts[i] * config.config.enemy_cost[top_n_enemies[i]]
+            time_cost : int = (enemy_amounts[i]+3) * time_between_enemies[i]
+            weights[-1] += max(0, penalty_time_budget - (abs(budget - budget_cost) ))
+            weights[-1] += max(0, penalty_time_budget - (abs(time - time_cost) ))
             if weights[-1] <= 0:
                 weights[-1] = 1
+            if budget_cost > 1.5*budget:
+                weights[-1] //= 2
+            if time_cost > 1.5*time:
+                weights[-1] //= 2
 
     chosen_enemy : tuple[int, data_class.SpecialEnemyTypes] = config.rng.choices(top_n_enemies, weights=weights)[0]
     chosen_enemy_i : int = top_n_enemies.index(chosen_enemy)

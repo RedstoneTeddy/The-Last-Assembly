@@ -40,8 +40,15 @@ def Flip_flop(config : 'WaveGenData', budget : int, time : int) -> tuple[int, in
         weights.append(0)
         if time_between_enemies[i] > 10:
             weights[-1] += penalty_time_budget
-        weights[-1] += max(0, penalty_time_budget - (abs(budget - enemy_amounts[i]//2 * (config.config.enemy_cost[mixes[i][0]] + config.config.enemy_cost[mixes[i][1]])) ))
-        weights[-1] += max(0, penalty_time_budget - (abs(time - enemy_amounts[i] * time_between_enemies[i]) ))
+        budget_cost : int = enemy_amounts[i]//2 * (config.config.enemy_cost[mixes[i][0]] + config.config.enemy_cost[mixes[i][1]])
+        time_cost : int = enemy_amounts[i] * time_between_enemies[i]
+        weights[-1] += max(0, penalty_time_budget - (abs(budget - budget_cost) ))
+        weights[-1] += max(0, penalty_time_budget - (abs(time - time_cost) ))
+        if budget_cost > 1.5*budget:
+            weights[-1] //= 2
+        if time_cost > 1.5*time:
+            weights[-1] //= 2
+        
         
     if sum(weights) == 0:
         logging.warning(f"All weights for the FlipFlop group are zero for wave {config.wave_number}. This should not happen, but to prevent a crash, we will assign equal weights to all enemies.")
